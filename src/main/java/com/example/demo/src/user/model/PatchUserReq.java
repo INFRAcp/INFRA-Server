@@ -8,7 +8,7 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)  // 해당 클래스의 파라미터가 없는 생성자를 생성, 접근제한자를 PROTECTED로 설정.
 /**
  * Req.java: From Client To Server
- * 회원정보 수정 요청(Patch Request)을 하기 위해 서버에 전달할 데이터의 형태
+ * 회원정보 수정 요청(Patch Request)을 하기 위해 서버에 전달할 데이터의 형태.
  */
 public class PatchUserReq {
     private int userIdx;
