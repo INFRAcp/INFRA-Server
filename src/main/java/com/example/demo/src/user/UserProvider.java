@@ -2,19 +2,24 @@ package com.example.demo.src.user;
 
 import com.example.demo.config.BaseException;
 import com.example.demo.config.secret.Secret;
-import com.example.demo.src.user.model.*;
+import com.example.demo.src.user.model.GetUserRes;
+import com.example.demo.src.user.model.PostLoginReq;
+import com.example.demo.src.user.model.PostLoginRes;
+import com.example.demo.src.user.model.User;
 import com.example.demo.utils.AES128;
 import com.example.demo.utils.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
+
 import static com.example.demo.config.BaseResponseStatus.*;
 
 //Provider : Read의 비즈니스 로직 처리
 @Service    // [Business Layer에서 Service를 명시하기 위해서 사용] 비즈니스 로직이나 respository layer 호출하는 함수에 사용된다.
-            // [Business Layer]는 컨트롤러와 데이터 베이스를 연결
+// [Business Layer]는 컨트롤러와 데이터 베이스를 연결
 /**
  * Provider란?
  * Controller에 의해 호출되어 실제 비즈니스 로직과 트랜잭션을 처리: Read의 비즈니스 로직 처리
@@ -63,7 +68,16 @@ public class UserProvider {
         }
     }
 
-    // 해당 이메일이 이미 User Table에 존재하는지 확인
+    // id 중복 체크
+    public int checkId(String id) throws BaseException {
+        try {
+            return userDao.checkId(id);
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    // 이메일 중복 체크
     public int checkEmail(String email) throws BaseException {
         try {
             return userDao.checkEmail(email);
@@ -72,6 +86,15 @@ public class UserProvider {
         }
     }
 
+    // 핸드폰 번호 체크
+    public int checkPhone(String phone) throws BaseException {
+        try {
+            return userDao.checkPhone(phone);
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+
+    }
 
     // User들의 정보를 조회
     public List<GetUserRes> getUsers() throws BaseException {
@@ -103,5 +126,4 @@ public class UserProvider {
             throw new BaseException(DATABASE_ERROR);
         }
     }
-
 }
