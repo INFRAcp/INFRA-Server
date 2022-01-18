@@ -14,19 +14,19 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RequestMapping("/project")
 public class ProjectController {
-    final Logger logger = LoggerFactory.getLogger(this.getClass());
-
-    @Autowired
-    private final ProjectProvider projectProvider;
-    @Autowired
-    private final ProjectService projectService;
-    @Autowired
-    private final JwtService jwtService;
-
-    public ProjectController(ProjectProvider projectProvider, ProjectService projectService, JwtService jwtService) {
-        this.projectProvider = projectProvider;
-        this.projectService = projectService;
-        this.jwtService = jwtService;
-    }
+//    final Logger logger = LoggerFactory.getLogger(this.getClass());
+//
+//    @Autowired
+//    private final ProjectProvider projectProvider;
+//    @Autowired
+//    private final ProjectService projectService;
+//    @Autowired
+//    private final JwtService jwtService;
+//
+//    public ProjectController(ProjectProvider projectProvider, ProjectService projectService, JwtService jwtService) {
+//        this.projectProvider = projectProvider;
+//        this.projectService = projectService;
+//        this.jwtService = jwtService;
+//    }
 
 }
