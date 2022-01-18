@@ -2,7 +2,10 @@ package com.example.demo.src.project;
 
 import com.example.demo.config.BaseException;
 import com.example.demo.config.BaseResponse;
+import com.example.demo.src.project.model.GetPj_keywordRes;
 import com.example.demo.src.project.model.GetProjectRes;
+import com.example.demo.src.project.model.PostPj_likeReq;
+import com.example.demo.src.project.model.PostPj_likeRes;
 import com.example.demo.utils.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,20 +18,20 @@ import java.util.List;
 
 @RequestMapping("/project")
 public class ProjectController {
-//    final Logger logger = LoggerFactory.getLogger(this.getClass());
-//
-//    @Autowired
-//    private final ProjectProvider projectProvider;
-//    @Autowired
-//    private final ProjectService projectService;
-//    @Autowired
-//    private final JwtService jwtService;
-//
-//    public ProjectController(ProjectProvider projectProvider, ProjectService projectService, JwtService jwtService) {
-//        this.projectProvider = projectProvider;
-//        this.projectService = projectService;
-//        this.jwtService = jwtService;
-//    }
+    final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    @Autowired
+    private final ProjectProvider projectProvider;
+    @Autowired
+    private final ProjectService projectService;
+    @Autowired
+    private final JwtService jwtService;
+
+    public ProjectController(ProjectProvider projectProvider, ProjectService projectService, JwtService jwtService) {
+        this.projectProvider = projectProvider;
+        this.projectService = projectService;
+        this.jwtService = jwtService;
+    }
 
 
     //프로젝트 전체 조회
@@ -45,9 +48,34 @@ public class ProjectController {
         } catch (BaseException exception){
             return new BaseResponse<>((exception.getStatus()));
         }
-
     }
 
+    //프로젝트 키워드 조회
+    @ResponseBody
+    @GetMapping("/keyword")
+    public BaseResponse<List<GetPj_keywordRes>> getPj_keywords(@RequestParam(required = false) String search){
+        try{
+            if(search == null){
+                List<GetPj_keywordRes> getPj_keywordRes = projectProvider.getPj_keywords();
+                return new BaseResponse<>(getPj_keywordRes);
+            }
+            List<GetPj_keywordRes> getPj_keywordRes = projectProvider.getPj_keywordsBysearch(search);
+            return new BaseResponse<>(getPj_keywordRes);
+        }catch (BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+    //유저가 찜한 프로젝트 조회
+    @ResponseBody
+    @PostMapping("likePj")
+    public BaseResponse<PostPj_likeRes> like(@RequestBody PostPj_likeReq postPj_likeReq){
+        try{
+            PostPj_likeRes postPj_likeRes = projectProvider.like(postPj_likeReq);
+            return new BaseResponse<>(postPj_likeRes);
+        }catch(BaseException exception){
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
 
 
 
