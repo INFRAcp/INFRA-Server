@@ -68,9 +68,10 @@ public class UserController {
     @ResponseBody
     @PostMapping("/log-in")
     public BaseResponse<PostLoginRes> logIn(@RequestBody PostLoginReq postLoginReq) {
+        if (postLoginReq.getId() == null || postLoginReq.getPw() == null) {
+            return new BaseResponse<>(POST_USERS_EMPTY_INFO);
+        }
         try {
-            // TODO: 로그인 값들에 대한 형식적인 validatin 처리해주셔야합니다!
-            // TODO: 유저의 status ex) 비활성화된 유저, 탈퇴한 유저 등을 관리해주고 있다면 해당 부분에 대한 validation 처리도 해주셔야합니다.
             PostLoginRes postLoginRes = userProvider.logIn(postLoginReq);
             return new BaseResponse<>(postLoginRes);
         } catch (BaseException exception) {
@@ -151,7 +152,7 @@ public class UserController {
  //같다면 유저네임 변경
  **************************************************************************
  */
-            PatchUserReq patchUserReq = new PatchUserReq(userIdx, user.getNickname());
+            PatchUserReq patchUserReq = new PatchUserReq(userIdx, user.getUserNickname());
             userService.modifyUserName(patchUserReq);
 
             String result = "회원정보가 수정되었습니다.";
