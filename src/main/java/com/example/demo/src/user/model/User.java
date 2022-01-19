@@ -10,13 +10,13 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class User {
-    private String userId;
-    private String userPw;
-    private String userNickname;
-    private float userGrade;
-    private String userPhone;
-    private String userEmail;
-    private String userName;
-    private String userPrPhoto;
-    private String userPrProfile;
+    private String id;
+    private String pw;
+    private String nickname;
+    private float grade;
+    private String phone;
+    private String email;
+    private String name;
+    private String prPhoto;
+    private String prProfile;
 }

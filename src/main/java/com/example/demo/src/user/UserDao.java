@@ -20,7 +20,7 @@ public class UserDao {
 
     // 회원가입
     public void createUser(PostUserReq postUserReq) {
-        String createUserQuery = "insert into dev_infraDB.User (User_id, User_Pw, User_nickname, User_Grade, User_Phone, " +
+        String createUserQuery = "insert into User (User_id, User_Pw, User_nickname, User_Grade, User_Phone, " +
                 "User_email, User_name, User_pr_photo, User_pr_profile)" +
                 " VALUES (?,?,?,0,?,?,?,?,?)"; // 실행될 동적 쿼리문
         Object[] createUserParams = new Object[]{postUserReq.getId(), postUserReq.getPw(), postUserReq.getNickname(), postUserReq.getPhone(),
@@ -30,39 +30,38 @@ public class UserDao {
 
     // id 확인
     public int checkId(String id) {
-        String checkIdQuery = "select exists(select User_id from dev_infraDB.User where User_id = ?)";
+        String checkIdQuery = "select exists(select User_id from User where User_id = ?)";
         return this.jdbcTemplate.queryForObject(checkIdQuery, int.class, id);
     }
 
     // 이메일 확인
     public int checkEmail(String email) {
-        String checkEmailQuery = "select exists(select User_email from dev_infraDB.User where User_email = ?)";
+        String checkEmailQuery = "select exists(select User_email from User where User_email = ?)";
         return this.jdbcTemplate.queryForObject(checkEmailQuery, int.class, email);
     }
 
     // 핸드폰 번호 확인
     public int checkPhone(String phone) {
-        String checkPhoneQuery = "select exists(select User_Phone from dev_infraDB.User where User_phone = ?)";
+        String checkPhoneQuery = "select exists(select User_Phone from User where User_phone = ?)";
         return this.jdbcTemplate.queryForObject(checkPhoneQuery, int.class, phone);
     }
 
-    // 회원정보 변경
-    public int modifyUserName(PatchUserReq patchUserReq) {
-        String modifyUserNameQuery = "update User set nickname = ? where userIdx = ? "; // 해당 userIdx를 만족하는 User를 해당 nickname으로 변경한다.
-        Object[] modifyUserNameParams = new Object[]{patchUserReq.getNickname(), patchUserReq.getUserIdx()}; // 주입될 값들(nickname, userIdx) 순
-
-        return this.jdbcTemplate.update(modifyUserNameQuery, modifyUserNameParams); // 대응시켜 매핑시켜 쿼리 요청(생성했으면 1, 실패했으면 0) 
+    // 비밀번호 변경
+    public int modifyUserPw(PatchUserReq patchUserReq) {
+        String modifyUserNameQuery = "update User set user_pw = ? where user_Id = ? ";
+        Object[] modifyUserNameParams = new Object[]{patchUserReq.getPw(), patchUserReq.getId()};
+        return this.jdbcTemplate.update(modifyUserNameQuery, modifyUserNameParams);
     }
 
 
     // 로그인
     public User getPwd(PostLoginReq postLoginReq) {
-        String getPwdQuery = "select User_id, User_Pw from dev_infraDB.User where User_id = ?";
+        String getPwdQuery = "select User_id, User_Pw from User where User_id = ?";
         String getPwdParams = postLoginReq.getId();
 
         return this.jdbcTemplate.queryForObject(getPwdQuery,
-                (rs, rowNum) -> User.builder().userId(rs.getString("User_id")).
-                        userPw(rs.getString("User_Pw")).build(), getPwdParams);
+                (rs, rowNum) -> User.builder().id(rs.getString("User_id")).
+                        pw(rs.getString("User_Pw")).build(), getPwdParams);
     }
 
 

@@ -60,7 +60,6 @@ public class UserService {
             // 비밀번호 암호화
             pwd = new AES128(Secret.USER_INFO_PASSWORD_KEY).encrypt(postUserReq.getPw()); // 암호화코드
             postUserReq.setPw(pwd);
-            System.out.println(pwd);
         } catch (Exception ignored) { // 암호화가 실패하였을 경우 에러 발생
             throw new BaseException(PASSWORD_ENCRYPTION_ERROR);
         }
@@ -75,14 +74,22 @@ public class UserService {
         }
     }
 
-    // 회원정보 수정(Patch)
-    public void modifyUserName(PatchUserReq patchUserReq) throws BaseException {
+    // 비밀번호 변경(Patch)
+    public void modifyUserPw(PatchUserReq patchUserReq) throws BaseException {
+        String pwd;
+        try {   // 비밀번호 암호화
+            pwd = new AES128(Secret.USER_INFO_PASSWORD_KEY).encrypt(patchUserReq.getPw()); // 암호화코드
+            patchUserReq.setPw(pwd);
+        } catch (Exception ignored) { // 암호화가 실패하였을 경우 에러 발생
+            throw new BaseException(PASSWORD_ENCRYPTION_ERROR);
+        }
+
         try {
-            int result = userDao.modifyUserName(patchUserReq); // 해당 과정이 무사히 수행되면 True(1), 그렇지 않으면 False(0)입니다.
-            if (result == 0) { // result값이 0이면 과정이 실패한 것이므로 에러 메서지를 보냅니다.
-                throw new BaseException(MODIFY_FAIL_USERNAME);
+            int result = userDao.modifyUserPw(patchUserReq);
+            if (result == 0) { // 변경 실패
+                throw new BaseException(MODIFY_FAIL_USERPW);
             }
-        } catch (Exception exception) { // DB에 이상이 있는 경우 에러 메시지를 보냅니다.
+        } catch (Exception exception) { // DB에 이상이 있는 경우
             throw new BaseException(DATABASE_ERROR);
         }
     }

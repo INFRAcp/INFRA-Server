@@ -49,13 +49,13 @@ public class UserProvider {
         String password;
 
         try {
-            password = new AES128(Secret.USER_INFO_PASSWORD_KEY).decrypt(user.getUserPw()); // 복호화
+            password = new AES128(Secret.USER_INFO_PASSWORD_KEY).decrypt(user.getPw()); // 복호화
         } catch (Exception ignored) {
             throw new BaseException(PASSWORD_DECRYPTION_ERROR);
         }
 
         if (postLoginReq.getPw().equals(password)) { //비밀번호 일치
-            String userId = userDao.getPwd(postLoginReq).getUserId();
+            String userId = userDao.getPwd(postLoginReq).getId();
             String jwt = jwtService.createJwt(userId);
             return new PostLoginRes(userId, jwt);
         } else { // 비밀번호 불일치

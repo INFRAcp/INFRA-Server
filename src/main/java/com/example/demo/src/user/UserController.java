@@ -134,28 +134,24 @@ public class UserController {
     }
 
     /**
-     * 유저정보변경 API
-     * [PATCH] /user/:userIdx
+     * 비밀번호 변경 API
+     * [PATCH] /user/update-pw/:userId
      */
     @ResponseBody
-    @PatchMapping("/{userIdx}")
-    public BaseResponse<String> modifyUserName(@PathVariable("userIdx") int userIdx, @RequestBody User user) {
+    @PatchMapping("/update-pw/{userId}")
+    public BaseResponse<String> modifyUserName(@PathVariable("userId") String userId, @RequestBody User user) {
         try {
-/**
- *********** 해당 부분은 7주차 - JWT 수업 후 주석해체 해주세요!  ****************
- //jwt에서 idx 추출.
- int userIdxByJwt = jwtService.getUserIdx();
- //userIdx와 접근한 유저가 같은지 확인
- if(userIdx != userIdxByJwt){
- return new BaseResponse<>(INVALID_USER_JWT);
- }
- //같다면 유저네임 변경
- **************************************************************************
- */
-            PatchUserReq patchUserReq = new PatchUserReq(userIdx, user.getUserNickname());
-            userService.modifyUserName(patchUserReq);
+            String userIdByJwt = jwtService.getUserId();    //jwt에서 id 추출
+            if (!userId.equals(userIdByJwt)) {
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
+            if (user.getPw() == null) {
+                return new BaseResponse<>(POST_USERS_EMPTY_INFO);
+            }
 
-            String result = "회원정보가 수정되었습니다.";
+            userService.modifyUserPw(PatchUserReq.builder().id(userId).pw(user.getPw()).build());
+
+            String result = "비밀번호가 성공적으로 변경되었습니다.";
             return new BaseResponse<>(result);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));

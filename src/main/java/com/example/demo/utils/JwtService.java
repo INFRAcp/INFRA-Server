@@ -14,7 +14,8 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 
-import static com.example.demo.config.BaseResponseStatus.*;
+import static com.example.demo.config.BaseResponseStatus.EMPTY_JWT;
+import static com.example.demo.config.BaseResponseStatus.INVALID_JWT;
 
 @Service
 public class JwtService {
@@ -45,11 +46,11 @@ public class JwtService {
     }
 
     /*
-    JWT에서 userIdx 추출
+    JWT에서 userId 추출
     @return int
     @throws BaseException
      */
-    public int getUserIdx() throws BaseException {
+    public String getUserId() throws BaseException {
         //1. JWT 추출
         String accessToken = getJwt();
         if (accessToken == null || accessToken.length() == 0) {
@@ -66,8 +67,8 @@ public class JwtService {
             throw new BaseException(INVALID_JWT);
         }
 
-        // 3. userIdx 추출
-        return claims.getBody().get("userId", Integer.class);  // jwt 에서 userId를 추출
+        // 3. userId 추출
+        return claims.getBody().get("userId", String.class);  // jwt 에서 userId를 추출
     }
 
 }
