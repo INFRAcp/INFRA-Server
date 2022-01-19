@@ -9,6 +9,8 @@ import com.example.demo.src.project.model.*;
 
 import javax.sql.DataSource;
 import javax.xml.crypto.Data;
+import java.sql.Timestamp;
+import java.time.LocalTime;
 import java.util.List;
 
 @Repository
@@ -16,7 +18,7 @@ public class ProjectDao {
     private JdbcTemplate jdbcTemplate;
 
     @Autowired
-    public void setDataSource(DataSource dataSource){
+    public void setDataSource(DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
@@ -32,14 +34,15 @@ public class ProjectDao {
                         rs.getString("pj_deadline"),
                         rs.getInt("pj_total_person"),
                         rs.getInt("pj_recruit_person")
-                        )
+                )
         );
 
     }
+
     //검색 프로젝트 조회
     public List<GetProjectRes> getProjectsBySearch(String search) {
         String getProjectsBySearchQuery = "select distinct pj_header, pj_field, pj_name, pj_progress, pj_deadline, pj_total_person, pj_recruit_person from Project, Pj_keyword where pj_name like ? or pj_content like ? or keyword like ? or pj_subfield like ?";
-        String getProjectsBySearchParams = '%'+search+'%';
+        String getProjectsBySearchParams = '%' + search + '%';
 
         return this.jdbcTemplate.query(getProjectsBySearchQuery,
                 (rs, rowNum) -> new GetProjectRes(
@@ -59,7 +62,6 @@ public class ProjectDao {
     //키워드 조회
     public List<GetPj_keywordRes> getPj_keywords() {
         String getProjectQuery = "select Project.pj_num, keyword from Pj_keyword, Project where Project.pj_num = Pj_keyword.pj_num";
-        System.out.println("gg");
         return this.jdbcTemplate.query(getProjectQuery,
                 (rs, rowNum) -> new GetPj_keywordRes(
                         rs.getInt("pj_num"),
@@ -67,11 +69,12 @@ public class ProjectDao {
                 )
         );
     }
+
     //버리는 카드
     public List<GetPj_keywordRes> getPj_keywordsBysearch(String search) {
         String getProjectsBySearchQuery = "select Project.pj_num, keyword from Project, Pj_keyword where Project.pj_num = Pj_keyword.pj_num and pj_name like ? or pj_content like ? or keyword like ? or pj_subfield like ?";
 
-        String getProjectsBySearchParams = '%'+search+'%';
+        String getProjectsBySearchParams = '%' + search + '%';
 
         return this.jdbcTemplate.query(getProjectsBySearchQuery,
                 (rs, rowNum) -> new GetPj_keywordRes(
@@ -103,5 +106,36 @@ public class ProjectDao {
                         rs.getString("pj_time")),
                 getParams
         );
+    }
+
+    public String registrationPj(PostPjRegisterReq postPjRegisterReq) {
+        String Pj_numQuery = "SELECT pj_num FROM Project ORDER BY pj_num DESC LIMIT 1";
+        postPjRegisterReq.setPj_num(this.jdbcTemplate.queryForObject(Pj_numQuery, int.class)+1);
+
+        String Pj_timeQuery = "SELECT now()";
+        postPjRegisterReq.setPj_time(this.jdbcTemplate.queryForObject(Pj_timeQuery, Timestamp.class));
+
+        String registrationPjQuery = "insert into Project(pj_num, User_id, pj_views, pj_header, pj_field, pj_content, pj_name, pj_subField, pj_progress, pj_end_term, pj_start_term, pj_deadline, pj_total_person, pj_recruit_person, pj_time) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+        Object[] registrationParms = new Object[]
+                {postPjRegisterReq.getPj_num(),
+                postPjRegisterReq.getUser_id(),
+                postPjRegisterReq.getPj_views(),
+                postPjRegisterReq.getPj_header(),
+                postPjRegisterReq.getPj_field(),
+                postPjRegisterReq.getPj_content(),
+                postPjRegisterReq.getPj_name(),
+                postPjRegisterReq.getPj_subField(),
+                postPjRegisterReq.getPj_progress(),
+                postPjRegisterReq.getPj_end_term(),
+                postPjRegisterReq.getPj_start_term(),
+                postPjRegisterReq.getPj_deadline(),
+                postPjRegisterReq.getPj_total_person(),
+                postPjRegisterReq.getPj_recruit_person(),
+                postPjRegisterReq.getPj_time()};
+        this.jdbcTemplate.update(registrationPjQuery, registrationParms);
+
+        String lastInsertPjnameQuery = postPjRegisterReq.getPj_name();
+        return lastInsertPjnameQuery;
+//        return this.jdbcTemplate.queryForObject(lastInsertPjnameQuery, String.class);
     }
 }
