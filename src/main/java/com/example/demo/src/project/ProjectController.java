@@ -67,9 +67,9 @@ public class ProjectController {
     //유저가 찜한 프로젝트 조회
     @ResponseBody
     @PostMapping("/likePj")
-    public BaseResponse<PostPj_likeRes> like(@RequestBody PostPj_likeReq postPj_likeReq){
+    public BaseResponse<List<PostPj_likeRes>> like(@RequestBody PostPj_likeReq postPj_likeReq){
         try{
-            PostPj_likeRes postPj_likeRes = projectProvider.like(postPj_likeReq);
+            List<PostPj_likeRes> postPj_likeRes = projectProvider.like(postPj_likeReq);
             return new BaseResponse<>(postPj_likeRes);
         }catch(BaseException exception){
             return new BaseResponse<>(exception.getStatus());

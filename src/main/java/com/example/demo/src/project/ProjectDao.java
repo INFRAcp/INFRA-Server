@@ -36,7 +36,6 @@ public class ProjectDao {
                         rs.getInt("pj_recruit_person")
                 )
         );
-
     }
 
     //검색 프로젝트 조회
@@ -87,15 +86,14 @@ public class ProjectDao {
     }
 
     //유저가 찜한 프로젝트 조회
-    public Project getPj_num(PostPj_likeReq postPj_likeReq) {
-        String getPj_numQuery = "select Project.pj_num, Project.User_id, pj_views, pj_header, pj_field, pj_name, pj_subField, pj_progress, pj_deadline, pj_total_person, pj_recruit_person, pj_time from Project where pj_num in (select pj_num from Pj_like where User_id= ?)";
+    public List<PostPj_likeRes> getPj_num(PostPj_likeReq postPj_likeReq) {
+        String getPj_numQuery = "select Project.pj_num, pj_header, pj_views, pj_field, pj_name, pj_subField, pj_progress, pj_deadline, pj_total_person, pj_recruit_person, pj_time from Project where pj_num in (select pj_num from Pj_like where User_id= ?)";
         String getParams = postPj_likeReq.getUser_id();
-        return this.jdbcTemplate.queryForObject(getPj_numQuery,
-                (rs, rowNum) -> new Project(
+        return this.jdbcTemplate.query(getPj_numQuery,
+                (rs, rowNum) -> new PostPj_likeRes(
                         rs.getInt("pj_num"),
-                        rs.getString("User_id"),
-                        rs.getInt("pj_views"),
                         rs.getString("pj_header"),
+                        rs.getInt("pj_views"),
                         rs.getString("pj_field"),
                         rs.getString("pj_name"),
                         rs.getString("pj_subField"),
@@ -133,6 +131,40 @@ public class ProjectDao {
                 postPjRegisterReq.getPj_recruit_person(),
                 postPjRegisterReq.getPj_time()};
         this.jdbcTemplate.update(registrationPjQuery, registrationParms);
+
+        if(postPjRegisterReq.getKeyword1() != null){
+            String registrationPjKeywordQuery = "insert into Pj_keyword(pj_num, keyword) VALUES (?,?)";
+            Object[] registrationKeywordParms = new Object[]{
+                    postPjRegisterReq.getPj_num(),
+                    postPjRegisterReq.getKeyword1()
+            };
+            this.jdbcTemplate.update(registrationPjKeywordQuery, registrationKeywordParms);
+        }
+        if(postPjRegisterReq.getKeyword2() != null){
+            String registrationPjKeywordQuery = "insert into Pj_keyword(pj_num, keyword) VALUES (?,?)";
+            Object[] registrationKeywordParms = new Object[]{
+                    postPjRegisterReq.getPj_num(),
+                    postPjRegisterReq.getKeyword2()
+            };
+            this.jdbcTemplate.update(registrationPjKeywordQuery, registrationKeywordParms);
+        }
+        if(postPjRegisterReq.getKeyword3() != null){
+            String registrationPjKeywordQuery = "insert into Pj_keyword(pj_num, keyword) VALUES (?,?)";
+            Object[] registrationKeywordParms = new Object[]{
+                    postPjRegisterReq.getPj_num(),
+                    postPjRegisterReq.getKeyword3()
+            };
+            this.jdbcTemplate.update(registrationPjKeywordQuery, registrationKeywordParms);
+        }
+        if(postPjRegisterReq.getKeyword4() != null){
+            String registrationPjKeywordQuery = "insert into Pj_keyword(pj_num, keyword) VALUES (?,?)";
+            Object[] registrationKeywordParms = new Object[]{
+                    postPjRegisterReq.getPj_num(),
+                    postPjRegisterReq.getKeyword4()
+            };
+            this.jdbcTemplate.update(registrationPjKeywordQuery, registrationKeywordParms);
+        }
+
 
         String lastInsertPjnameQuery = postPjRegisterReq.getPj_name();
         return lastInsertPjnameQuery;

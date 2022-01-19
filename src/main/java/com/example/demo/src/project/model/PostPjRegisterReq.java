@@ -4,6 +4,7 @@ import lombok.*;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @Setter
@@ -28,4 +29,9 @@ public class PostPjRegisterReq {
     private int pj_recruit_person;
     private Timestamp pj_time;
 
+    private String keyword1 = null;
+    private String keyword2 = null;
+    private String keyword3 = null;
+    private String keyword4 = null;
+//    private List<String> keyword;
 }
