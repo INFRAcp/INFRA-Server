@@ -133,8 +133,6 @@ public class ProjectDao {
                 postPjRegisterReq.getPj_time()};
         this.jdbcTemplate.update(registrationPjQuery, registrationParms);
 
-        pjInsertKeyword(postPjRegisterReq);
-
         if(postPjRegisterReq.getKeyword1() != null){
             String registrationPjKeywordQuery = "insert into Pj_keyword(pj_num, keyword) VALUES (?,?)";
             Object[] registrationKeywordParms = new Object[]{
@@ -173,22 +171,6 @@ public class ProjectDao {
         return lastInsertPjnameQuery;
     }
 
-    @SneakyThrows
-    private void pjInsertKeyword(PostPjRegisterReq postPjRegisterReq) {
-        String func_name="";
-        ProjectDao pjDao = new ProjectDao();
-        for(int i=0; i<3; i++) {
-            if(postPjRegisterReq.getKeyword1() == null){
-                break;
-            }
-            func_name="insertKeyword";
-            Method method = ProjectDao.class.getDeclaredMethod(func_name);
-            System.out.println(method.invoke(pjDao, new Object[]{}));
-        }
 
-    }
-    void insertKeyword(){
-        System.out.println("성공!");
-    }
 
 }
