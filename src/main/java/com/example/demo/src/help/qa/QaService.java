@@ -2,10 +2,14 @@ package com.example.demo.src.help.qa;
 
 import com.example.demo.config.BaseException;
 import com.example.demo.src.help.qa.model.PatchQaReq;
+import com.example.demo.src.help.qa.model.PostQaReq;
+import com.example.demo.src.help.qa.model.PostQaRes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.transaction.Transactional;
 
 import static com.example.demo.config.BaseResponseStatus.*;
 
@@ -42,6 +46,16 @@ public class QaService {
             if (result == 0) {
                 throw new BaseException(MODIFY_FAIL_QA);
             }
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    // QA 등록
+    @Transactional
+    public void uploadQa(PostQaReq postQaReq) throws BaseException{
+        try {
+            qaDao.uploadQa(postQaReq);
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }

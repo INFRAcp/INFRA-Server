@@ -2,6 +2,7 @@ package com.example.demo.src.help.qa;
 
 import com.example.demo.src.help.qa.model.GetQaRes;
 import com.example.demo.src.help.qa.model.PatchQaReq;
+import com.example.demo.src.help.qa.model.PostQaReq;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -77,5 +78,12 @@ public class QaDao {
                         rs.getString("QA_a")
                 ),
                 getQaByQaNumParam);
+    }
+
+    public int uploadQa(PostQaReq postQaReq) {
+        String uploadQaQuery = "insert into QA (QA_num, User_id, QA_q, QA_a) VALUES (?,?,?,?)";
+        Object[] uploadQaParam = new Object[]{postQaReq.getQA_num(), postQaReq.getUser_id(), postQaReq.getQA_q(), postQaReq.getQA_a()};
+
+        return this.jdbcTemplate.update(uploadQaQuery, uploadQaParam);
     }
 }

@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 
-public class PostQaReq {
+public class PostQaRes {
     private int QA_num; // 추후 table에 auto_inrement 적용 하고, 제거할 코드
     private String User_id;
     private String QA_q;

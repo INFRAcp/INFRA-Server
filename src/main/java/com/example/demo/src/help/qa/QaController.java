@@ -2,10 +2,7 @@ package com.example.demo.src.help.qa;
 
 import com.example.demo.config.BaseException;
 import com.example.demo.config.BaseResponse;
-import com.example.demo.src.help.qa.model.GetQaRes;
-import com.example.demo.src.help.qa.model.PatchQaReq;
-import com.example.demo.src.help.qa.model.PostQaReq;
-import com.example.demo.src.help.qa.model.Qa;
+import com.example.demo.src.help.qa.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -103,12 +100,19 @@ public class QaController {
     * 질문 등록 API
     * */
 
-//    @RequestBody
-//    @PostMapping("")
-//
-//    public BaseResponse<List<GetQaRes>> uploadQa(@RequestBody PostQaReq postQaReq){
-//
-//    }
+    @ResponseBody
+    @PostMapping("")
+
+    public BaseResponse<List<GetQaRes>> uploadQa(@RequestBody PostQaReq postQaReq){
+        try {
+            qaService.uploadQa(postQaReq);
+
+            List<GetQaRes> getQaRes = qaProvider.getQaByQaNum(postQaReq.getQA_num());
+            return new BaseResponse<>(getQaRes);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
 
 
 }
