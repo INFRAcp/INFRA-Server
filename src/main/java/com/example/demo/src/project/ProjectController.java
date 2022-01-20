@@ -75,6 +75,17 @@ public class ProjectController {
             return new BaseResponse<>(exception.getStatus());
         }
     }
+    //프로젝트에 참여한 팀원들 조회
+    @ResponseBody
+    @PostMapping("/team")
+    public BaseResponse<List<PostPj_participateRes>> getTeam(@RequestBody PostPj_participateReq postPj_participateReq){
+        try{
+            List<PostPj_participateRes> postPj_participateRes = projectProvider.getTeam(postPj_participateReq);
+            return new BaseResponse<>(postPj_participateRes);
+        }catch(BaseException exception){
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
 
     //프로젝트 등록
     @ResponseBody

@@ -105,7 +105,19 @@ public class ProjectDao {
                 getParams
         );
     }
+    //프로젝트에 참여한 팀원들 조회
+    public List<PostPj_participateRes> getTeam(PostPj_participateReq postPj_participateReq) {
+        String getTeam_Query = "select User_nickname, User_pr_photo from User where User_id in (select User_id from Pj_request where pj_status = '승인완료' and pj_num = ?)";
+        Integer getParams = postPj_participateReq.getPj_num();
+        return this.jdbcTemplate.query(getTeam_Query,
+                (rs, rowNum) -> new PostPj_participateRes(
+                        rs.getString("User_nickname"),
+                        rs.getString("User_pr_photo")),
+                getParams
+                );
+    }
 
+    //프로젝트 등록
     public String registrationPj(PostPjRegisterReq postPjRegisterReq) {
         String Pj_numQuery = "SELECT pj_num FROM Project ORDER BY pj_num DESC LIMIT 1";
         postPjRegisterReq.setPj_num(this.jdbcTemplate.queryForObject(Pj_numQuery, int.class)+1);
