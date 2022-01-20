@@ -1,16 +1,15 @@
 package com.example.demo.src.project;
 
-import com.example.demo.src.project.model.GetProjectRes;
+import com.example.demo.src.project.model.*;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-import org.springframework.web.bind.annotation.ResponseBody;
-import com.example.demo.src.project.model.*;
 
 import javax.sql.DataSource;
-import javax.xml.crypto.Data;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.sql.Timestamp;
-import java.time.LocalTime;
 import java.util.List;
 
 @Repository
@@ -106,7 +105,9 @@ public class ProjectDao {
         );
     }
 
-    public String registrationPj(PostPjRegisterReq postPjRegisterReq) {
+
+
+    public String registrationPj(PostPjRegisterReq postPjRegisterReq) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         String Pj_numQuery = "SELECT pj_num FROM Project ORDER BY pj_num DESC LIMIT 1";
         postPjRegisterReq.setPj_num(this.jdbcTemplate.queryForObject(Pj_numQuery, int.class)+1);
 
@@ -131,6 +132,8 @@ public class ProjectDao {
                 postPjRegisterReq.getPj_recruit_person(),
                 postPjRegisterReq.getPj_time()};
         this.jdbcTemplate.update(registrationPjQuery, registrationParms);
+
+        pjInsertKeyword(postPjRegisterReq);
 
         if(postPjRegisterReq.getKeyword1() != null){
             String registrationPjKeywordQuery = "insert into Pj_keyword(pj_num, keyword) VALUES (?,?)";
@@ -168,6 +171,24 @@ public class ProjectDao {
 
         String lastInsertPjnameQuery = postPjRegisterReq.getPj_name();
         return lastInsertPjnameQuery;
-//        return this.jdbcTemplate.queryForObject(lastInsertPjnameQuery, String.class);
     }
+
+    @SneakyThrows
+    private void pjInsertKeyword(PostPjRegisterReq postPjRegisterReq) {
+        String func_name="";
+        ProjectDao pjDao = new ProjectDao();
+        for(int i=0; i<3; i++) {
+            if(postPjRegisterReq.getKeyword1() == null){
+                break;
+            }
+            func_name="insertKeyword";
+            Method method = ProjectDao.class.getDeclaredMethod(func_name);
+            System.out.println(method.invoke(pjDao, new Object[]{}));
+        }
+
+    }
+    void insertKeyword(){
+        System.out.println("성공!");
+    }
+
 }
