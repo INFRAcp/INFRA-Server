@@ -4,6 +4,7 @@ import com.example.demo.config.BaseException;
 import com.example.demo.config.BaseResponse;
 import com.example.demo.src.project.model.*;
 import com.example.demo.utils.JwtService;
+import com.fasterxml.jackson.databind.ser.Serializers;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -119,6 +120,15 @@ public class ProjectProvider {
         try{
             List<PostPj_participateRes> postPj_participateRes = projectDao.getTeam(postPj_participateReq);
             return postPj_participateRes;
+        }catch(Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    public List<PostPj_inquiryRes> proInquiry(PostPj_inquiryReq postPj_inquiryReq) throws BaseException {
+        try{
+            List<PostPj_inquiryRes> postPj_inquiryRes = projectDao.proInquiry(postPj_inquiryReq);
+            return postPj_inquiryRes;
         }catch(Exception exception){
             throw new BaseException(DATABASE_ERROR);
         }
