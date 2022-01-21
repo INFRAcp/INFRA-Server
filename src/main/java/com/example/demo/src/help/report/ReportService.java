@@ -42,7 +42,7 @@ public class ReportService {
     }
 
     // [Delete] 특정 사용자의 특정 신고글 삭제
-    public String deleteReport(PostReportDelReq postReportDelReq) throws BaseException {
+    public int deleteReport(PostReportDelReq postReportDelReq) throws BaseException {
         try {
             return reportDao.deleteReport(postReportDelReq);
         } catch (Exception exception) {

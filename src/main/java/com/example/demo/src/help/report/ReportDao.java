@@ -1,5 +1,6 @@
 package com.example.demo.src.help.report;
 
+import com.example.demo.config.BaseException;
 import com.example.demo.src.help.report.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -41,13 +42,12 @@ public class ReportDao {
     }
 
     // [Delete] 특정 사용자의 특정 신고글 삭제
-    public String deleteReport(PostReportDelReq postReportDelReq) {
+    public int deleteReport(PostReportDelReq postReportDelReq) throws BaseException {
         String deleteReportQuery = "delete from dev_infraDB.User_Report where User_id = ? and ReportedUser_id = ?";
         Object[] deleteReportParams = new Object[]
                 {postReportDelReq.getUser_id(), postReportDelReq.getReportedUser_id()};
-        this.jdbcTemplate.update(deleteReportQuery, deleteReportParams);
-        return "글이 삭제되었습니다.";
+        return this.jdbcTemplate.update(deleteReportQuery, deleteReportParams);
+        }
     }
-}
 
 

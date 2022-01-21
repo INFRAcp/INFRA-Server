@@ -67,7 +67,8 @@ public enum BaseResponseStatus {
 
     // [POST] /report
     POST_REPORTS_EMPTY_INFO(false, 6011, "신고 접수에 필요한 모든 항목을 작성해주세요."),
-    POST_REPORTS_EMPTY_USERID(false, 6012, "작성 권한이 없습니다. 로그인해주세요.");
+    POST_REPORTS_EMPTY_USERID(false, 6012, "작성 권한이 없습니다. 로그인해주세요."),
+    POST_REPORTS_DELETE_ERROR(false, 6013, "신고 철회 요청에 실패하였습니다.");
 
 
 

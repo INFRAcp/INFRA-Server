@@ -66,8 +66,12 @@ public class ReportController {
     @ResponseBody
     @DeleteMapping("")
     public BaseResponse<String> deleteReport(@RequestBody PostReportDelReq postReportDelReq) {
+        if (postReportDelReq.getUser_id() == null || postReportDelReq.getReportedUser_id() == null){
+            return new BaseResponse<>(POST_REPORTS_DELETE_ERROR);
+        }
         try {
-            String result = reportService.deleteReport(postReportDelReq);
+            reportService.deleteReport(postReportDelReq);
+            String result = "신고가 철회되었습니다.";
             return new BaseResponse<>(result);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
