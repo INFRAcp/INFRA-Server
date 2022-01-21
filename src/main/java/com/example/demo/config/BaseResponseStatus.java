@@ -54,11 +54,15 @@ public enum BaseResponseStatus {
     MODIFY_FAIL_USERNAME(false,4014,"유저네임 수정 실패"),
 
     PASSWORD_ENCRYPTION_ERROR(false, 4011, "비밀번호 암호화에 실패하였습니다."),
-    PASSWORD_DECRYPTION_ERROR(false, 4012, "비밀번호 복호화에 실패하였습니다.");
+    PASSWORD_DECRYPTION_ERROR(false, 4012, "비밀번호 복호화에 실패하였습니다."),
 
 
-    // 6000 : 필요시 만들어서 쓰세요
+    // 6000 : 고객센터
 
+    // [POST] /report
+    POST_REPORTS_EMPTY_INFO(false, 6011, "신고 접수에 필요한 모든 항목을 작성해주세요."),
+    POST_REPORTS_EMPTY_USERID(false, 6012, "작성 권한이 없습니다. 로그인해주세요."),
+    POST_REPORTS_DELETE_ERROR(false, 6013, "신고 철회 요청에 실패하였습니다.");
 
     private final boolean isSuccess;
     private final int code;
