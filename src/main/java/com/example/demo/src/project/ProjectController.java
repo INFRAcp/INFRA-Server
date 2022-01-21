@@ -75,6 +75,18 @@ public class ProjectController {
             return new BaseResponse<>(exception.getStatus());
         }
     }
+    //유저가 조회했던 프로젝트 조회
+    @ResponseBody
+    @PostMapping("/projectInquiry")
+    public BaseResponse<List<PostPj_inquiryRes>> proInquiry(@RequestBody PostPj_inquiryReq postPj_inquiryReq){
+        try{
+            List<PostPj_inquiryRes> postPj_inquiryRes = projectProvider.proInquiry(postPj_inquiryReq);
+            return new BaseResponse<>(postPj_inquiryRes);
+        }catch(BaseException exception){
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
     //프로젝트에 참여한 팀원들 조회
     @ResponseBody
     @PostMapping("/team")

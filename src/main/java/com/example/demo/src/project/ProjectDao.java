@@ -116,6 +116,26 @@ public class ProjectDao {
                 getParams
                 );
     }
+    //유저가 조회했던 프로젝트 조회
+    public List<PostPj_inquiryRes> proInquiry(PostPj_inquiryReq postPj_inquiryReq) {
+        String getPj_inquiryQuery = "select pj_num, pj_header, pj_views, pj_field, pj_name, pj_subField, pj_progress, pj_deadline, pj_total_person, pj_recruit_person, pj_time from Project where pj_num in (select pj_num from Pj_inquiry where User_id = ?)";
+        String Pj_inquiryParams = postPj_inquiryReq.getUser_id();
+        return this.jdbcTemplate.query(getPj_inquiryQuery,
+                (rs, rowNum) -> new PostPj_inquiryRes(
+                        rs.getInt("pj_num"),
+                        rs.getString("pj_header"),
+                        rs.getInt("pj_views"),
+                        rs.getString("pj_field"),
+                        rs.getString("pj_name"),
+                        rs.getString("pj_subField"),
+                        rs.getString("pj_progress"),
+                        rs.getString("pj_deadline"),
+                        rs.getInt("pj_total_person"),
+                        rs.getInt("pj_recruit_person"),
+                        rs.getString("pj_time")),
+                Pj_inquiryParams
+                );
+    }
 
     //프로젝트 등록
     public String registrationPj(PostPjRegisterReq postPjRegisterReq) {
@@ -176,10 +196,9 @@ public class ProjectDao {
             };
             this.jdbcTemplate.update(registrationPjKeywordQuery, registrationKeywordParms);
         }
-
-
         String lastInsertPjnameQuery = postPjRegisterReq.getPj_name();
         return lastInsertPjnameQuery;
 //        return this.jdbcTemplate.queryForObject(lastInsertPjnameQuery, String.class);
     }
+
 }
