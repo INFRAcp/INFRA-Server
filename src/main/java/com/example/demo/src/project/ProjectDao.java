@@ -1,16 +1,14 @@
 package com.example.demo.src.project;
 
 import com.example.demo.src.project.model.*;
-import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public class ProjectDao {
@@ -181,6 +179,102 @@ public class ProjectDao {
         return lastInsertPjnameQuery;
     }
 
+    //프로젝트 수정
+    public String pjModify(PatchPjModifyReq patchPjModifyReq) {
+        String pjModifyQuery = "update Project set pj_header = ?, pj_field = ?, pj_content = ?, pj_name = ?, pj_subField = ?, pj_progress = ?, pj_start_term = ?, pj_end_term = ?, pj_deadline = ?, pj_total_person = ? where pj_num = ? ";
+        Object[] pjModifyParms = new Object[]{
+                patchPjModifyReq.getPj_header(),
+                patchPjModifyReq.getPj_field(),
+                patchPjModifyReq.getPj_content(),
+                patchPjModifyReq.getPj_name(),
+                patchPjModifyReq.getPj_subField(),
+                patchPjModifyReq.getPj_progress(),
+                patchPjModifyReq.getPj_start_term(),
+                patchPjModifyReq.getPj_end_term(),
+                patchPjModifyReq.getPj_deadline(),
+                patchPjModifyReq.getPj_total_person(),
+                patchPjModifyReq.getPj_num()
+        };
+        this.jdbcTemplate.update(pjModifyQuery, pjModifyParms);
 
+        String lastKeywordQuery = "select keyword from Pj_keyword where pj_num = ?";
+        Object inParms = patchPjModifyReq.getPj_num();
+        List<String> lastKeywordList = this.jdbcTemplate.queryForList(lastKeywordQuery,String.class,inParms);
 
+        //기존의 키워드 > 넣는 키워드
+        if(patchPjModifyReq.getKeyword().length - lastKeywordList.size() > 0){
+            for(int i=0; i<=patchPjModifyReq.getKeyword().length; i++){
+                if(patchPjModifyReq.getKeyword()[i] != null){
+                    if(lastKeywordList.get(i).toString() == null) {
+                        String pjKeywordQuery = "update Pj_keyword set keyword = ? where pj_num = ? and keyword = ?";
+                        Object[] pjKeywordParms = new Object[]{
+                                patchPjModifyReq.getKeyword()[i],
+                                patchPjModifyReq.getPj_num(),
+                                lastKeywordList.get(i),
+                        };
+                        this.jdbcTemplate.update(pjKeywordQuery, pjKeywordParms);
+
+                    }else if (lastKeywordList.get(i).toString() == null){
+                        String pjKeywordInsertQuery = "INSERT INTO Pj_keyword(pj_numm keyword) VALUES (?,?)";
+                        Object[] pjKeywordInsertParms = new Object[]{
+                                patchPjModifyReq.getPj_num(),
+                                lastKeywordList.get(i),
+                        };
+                        this.jdbcTemplate.update(pjKeywordInsertQuery, pjKeywordInsertParms);
+                    }
+                }
+            }
+        }
+
+        //기존의 키워드보다 작을 경우
+        if(patchPjModifyReq.getKeyword().length - lastKeywordList.size() < 0){
+            for(int i=0; i<=patchPjModifyReq.getKeyword().length; i++){
+                if(patchPjModifyReq.getKeyword()[i] != null){
+                    if(lastKeywordList.get(i).toString() == null) {
+                        String pjKeywordQuery = "update Pj_keyword set keyword = ? where pj_num = ? and keyword = ?";
+                        Object[] pjKeywordParms = new Object[]{
+                                patchPjModifyReq.getKeyword()[i],
+                                patchPjModifyReq.getPj_num(),
+                                lastKeywordList.get(i),
+                        };
+                        this.jdbcTemplate.update(pjKeywordQuery, pjKeywordParms);
+
+                    }else if (lastKeywordList.get(i).toString() == null){
+                        String pjKeywordInsertQuery = "INSERT INTO Pj_keyword(pj_numm keyword) VALUES (?,?)";
+                        Object[] pjKeywordInsertParms = new Object[]{
+                                patchPjModifyReq.getPj_num(),
+                                lastKeywordList.get(i),
+                        };
+                        this.jdbcTemplate.update(pjKeywordInsertQuery, pjKeywordInsertParms);
+                    }
+                }
+            }
+        }
+
+        //기존의 키워드와 같을 경우
+        if(patchPjModifyReq.getKeyword().length - lastKeywordList.size() == 0){
+            for(int i=0; i<=patchPjModifyReq.getKeyword().length; i++){
+                if(patchPjModifyReq.getKeyword()[i] != null){
+                    if(lastKeywordList.get(i).toString() == null) {
+                        String pjKeywordQuery = "update Pj_keyword set keyword = ? where pj_num = ? and keyword = ?";
+                        Object[] pjKeywordParms = new Object[]{
+                                patchPjModifyReq.getKeyword()[i],
+                                patchPjModifyReq.getPj_num(),
+                                lastKeywordList.get(i),
+                        };
+                        this.jdbcTemplate.update(pjKeywordQuery, pjKeywordParms);
+
+                    }else if (lastKeywordList.get(i).toString() == null){
+                        String pjKeywordInsertQuery = "INSERT INTO Pj_keyword(pj_numm keyword) VALUES (?,?)";
+                        Object[] pjKeywordInsertParms = new Object[]{
+                                patchPjModifyReq.getPj_num(),
+                                lastKeywordList.get(i),
+                        };
+                        this.jdbcTemplate.update(pjKeywordInsertQuery, pjKeywordInsertParms);
+                    }
+                }
+            }
+        }
+        return patchPjModifyReq.getPj_name();
+    }
 }

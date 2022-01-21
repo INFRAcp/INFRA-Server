@@ -100,6 +100,7 @@ public class ProjectController {
         }
     }
 
+    //프로젝트 오류 값 확인
     private BaseResponse<Object> postPjNullCheck(@RequestBody PostPjRegisterReq postPjRegisterReq) throws BaseException{
         if(postPjRegisterReq.getPj_header()==null){
             throw new BaseException(POST_PROJECT_EMPTY_HEADER);
@@ -134,5 +135,15 @@ public class ProjectController {
         return null;
     }
 
-
+    //프로젝트 수정
+    @ResponseBody
+    @PatchMapping("/modify")
+    public BaseResponse<PatchPjModifyRes> pjModify(@RequestBody PatchPjModifyReq patchPjModifyReq){
+        try {
+            PatchPjModifyRes patchPjModifyRes = projectService.pjModify(patchPjModifyReq);
+            return new BaseResponse<>(patchPjModifyRes);
+        }catch (BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
 }
