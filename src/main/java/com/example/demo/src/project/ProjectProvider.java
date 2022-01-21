@@ -78,31 +78,6 @@ public class ProjectProvider {
         }catch (Exception exception){
             throw new BaseException(DATABASE_ERROR);
         }
-//        int pj_num = project.getPj_num();
-//        String pj_name = project.getPj_name();
-//        String pj_header = project.getPj_header();
-//        String pj_field = project.getPj_field();
-//        String pj_subField = project.getPj_subField();
-//        String pj_getPj_progress = project.getPj_progress();
-//        String pj_deadline = project.getPj_deadline();
-//        int pj_total_person = project.getPj_total_person();
-//        int pj_recruit_person = project.getPj_recruit_person();
-//        int pj_views = project.getPj_views();
-//        String pj_time = project.getPj_time();
-//        return new PostPj_likeRes(
-//                pj_num,
-//                pj_header,
-//                pj_views,
-//                pj_field,
-//                pj_name,
-//                pj_subField,
-//                pj_getPj_progress,
-//                pj_deadline,
-//                pj_total_person,
-//                pj_recruit_person,
-//                pj_time
-//        );
-
     }
 
     //프로젝트 null 값 체크
@@ -140,4 +115,12 @@ public class ProjectProvider {
         return null;
     }
 
+    public List<PostPj_participateRes> getTeam(PostPj_participateReq postPj_participateReq) throws BaseException{
+        try{
+            List<PostPj_participateRes> postPj_participateRes = projectDao.getTeam(postPj_participateReq);
+            return postPj_participateRes;
+        }catch(Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 }
