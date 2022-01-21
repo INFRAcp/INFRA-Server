@@ -246,7 +246,7 @@ public class ProjectDao {
             }
         }
 
-        //기존의 키워드보다 작을 경우
+        //기존의 키워드보다 작을 경우1
         if(patchPjModifyReq.getKeyword().length - lastKeywordList.size() < 0){
             for(int i=0; i<=patchPjModifyReq.getKeyword().length; i++){
                 if(patchPjModifyReq.getKeyword()[i] != null){
@@ -271,7 +271,7 @@ public class ProjectDao {
             }
         }
 
-        //기존의 키워드와 같을 경우
+        //기존의 키워드와 같을 경우2
         if(patchPjModifyReq.getKeyword().length - lastKeywordList.size() == 0){
             for(int i=0; i<=patchPjModifyReq.getKeyword().length; i++){
                 if(patchPjModifyReq.getKeyword()[i] != null){
