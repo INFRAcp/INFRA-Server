@@ -116,14 +116,8 @@ public class ProjectDao {
                 );
     }
 
-<<<<<<< HEAD
-
-
-    public String registrationPj(PostPjRegisterReq postPjRegisterReq) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-=======
     //프로젝트 등록
     public String registrationPj(PostPjRegisterReq postPjRegisterReq) {
->>>>>>> ssongsik
         String Pj_numQuery = "SELECT pj_num FROM Project ORDER BY pj_num DESC LIMIT 1";
         postPjRegisterReq.setPj_num(this.jdbcTemplate.queryForObject(Pj_numQuery, int.class)+1);
 
