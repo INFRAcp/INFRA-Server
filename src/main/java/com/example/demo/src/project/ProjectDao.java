@@ -1,16 +1,15 @@
 package com.example.demo.src.project;
 
-import com.example.demo.src.project.model.GetProjectRes;
+import com.example.demo.src.project.model.*;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-import org.springframework.web.bind.annotation.ResponseBody;
-import com.example.demo.src.project.model.*;
 
 import javax.sql.DataSource;
-import javax.xml.crypto.Data;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.sql.Timestamp;
-import java.time.LocalTime;
 import java.util.List;
 
 @Repository
@@ -198,7 +197,6 @@ public class ProjectDao {
         }
         String lastInsertPjnameQuery = postPjRegisterReq.getPj_name();
         return lastInsertPjnameQuery;
-//        return this.jdbcTemplate.queryForObject(lastInsertPjnameQuery, String.class);
     }
 
 }
