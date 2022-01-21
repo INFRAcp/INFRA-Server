@@ -197,8 +197,6 @@ public class ProjectDao {
         return lastInsertPjnameQuery;
     }
 
-<<<<<<< HEAD
-=======
     //프로젝트 수정
     public String pjModify(PatchPjModifyReq patchPjModifyReq) {
         String pjModifyQuery = "update Project set pj_header = ?, pj_field = ?, pj_content = ?, pj_name = ?, pj_subField = ?, pj_progress = ?, pj_start_term = ?, pj_end_term = ?, pj_deadline = ?, pj_total_person = ? where pj_num = ? ";
