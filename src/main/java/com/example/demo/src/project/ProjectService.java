@@ -2,6 +2,8 @@ package com.example.demo.src.project;
 
 import com.example.demo.config.BaseException;
 import com.example.demo.config.BaseResponseStatus;
+import com.example.demo.src.project.model.PatchPjModifyReq;
+import com.example.demo.src.project.model.PatchPjModifyRes;
 import com.example.demo.src.project.model.PostPjRegisterReq;
 import com.example.demo.src.project.model.PostPjRegisterRes;
 import com.example.demo.utils.JwtService;
@@ -37,4 +39,13 @@ public class ProjectService {
         }
     }
 
+    //프로젝트 수정
+    public PatchPjModifyRes pjModify(PatchPjModifyReq patchPjModifyReq)throws BaseException{
+        try {
+            String PjModify = projectDao.pjModify(patchPjModifyReq);
+            return new PatchPjModifyRes(PjModify);
+        }catch (Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 }
