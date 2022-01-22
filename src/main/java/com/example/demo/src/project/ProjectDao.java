@@ -224,37 +224,6 @@ public class ProjectDao {
         }
 
 
-
-//        String lastKeywordQuery = "select keyword from Pj_keyword where pj_num = ?";
-//        Object inParms = patchPjModifyReq.getPj_num();
-//        List<String> lastKeywordList = this.jdbcTemplate.queryForList(lastKeywordQuery,String.class,inParms);
-//
-//        //기존의 키워드 > 넣는 키워드
-//        if(patchPjModifyReq.getKeyword().length - lastKeywordList.size() > 0){
-//            for(int i=0; i<=patchPjModifyReq.getKeyword().length; i++){
-//                if(patchPjModifyReq.getKeyword()[i] != null){
-//                    if(lastKeywordList.get(i).toString() == null) {
-//                        String pjKeywordQuery = "update Pj_keyword set keyword = ? where pj_num = ? and keyword = ?";
-//                        Object[] pjKeywordParms = new Object[]{
-//                                patchPjModifyReq.getKeyword()[i],
-//                                patchPjModifyReq.getPj_num(),
-//                                lastKeywordList.get(i),
-//                        };
-//                        this.jdbcTemplate.update(pjKeywordQuery, pjKeywordParms);
-//
-//                    }else if (lastKeywordList.get(i).toString() == null){
-//                        String pjKeywordInsertQuery = "INSERT INTO Pj_keyword(pj_numm keyword) VALUES (?,?)";
-//                        Object[] pjKeywordInsertParms = new Object[]{
-//                                patchPjModifyReq.getPj_num(),
-//                                lastKeywordList.get(i),
-//                        };
-//                        this.jdbcTemplate.update(pjKeywordInsertQuery, pjKeywordInsertParms);
-//                    }
-//                }
-//            }
-//        }
-
-
         return patchPjModifyReq.getPj_name();
     }
 
