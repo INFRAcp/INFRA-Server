@@ -132,16 +132,16 @@ public class ProjectController {
         if(postPjRegisterReq.getPj_progress()==null){
             throw new BaseException(POST_PROJECT_EMPTY_PROGRESS);
         }
-        if(postPjRegisterReq.getPj_end_term()==null){
+        if(postPjRegisterReq.getPj_endTerm()==null){
             throw new BaseException(POST_PROJECT_EMPTY_END_TERM);
         }
-        if(postPjRegisterReq.getPj_start_term()==null){
+        if(postPjRegisterReq.getPj_startTerm()==null){
             throw new BaseException(POST_PROJECT_EMPTY_START_TERM);
         }
         if(postPjRegisterReq.getPj_deadline()==null){
             throw new BaseException(POST_PROJECT_EMPTY_DEADLINE);
         }
-        if(postPjRegisterReq.getPj_total_person()==0){
+        if(postPjRegisterReq.getPj_totalPerson()==0){
             throw new BaseException(POST_PROJECT_EMPTY_TOTAL_PERSON);
         }
         return null;

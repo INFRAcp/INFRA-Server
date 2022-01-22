@@ -10,5 +10,5 @@ import lombok.Setter;
 @AllArgsConstructor
 public class Pj_like {
     private int pj_num;
-    private String User_id;
+    private String user_id;
 }

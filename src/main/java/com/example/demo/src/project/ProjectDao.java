@@ -8,7 +8,6 @@ import org.springframework.stereotype.Repository;
 import javax.sql.DataSource;
 import java.sql.Timestamp;
 import java.util.List;
-import java.util.Map;
 
 @Repository
 public class ProjectDao {
@@ -153,11 +152,11 @@ public class ProjectDao {
                 postPjRegisterReq.getPj_name(),
                 postPjRegisterReq.getPj_subField(),
                 postPjRegisterReq.getPj_progress(),
-                postPjRegisterReq.getPj_end_term(),
-                postPjRegisterReq.getPj_start_term(),
+                postPjRegisterReq.getPj_endTerm(),
+                postPjRegisterReq.getPj_startTerm(),
                 postPjRegisterReq.getPj_deadline(),
-                postPjRegisterReq.getPj_total_person(),
-                postPjRegisterReq.getPj_recruit_person(),
+                postPjRegisterReq.getPj_totalPerson(),
+                postPjRegisterReq.getPj_recruitPerson(),
                 postPjRegisterReq.getPj_time()};
         this.jdbcTemplate.update(registrationPjQuery, registrationParms);
 
@@ -207,10 +206,10 @@ public class ProjectDao {
                 patchPjModifyReq.getPj_name(),
                 patchPjModifyReq.getPj_subField(),
                 patchPjModifyReq.getPj_progress(),
-                patchPjModifyReq.getPj_start_term(),
-                patchPjModifyReq.getPj_end_term(),
+                patchPjModifyReq.getPj_startTerm(),
+                patchPjModifyReq.getPj_endTerm(),
                 patchPjModifyReq.getPj_deadline(),
-                patchPjModifyReq.getPj_total_person(),
+                patchPjModifyReq.getPj_totalPerson(),
                 patchPjModifyReq.getPj_num()
         };
         this.jdbcTemplate.update(pjModifyQuery, pjModifyParms);

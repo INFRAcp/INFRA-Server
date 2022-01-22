@@ -19,12 +19,11 @@ public class PatchPjModifyReq {
     private String pj_name=null;
     private String pj_subField=null;
     private String pj_progress=null;
-    private LocalDate pj_end_term=null;
+    private LocalDate pj_endTerm =null;
 
-    private LocalDate pj_start_term=null;
+    private LocalDate pj_startTerm =null;
     private LocalDate pj_deadline=null;
-    private int pj_total_person=0;
+    private int pj_totalPerson =0;
 
     private String [] keyword;
-
 }
