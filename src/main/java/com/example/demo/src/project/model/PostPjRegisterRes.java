@@ -8,5 +8,5 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class PostPjRegisterRes {
-    private String Pj_name;
+    private String pj_name;
 }

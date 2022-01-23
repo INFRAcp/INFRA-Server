@@ -13,6 +13,21 @@ public enum BaseResponseStatus {
     SUCCESS(true, 1000, "요청에 성공하였습니다."),
 
 
+    // x300 : 프로젝트 관련
+    SEARCH_LENGTH_ERROR(false, 1300, "검색어 2글자 이상 입력해주세요."),
+
+    //프로젝트 등록시 빈값 에러
+    POST_PROJECT_EMPTY_HEADER(false, 1310, "프로젝트 제목을 입력해주세요."),
+    POST_PROJECT_EMPTY_FIELD(false, 1311, "프로젝트 분야를 입력해주세요."),
+    POST_PROJECT_EMPTY_CONTENT(false, 1312, "프로젝트 내용을 입력해주세요."),
+    POST_PROJECT_EMPTY_NAME(false, 1313, "프로젝트 이름을 입력해주세요."),
+    POST_PROJECT_EMPTY_SUBFIELD(false, 1314, "프로젝트 세부 분야를 입력해주세요."),
+    POST_PROJECT_EMPTY_PROGRESS(false, 1315, "프로젝트 진도를 입력해주세요."),
+    POST_PROJECT_EMPTY_END_TERM(false, 1316, "프로젝트 종료 시점을 입력해주세요."),
+    POST_PROJECT_EMPTY_START_TERM(false, 1317, "프로젝트 시작 시점을 입력해주세요."),
+    POST_PROJECT_EMPTY_DEADLINE(false, 1318, "프로젝트 모집 마감일을 입력해주세요."),
+    POST_PROJECT_EMPTY_TOTAL_PERSON(false, 1319, "프로젝트 모집 인원을 입력해주세요."),
+
     /**
      * 2000 : Request 오류
      */
@@ -45,7 +60,6 @@ public enum BaseResponseStatus {
     DUPLICATED_EMAIL(false, 3013, "중복된 이메일입니다."),
     FAILED_TO_LOGIN(false, 3014, "없는 아이디거나 비밀번호가 틀렸습니다."),
 
-
     /**
      * 4000 : Database, Server 오류
      */
@@ -57,23 +71,8 @@ public enum BaseResponseStatus {
     MODIFY_FAIL_USERPW(false, 4015, "비밀번호 수정 실패"),
 
     PASSWORD_ENCRYPTION_ERROR(false, 4011, "비밀번호 암호화에 실패하였습니다."),
-    PASSWORD_DECRYPTION_ERROR(false, 4012, "비밀번호 복호화에 실패하였습니다."),
+    PASSWORD_DECRYPTION_ERROR(false, 4012, "비밀번호 복호화에 실패하였습니다.");
 
-
-    // 5000 : 프로젝트 관련
-    SEARCH_LENGTH_ERROR(false, 5010, "검색어 2글자 이상 입력해주세요."),
-
-    //프로젝트 등록시 빈값 에러
-    POST_PROJECT_EMPTY_HEADER(false, 5020, "프로젝트 제목을 입력해주세요."),
-    POST_PROJECT_EMPTY_FIELD(false, 5021, "프로젝트 분야를 입력해주세요."),
-    POST_PROJECT_EMPTY_CONTENT(false, 5022, "프로젝트 내용을 입력해주세요."),
-    POST_PROJECT_EMPTY_NAME(false, 5023, "프로젝트 이름을 입력해주세요."),
-    POST_PROJECT_EMPTY_SUBFIELD(false, 5024, "프로젝트 세부 분야를 입력해주세요."),
-    POST_PROJECT_EMPTY_PROGRESS(false, 5025, "프로젝트 진도를 입력해주세요."),
-    POST_PROJECT_EMPTY_END_TERM(false, 5026, "프로젝트 종료 시점을 입력해주세요."),
-    POST_PROJECT_EMPTY_START_TERM(false, 5027, "프로젝트 시작 시점을 입력해주세요."),
-    POST_PROJECT_EMPTY_DEADLINE(false, 5028, "프로젝트 모집 마감일을 입력해주세요."),
-    POST_PROJECT_EMPTY_TOTAL_PERSON(false, 5029, "프로젝트 모집 인원을 입력해주세요.");
 
     // 6000 : 필요시 만들어서 쓰세요
 

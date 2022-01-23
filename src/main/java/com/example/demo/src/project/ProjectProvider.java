@@ -4,7 +4,6 @@ import com.example.demo.config.BaseException;
 import com.example.demo.config.BaseResponse;
 import com.example.demo.src.project.model.*;
 import com.example.demo.utils.JwtService;
-import com.fasterxml.jackson.databind.ser.Serializers;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -101,16 +100,16 @@ public class ProjectProvider {
         if(postPjRegisterReq.getPj_progress()==null){
             return new BaseResponse<>(POST_PROJECT_EMPTY_PROGRESS);
         }
-        if(postPjRegisterReq.getPj_end_term()==null){
+        if(postPjRegisterReq.getPj_endTerm()==null){
             return new BaseResponse<>(POST_PROJECT_EMPTY_END_TERM);
         }
-        if(postPjRegisterReq.getPj_start_term()==null){
+        if(postPjRegisterReq.getPj_startTerm()==null){
             return new BaseResponse<>(POST_PROJECT_EMPTY_START_TERM);
         }
         if(postPjRegisterReq.getPj_deadline()==null){
             return new BaseResponse<>(POST_PROJECT_EMPTY_DEADLINE);
         }
-        if(postPjRegisterReq.getPj_total_person()==0){
+        if(postPjRegisterReq.getPj_totalPerson()==0){
             return new BaseResponse<>(POST_PROJECT_EMPTY_TOTAL_PERSON);
         }
         return null;
