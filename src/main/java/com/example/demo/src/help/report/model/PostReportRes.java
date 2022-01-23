@@ -9,5 +9,5 @@ import lombok.Setter;
 @AllArgsConstructor
 
 public class PostReportRes {
-    private String User_id;
+    private String user_id;
 }

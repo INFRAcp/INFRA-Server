@@ -9,6 +9,6 @@ import lombok.Setter;
 @AllArgsConstructor
 
 public class PostReportDelRes {
-    private String User_id;
-    private String ReportedUser_id;
+    private String user_id;
+    private String reportedUser_id;
 }

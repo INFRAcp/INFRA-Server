@@ -43,6 +43,10 @@ public class ReportController {
             return new BaseResponse<>(POST_REPORTS_EMPTY_INFO);
         }
         try {
+            String userIdByJwt = jwtService.getUserId();
+            if(!postReportReq.getUser_id().equals(userIdByJwt)) {
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
             PostReportRes postReportRes = reportService.createReport(postReportReq);
             return new BaseResponse<>(postReportRes);
         } catch (BaseException exception) {
@@ -50,11 +54,15 @@ public class ReportController {
         }
     }
 
-    // [POST] 특정 사용자가 신고했던 목록 조회
+    // [GET] 특정 사용자가 신고했던 목록 조회
     @ResponseBody
     @GetMapping("")
     public BaseResponse<List<PostReportUserRes>> getReports(@RequestBody PostReportUserReq postReportUserReq) {
         try {
+            String userIdByJwt = jwtService.getUserId();
+            if(!postReportUserReq.getUser_id().equals(userIdByJwt)) {
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
             List<PostReportUserRes> postReportUserRes = reportProvider.getReports(postReportUserReq);
             return new BaseResponse<>(postReportUserRes);
         } catch (BaseException exception) {
@@ -70,6 +78,10 @@ public class ReportController {
             return new BaseResponse<>(POST_REPORTS_DELETE_ERROR);
         }
         try {
+            String userIdByJwt = jwtService.getUserId();
+            if(!postReportDelReq.getUser_id().equals(userIdByJwt)) {
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
             reportService.deleteReport(postReportDelReq);
             String result = "신고가 철회되었습니다.";
             return new BaseResponse<>(result);

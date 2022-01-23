@@ -8,6 +8,6 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 
 public class PostReportDelReq {
-    private String User_id;
-    private String ReportedUser_id;
+    private String user_id;
+    private String reportedUser_id;
 }

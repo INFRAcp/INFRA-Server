@@ -9,7 +9,7 @@ import lombok.Setter;
 @AllArgsConstructor
 
 public class PostReportUserRes {
-    private String ReportedUser_id;
+    private String reportedUser_id;
     private String rp_category;
     private String rp_field;
     private String rp_opinion;

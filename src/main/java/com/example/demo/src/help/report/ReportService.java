@@ -33,8 +33,8 @@ public class ReportService {
     public PostReportRes createReport(PostReportReq postReportReq) throws BaseException {
         try {
             reportDao.createReport(postReportReq);
-            String User_id = postReportReq.getUser_id();
-            return new PostReportRes(User_id);
+            String user_id = postReportReq.getUser_id();
+            return new PostReportRes(user_id);
         } catch (Exception exception) { // DB에 이상이 있는 경우
             logger.error(exception.getMessage());
             throw new BaseException(DATABASE_ERROR);

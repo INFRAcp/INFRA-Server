@@ -34,6 +34,10 @@ public enum BaseResponseStatus {
     POST_USERS_EXISTS_ID(false, 2020, "중복된 아이디입니다."),
     POST_USERS_EXISTS_PHONE(false, 2021, "중복된 핸드폰 번호입니다."),
 
+    // [POST] /report
+    POST_REPORTS_EMPTY_INFO(false, 2501, "신고 접수에 필요한 모든 항목을 작성해주세요."),
+    POST_REPORTS_DELETE_ERROR(false, 2502, "신고 철회 요청에 실패하였습니다."),
+
 
     /**
      * 3000 : Response 오류
@@ -45,10 +49,14 @@ public enum BaseResponseStatus {
     DUPLICATED_EMAIL(false, 3013, "중복된 이메일입니다."),
     FAILED_TO_LOGIN(false, 3014, "없는 아이디거나 비밀번호가 틀렸습니다."),
 
+    // [POST] /report
+
 
     /**
      * 4000 : Database, Server 오류
      */
+
+    // common
     DATABASE_ERROR(false, 4000, "데이터베이스 연결에 실패하였습니다."),
     SERVER_ERROR(false, 4001, "서버와의 연결에 실패하였습니다."),
 
@@ -73,14 +81,10 @@ public enum BaseResponseStatus {
     POST_PROJECT_EMPTY_END_TERM(false, 5026, "프로젝트 종료 시점을 입력해주세요."),
     POST_PROJECT_EMPTY_START_TERM(false, 5027, "프로젝트 시작 시점을 입력해주세요."),
     POST_PROJECT_EMPTY_DEADLINE(false, 5028, "프로젝트 모집 마감일을 입력해주세요."),
-    POST_PROJECT_EMPTY_TOTAL_PERSON(false, 5029, "프로젝트 모집 인원을 입력해주세요."),
+    POST_PROJECT_EMPTY_TOTAL_PERSON(false, 5029, "프로젝트 모집 인원을 입력해주세요.");
+
 
     // 6000 : 필요시 만들어서 쓰세요
-
-    // [POST] /report
-    POST_REPORTS_EMPTY_INFO(false, 6011, "신고 접수에 필요한 모든 항목을 작성해주세요."),
-    POST_REPORTS_EMPTY_USERID(false, 6012, "작성 권한이 없습니다. 로그인해주세요."),
-    POST_REPORTS_DELETE_ERROR(false, 6013, "신고 철회 요청에 실패하였습니다.");
 
     private final boolean isSuccess;
     private final int code;

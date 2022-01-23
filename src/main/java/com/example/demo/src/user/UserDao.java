@@ -20,8 +20,8 @@ public class UserDao {
 
     // 회원가입
     public void createUser(PostUserReq postUserReq) {
-        String createUserQuery = "insert into User (User_id, User_Pw, User_nickname, User_Grade, User_Phone, " +
-                "User_email, User_name, User_pr_photo, User_pr_profile)" +
+        String createUserQuery = "insert into User (user_id, user_pw, user_nickname, user_grade, user_phone, " +
+                "user_email, user_name, user_prPhoto, user_prProfile)" +
                 " VALUES (?,?,?,0,?,?,?,?,?)"; // 실행될 동적 쿼리문
         Object[] createUserParams = new Object[]{postUserReq.getId(), postUserReq.getPw(), postUserReq.getNickname(), postUserReq.getPhone(),
                 postUserReq.getEmail(), postUserReq.getName(), postUserReq.getPrPhoto(), postUserReq.getPrProfile()};
