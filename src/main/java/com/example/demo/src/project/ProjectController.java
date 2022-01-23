@@ -158,4 +158,16 @@ public class ProjectController {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
+
+    //프로젝트 삭제
+    @ResponseBody
+    @DeleteMapping("/del")
+    public BaseResponse<GetpjDelRes> pjDel(@RequestBody GetPjDelReq getPjDelReq){
+        try {
+            GetpjDelRes getpjDelRes = projectService.pjDel(getPjDelReq);
+            return new BaseResponse<>(getpjDelRes);
+        }catch (BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
 }

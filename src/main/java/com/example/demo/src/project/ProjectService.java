@@ -1,11 +1,7 @@
 package com.example.demo.src.project;
 
 import com.example.demo.config.BaseException;
-import com.example.demo.config.BaseResponseStatus;
-import com.example.demo.src.project.model.PatchPjModifyReq;
-import com.example.demo.src.project.model.PatchPjModifyRes;
-import com.example.demo.src.project.model.PostPjRegisterReq;
-import com.example.demo.src.project.model.PostPjRegisterRes;
+import com.example.demo.src.project.model.*;
 import com.example.demo.utils.JwtService;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,8 +28,8 @@ public class ProjectService {
     //프로젝트 등록
     public PostPjRegisterRes registrationPj(PostPjRegisterReq postPjRegisterReq) throws BaseException{
         try{
-            String Pj_registerSucese = projectDao.registrationPj(postPjRegisterReq);
-            return new PostPjRegisterRes(Pj_registerSucese);
+            String pjRegisterSucese = projectDao.pjRegistration(postPjRegisterReq);
+            return new PostPjRegisterRes(pjRegisterSucese);
         }catch (Exception exception){
             throw new BaseException(DATABASE_ERROR);
         }
@@ -44,6 +40,16 @@ public class ProjectService {
         try {
             String PjModify = projectDao.pjModify(patchPjModifyReq);
             return new PatchPjModifyRes(PjModify);
+        }catch (Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    //프로젝트 삭제
+    public GetpjDelRes pjDel(GetPjDelReq getPjDelReq) throws BaseException{
+        try {
+            String pjDel = projectDao.pjDel(getPjDelReq);
+            return new GetpjDelRes(pjDel);
         }catch (Exception exception){
             throw new BaseException(DATABASE_ERROR);
         }

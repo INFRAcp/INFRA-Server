@@ -134,7 +134,7 @@ public class ProjectDao {
     }
 
     //프로젝트 등록
-    public String registrationPj(PostPjRegisterReq postPjRegisterReq) {
+    public String pjRegistration(PostPjRegisterReq postPjRegisterReq) {
         String Pj_numQuery = "SELECT pj_num FROM Project ORDER BY pj_num DESC LIMIT 1";
         postPjRegisterReq.setPj_num(this.jdbcTemplate.queryForObject(Pj_numQuery, int.class)+1);
 
@@ -226,4 +226,13 @@ public class ProjectDao {
         return patchPjModifyReq.getPj_name();
     }
 
+    public String pjDel(GetPjDelReq getPjDelReq) {
+        String pjKeowrdDelQuery = "delete from Pj_keyword where pj_num = ?";
+        this.jdbcTemplate.update(pjKeowrdDelQuery, getPjDelReq.getPj_num());
+
+        String pjDelQuery = "delete from Project where pj_num = ?";
+        this.jdbcTemplate.update(pjDelQuery, getPjDelReq.getPj_num());
+
+        return "삭제가 완료되었습니다.";
+    }
 }
