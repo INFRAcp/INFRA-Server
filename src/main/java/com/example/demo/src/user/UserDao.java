@@ -36,6 +36,12 @@ public class UserDao {
         return this.jdbcTemplate.queryForObject(checkIdQuery, int.class, id);
     }
 
+    // nickname 중복 체크
+    public int checkNickname(String nickname) {
+        String checkNicknameQuery = "select exists(select user_nickname from User where user_nickname = ?)";
+        return this.jdbcTemplate.queryForObject(checkNicknameQuery, int.class, nickname);
+    }
+
     // 이메일 확인
     public int checkEmail(String email) {
         String checkEmailQuery = "select exists(select user_email from User where user_email = ?)";

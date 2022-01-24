@@ -35,6 +35,7 @@ public enum BaseResponseStatus {
     POST_USERS_EXISTS_EMAIL(false, 2017, "중복된 이메일입니다."),
     POST_USERS_EMPTY_INFO(false, 2018, "필수 정보가 비어있습니다."),
     POST_USERS_EXISTS_ID(false, 2020, "중복된 아이디입니다."),
+    POST_USERS_EXISTS_NICKNAME(false, 2024, "중복된 닉네임입니다."),
     POST_USERS_EXISTS_PHONE(false, 2021, "중복된 핸드폰 번호입니다."),
 
 

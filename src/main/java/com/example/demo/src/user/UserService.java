@@ -37,11 +37,12 @@ public class UserService {
         if (userProvider.checkId(postUserReq.getUser_id()) == 1) {  // id 중복 확인
             throw new BaseException(POST_USERS_EXISTS_ID);
         }
-
+        if (userProvider.checkNickname(postUserReq.getUser_nickname()) == 1) {  // nickname 중복 확인
+            throw new BaseException(POST_USERS_EXISTS_NICKNAME);
+        }
         if (userProvider.checkEmail(postUserReq.getUser_email()) == 1) { // 이메일 중복 확인
             throw new BaseException(POST_USERS_EXISTS_EMAIL);
         }
-
         if (userProvider.checkPhone(postUserReq.getUser_phone()) == 1) { // 전화번호 중복 확인
             throw new BaseException(POST_USERS_EXISTS_PHONE);
         }
