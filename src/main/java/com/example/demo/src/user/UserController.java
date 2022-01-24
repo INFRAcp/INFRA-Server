@@ -46,7 +46,9 @@ public class UserController {
                 || postUserReq.getUser_email() == null || postUserReq.getUser_name() == null || postUserReq.getUser_phone() == null) {
             return new BaseResponse<>(POST_USERS_EMPTY_INFO);
         }
-
+        if (!isRegexName(postUserReq.getUser_name())) {   // 이름 형식 체크
+            return new BaseResponse<>(POST_USERS_INVALID_NAME);
+        }
         if (!isRegexPw(postUserReq.getUser_pw())) {    // 비밀번호 형식 체크
             return new BaseResponse<>(POST_USERS_INVALID_PW);
         }

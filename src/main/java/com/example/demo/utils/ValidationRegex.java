@@ -28,5 +28,12 @@ public class ValidationRegex {
         return matcher.find();
     }
 
+    // 이름 형식 체크
+    public static boolean isRegexName(String target) {
+        String regex = "^[가-힣]*$";
+        Pattern pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(target);
+        return matcher.find();
+    }
 }
 

@@ -29,6 +29,7 @@ public enum BaseResponseStatus {
     POST_USERS_EMPTY_EMAIL(false, 2015, "이메일을 입력해주세요."),
     POST_USERS_INVALID_EMAIL(false, 2016, "이메일 형식을 확인해주세요."),
     POST_USERS_INVALID_PW(false, 2022, "비밀번호 형식을 확인해주세요"),
+    POST_USERS_INVALID_NAME(false, 2023, "이름 형식을 확인해주세요"),
     POST_USERS_INVALID_PHONE(false, 2019, "핸드폰 번호 형식을 확인해주세요."),
     POST_USERS_EXISTS_EMAIL(false, 2017, "중복된 이메일입니다."),
     POST_USERS_EMPTY_INFO(false, 2018, "필수 정보가 비어있습니다."),
