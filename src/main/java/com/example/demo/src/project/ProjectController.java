@@ -53,13 +53,13 @@ public class ProjectController {
     //프로젝트 키워드 조회
     @ResponseBody
     @GetMapping("/keyword")
-    public BaseResponse<List<GetPj_keywordRes>> getPj_keywords(@RequestParam(required = false) String search){
+    public BaseResponse<List<GetPjKeywordRes>> getPj_keywords(@RequestParam(required = false) String search){
         try{
             if(search == null){
-                List<GetPj_keywordRes> getPj_keywordRes = projectProvider.getPj_keywords();
+                List<GetPjKeywordRes> getPj_keywordRes = projectProvider.getPj_keywords();
                 return new BaseResponse<>(getPj_keywordRes);
             }
-            List<GetPj_keywordRes> getPj_keywordRes = projectProvider.getPj_keywordsBysearch(search);
+            List<GetPjKeywordRes> getPj_keywordRes = projectProvider.getPj_keywordsBysearch(search);
             return new BaseResponse<>(getPj_keywordRes);
         }catch (BaseException exception){
             return new BaseResponse<>((exception.getStatus()));
@@ -68,9 +68,9 @@ public class ProjectController {
     //유저가 찜한 프로젝트 조회
     @ResponseBody
     @PostMapping("/likePj")
-    public BaseResponse<List<PostPj_likeRes>> like(@RequestBody PostPj_likeReq postPj_likeReq){
+    public BaseResponse<List<PostPjLikeRes>> like(@RequestBody PostPjLikeReq postPj_likeReq){
         try{
-            List<PostPj_likeRes> postPj_likeRes = projectProvider.like(postPj_likeReq);
+            List<PostPjLikeRes> postPj_likeRes = projectProvider.like(postPj_likeReq);
             return new BaseResponse<>(postPj_likeRes);
         }catch(BaseException exception){
             return new BaseResponse<>(exception.getStatus());
@@ -79,9 +79,9 @@ public class ProjectController {
     //유저가 조회했던 프로젝트 조회
     @ResponseBody
     @PostMapping("/project-inquiry")
-    public BaseResponse<List<PostPj_inquiryRes>> proInquiry(@RequestBody PostPj_inquiryReq postPj_inquiryReq){
+    public BaseResponse<List<PostPjInquiryRes>> proInquiry(@RequestBody PostPjInquiryReq postPj_inquiryReq){
         try{
-            List<PostPj_inquiryRes> postPj_inquiryRes = projectProvider.proInquiry(postPj_inquiryReq);
+            List<PostPjInquiryRes> postPj_inquiryRes = projectProvider.proInquiry(postPj_inquiryReq);
             return new BaseResponse<>(postPj_inquiryRes);
         }catch(BaseException exception){
             return new BaseResponse<>(exception.getStatus());
@@ -91,9 +91,9 @@ public class ProjectController {
     //프로젝트에 참여한 팀원들 조회
     @ResponseBody
     @PostMapping("/team")
-    public BaseResponse<List<PostPj_participateRes>> getTeam(@RequestBody PostPj_participateReq postPj_participateReq){
+    public BaseResponse<List<PostPjParticipateRes>> getTeam(@RequestBody PostPjParticipateReq postPj_participateReq){
         try{
-            List<PostPj_participateRes> postPj_participateRes = projectProvider.getTeam(postPj_participateReq);
+            List<PostPjParticipateRes> postPj_participateRes = projectProvider.getTeam(postPj_participateReq);
             return new BaseResponse<>(postPj_participateRes);
         }catch(BaseException exception){
             return new BaseResponse<>(exception.getStatus());
@@ -171,4 +171,21 @@ public class ProjectController {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
+
+    //프로젝트 지원
+    @ResponseBody
+    @PostMapping("/apply")
+    public BaseResponse<PostPjApplyRes> pjApply(@RequestBody PostPjApplyReq postPjApplyReq){
+        try {
+                PostPjApplyRes postPjApplyRes = projectService.pjApply(postPjApplyReq);
+                if (postPjApplyRes.getComment().equals("중복"))
+                    throw new BaseException(POST_PROJECT_COINCIDE_CHECK);
+                else
+                    return new BaseResponse<>(postPjApplyRes);
+        }catch (BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+
 }

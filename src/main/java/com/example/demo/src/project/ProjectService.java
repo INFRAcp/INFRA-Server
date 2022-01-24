@@ -54,4 +54,16 @@ public class ProjectService {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
+    //프로젝트 지원
+    public PostPjApplyRes pjApply(PostPjApplyReq postPjApplyReq) throws BaseException{
+        try {
+            String pjApplyName = projectDao.pjApply(postPjApplyReq);
+            return new PostPjApplyRes(pjApplyName);
+        }catch (Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+
 }

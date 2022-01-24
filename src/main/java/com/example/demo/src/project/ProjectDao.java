@@ -1,5 +1,7 @@
 package com.example.demo.src.project;
 
+import com.example.demo.config.BaseException;
+import com.example.demo.config.BaseResponseStatus;
 import com.example.demo.src.project.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -8,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import javax.sql.DataSource;
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public class ProjectDao {
@@ -55,10 +58,10 @@ public class ProjectDao {
     }
 
     //키워드 조회
-    public List<GetPj_keywordRes> getPj_keywords() {
+    public List<GetPjKeywordRes> getPj_keywords() {
         String getProjectQuery = "select Project.pj_num, keyword from Pj_keyword, Project where Project.pj_num = Pj_keyword.pj_num";
         return this.jdbcTemplate.query(getProjectQuery,
-                (rs, rowNum) -> new GetPj_keywordRes(
+                (rs, rowNum) -> new GetPjKeywordRes(
                         rs.getInt("pj_num"),
                         rs.getString("keyword")
                 )
@@ -66,13 +69,13 @@ public class ProjectDao {
     }
 
     //버리는 카드
-    public List<GetPj_keywordRes> getPj_keywordsBysearch(String search) {
+    public List<GetPjKeywordRes> getPj_keywordsBysearch(String search) {
         String getProjectsBySearchQuery = "select Project.pj_num, keyword from Project, Pj_keyword where Project.pj_num = Pj_keyword.pj_num and pj_name like ? or pj_content like ? or keyword like ? or pj_subfield like ?";
 
         String getProjectsBySearchParams = '%' + search + '%';
 
         return this.jdbcTemplate.query(getProjectsBySearchQuery,
-                (rs, rowNum) -> new GetPj_keywordRes(
+                (rs, rowNum) -> new GetPjKeywordRes(
                         rs.getInt("pj_num"),
                         rs.getString("keyword")),
                 getProjectsBySearchParams,
@@ -82,11 +85,11 @@ public class ProjectDao {
     }
 
     //유저가 찜한 프로젝트 조회
-    public List<PostPj_likeRes> getPj_num(PostPj_likeReq postPj_likeReq) {
+    public List<PostPjLikeRes> getPj_num(PostPjLikeReq postPj_likeReq) {
         String getPj_numQuery = "select Project.pj_num, pj_header, pj_views, pj_field, pj_name, pj_subField, pj_progress, pj_deadline, pj_totalPerson, pj_recruitPerson, pj_time from Project where pj_num in (select pj_num from Pj_like where user_id= ?)";
         String getParams = postPj_likeReq.getUser_id();
         return this.jdbcTemplate.query(getPj_numQuery,
-                (rs, rowNum) -> new PostPj_likeRes(
+                (rs, rowNum) -> new PostPjLikeRes(
                         rs.getInt("pj_num"),
                         rs.getString("pj_header"),
                         rs.getInt("pj_views"),
@@ -102,22 +105,22 @@ public class ProjectDao {
         );
     }
     //프로젝트에 참여한 팀원들 조회
-    public List<PostPj_participateRes> getTeam(PostPj_participateReq postPj_participateReq) {
+    public List<PostPjParticipateRes> getTeam(PostPjParticipateReq postPj_participateReq) {
         String getTeam_Query = "select User_nickname, User_prPhoto from User where User_id in (select User_id from Pj_request where pj_inviteStatus = '승인완료' and pj_num = ?)";
         Integer getParams = postPj_participateReq.getPj_num();
         return this.jdbcTemplate.query(getTeam_Query,
-                (rs, rowNum) -> new PostPj_participateRes(
+                (rs, rowNum) -> new PostPjParticipateRes(
                         rs.getString("user_nickname"),
                         rs.getString("user_prPhoto")),
                 getParams
                 );
     }
     //유저가 조회했던 프로젝트 조회
-    public List<PostPj_inquiryRes> proInquiry(PostPj_inquiryReq postPj_inquiryReq) {
+    public List<PostPjInquiryRes> proInquiry(PostPjInquiryReq postPj_inquiryReq) {
         String getPj_inquiryQuery = "select pj_num, pj_header, pj_views, pj_field, pj_name, pj_subField, pj_progress, pj_deadline, pj_totalPerson, pj_recruitPerson, pj_time from Project where pj_num in (select pj_num from Pj_inquiry where user_id = ?)";
         String Pj_inquiryParams = postPj_inquiryReq.getUser_id();
         return this.jdbcTemplate.query(getPj_inquiryQuery,
-                (rs, rowNum) -> new PostPj_inquiryRes(
+                (rs, rowNum) -> new PostPjInquiryRes(
                         rs.getInt("pj_num"),
                         rs.getString("pj_header"),
                         rs.getInt("pj_views"),
@@ -226,6 +229,7 @@ public class ProjectDao {
         return patchPjModifyReq.getPj_name();
     }
 
+    //프로젝트 삭제
     public String pjDel(DelPjDelReq getPjDelReq) {
         String pjKeowrdDelQuery = "delete from Pj_keyword where pj_num = ?";
         this.jdbcTemplate.update(pjKeowrdDelQuery, getPjDelReq.getPj_num());
@@ -234,5 +238,18 @@ public class ProjectDao {
         this.jdbcTemplate.update(pjDelQuery, getPjDelReq.getPj_num());
 
         return "삭제가 완료되었습니다.";
+    }
+
+    //프로젝트 지원
+    public String pjApply(PostPjApplyReq postPjApplyReq) {
+        String pjApplyCoincideCheckQuery = "Select Count(*) from Pj_request where pj_num = ? and user_id = ?";
+
+        if(this.jdbcTemplate.queryForObject(pjApplyCoincideCheckQuery, int.class, postPjApplyReq.getPj_num(), postPjApplyReq.getUser_id()) == 1){
+            return "중복";
+        }else{
+            String pjApplyQuery = "insert into Pj_request (user_id, pj_num, pj_inviteStatus) VALUES (?,?,'신청')";
+            this.jdbcTemplate.update(pjApplyQuery, postPjApplyReq.getUser_id(), postPjApplyReq.getPj_num());
+            return "신청이 완료되었습니다.";
+        }
     }
 }

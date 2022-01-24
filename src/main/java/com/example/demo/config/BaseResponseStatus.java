@@ -28,6 +28,8 @@ public enum BaseResponseStatus {
     POST_PROJECT_EMPTY_DEADLINE(false, 1318, "프로젝트 모집 마감일을 입력해주세요."),
     POST_PROJECT_EMPTY_TOTAL_PERSON(false, 1319, "프로젝트 모집 인원을 입력해주세요."),
 
+    POST_PROJECT_COINCIDE_CHECK(false, 1320,"이미 지원한 프로젝트입니다."),
+
     /**
      * 2000 : Request 오류
      */
