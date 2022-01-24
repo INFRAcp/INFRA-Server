@@ -41,9 +41,9 @@ public class ReportDao {
                 postReportUserParams);
     }
 
-    // [Delete] 특정 사용자의 특정 신고글 삭제
+    // [PATCH] 특정 사용자의 특정 신고글 삭제
     public int deleteReport(PostReportDelReq postReportDelReq) throws BaseException {
-        String deleteReportQuery = "delete from dev_infraDB.User_Report where user_id = ? and reportedUser_id = ?";
+        String deleteReportQuery = "update User_Report set rp_status = '삭제' where user_id = ? and reportedUser_id = ?";
         Object[] deleteReportParams = new Object[]
                 {postReportDelReq.getUser_id(), postReportDelReq.getReportedUser_id()};
         return this.jdbcTemplate.update(deleteReportQuery, deleteReportParams);

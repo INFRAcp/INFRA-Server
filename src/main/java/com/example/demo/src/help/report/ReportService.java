@@ -41,7 +41,7 @@ public class ReportService {
         }
     }
 
-    // [Delete] 특정 사용자의 특정 신고글 삭제
+    // [PATCH] 특정 사용자의 특정 신고글 삭제
     public int deleteReport(PostReportDelReq postReportDelReq) throws BaseException {
         try {
             return reportDao.deleteReport(postReportDelReq);
@@ -49,5 +49,4 @@ public class ReportService {
             throw new BaseException(DATABASE_ERROR);
         }
     }
-
 }
