@@ -46,10 +46,10 @@ public class ProjectService {
     }
 
     //프로젝트 삭제
-    public GetpjDelRes pjDel(GetPjDelReq getPjDelReq) throws BaseException{
+    public DelPjDelRes pjDel(DelPjDelReq getPjDelReq) throws BaseException{
         try {
             String pjDel = projectDao.pjDel(getPjDelReq);
-            return new GetpjDelRes(pjDel);
+            return new DelPjDelRes(pjDel);
         }catch (Exception exception){
             throw new BaseException(DATABASE_ERROR);
         }

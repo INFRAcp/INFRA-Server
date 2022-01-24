@@ -7,6 +7,6 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class GetpjDelRes {
+public class DelPjDelRes {
     private String comment;
 }

@@ -103,7 +103,7 @@ public class ProjectDao {
     }
     //프로젝트에 참여한 팀원들 조회
     public List<PostPj_participateRes> getTeam(PostPj_participateReq postPj_participateReq) {
-        String getTeam_Query = "select User_nickname, User_pr_photo from User where User_id in (select User_id from Pj_request where pj_status = '승인완료' and pj_num = ?)";
+        String getTeam_Query = "select User_nickname, User_prPhoto from User where User_id in (select User_id from Pj_request where pj_inviteStatus = '승인완료' and pj_num = ?)";
         Integer getParams = postPj_participateReq.getPj_num();
         return this.jdbcTemplate.query(getTeam_Query,
                 (rs, rowNum) -> new PostPj_participateRes(
@@ -226,7 +226,7 @@ public class ProjectDao {
         return patchPjModifyReq.getPj_name();
     }
 
-    public String pjDel(GetPjDelReq getPjDelReq) {
+    public String pjDel(DelPjDelReq getPjDelReq) {
         String pjKeowrdDelQuery = "delete from Pj_keyword where pj_num = ?";
         this.jdbcTemplate.update(pjKeowrdDelQuery, getPjDelReq.getPj_num());
 

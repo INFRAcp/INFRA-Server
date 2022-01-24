@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class GetPjDelReq {
+public class DelPjDelReq {
     private String pj_num;
     private String user_id;
 }
