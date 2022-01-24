@@ -20,6 +20,13 @@ public class ValidationRegex {
         return matcher.find();
     }
 
+    // 비밀번호 형식 체크
+    public static boolean isRegexPw(String target) {
+        String regex = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[$@$!%*#?&])[A-Za-z\\d$@$!%*#?&]{8,20}$";
+        Pattern pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(target);
+        return matcher.find();
+    }
 
 }
 

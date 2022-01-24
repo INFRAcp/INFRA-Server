@@ -13,8 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import static com.example.demo.config.BaseResponseStatus.*;
-import static com.example.demo.utils.ValidationRegex.isRegexEmail;
-import static com.example.demo.utils.ValidationRegex.isRegexPhone;
+import static com.example.demo.utils.ValidationRegex.*;
 
 @RestController
 @RequestMapping("/user")
@@ -48,6 +47,9 @@ public class UserController {
             return new BaseResponse<>(POST_USERS_EMPTY_INFO);
         }
 
+        if (!isRegexPw(postUserReq.getUser_pw())) {    // 비밀번호 형식 체크
+            return new BaseResponse<>(POST_USERS_INVALID_PW);
+        }
         if (!isRegexEmail(postUserReq.getUser_email())) {    // 이메일 형식 체크
             return new BaseResponse<>(POST_USERS_INVALID_EMAIL);
         }
