@@ -144,7 +144,7 @@ public class ProjectDao {
         String Pj_timeQuery = "SELECT now()";
         postPjRegisterReq.setPj_time(this.jdbcTemplate.queryForObject(Pj_timeQuery, Timestamp.class));
 
-        String registrationPjQuery = "insert into Project(pj_num, User_id, pj_views, pj_header, pj_field, pj_content, pj_name, pj_subField, pj_progress, pj_endTerm, pj_startTerm, pj_deadline, pj_totalPerson, pj_recruitPerson, pj_time) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+        String registrationPjQuery = "insert into Project(pj_num, user_id, pj_views, pj_header, pj_field,    pj_content, pj_name, pj_subField, pj_progress, pj_endTerm,      pj_startTerm, pj_deadline, pj_totalPerson, pj_recruitPerson, pj_time) VALUES (?,?,?,?,?  ,?,?,?,?,?   ,?,?,?,?,?)";
         Object[] registrationParms = new Object[]
                 {postPjRegisterReq.getPj_num(),
                 postPjRegisterReq.getUser_id(),
@@ -163,38 +163,11 @@ public class ProjectDao {
                 postPjRegisterReq.getPj_time()};
         this.jdbcTemplate.update(registrationPjQuery, registrationParms);
 
-        if(postPjRegisterReq.getKeyword1() != null){
-            String registrationPjKeywordQuery = "insert into Pj_keyword(pj_num, keyword) VALUES (?,?)";
-            Object[] registrationKeywordParms = new Object[]{
-                    postPjRegisterReq.getPj_num(),
-                    postPjRegisterReq.getKeyword1()
-            };
-            this.jdbcTemplate.update(registrationPjKeywordQuery, registrationKeywordParms);
+        for(int i=0; i<postPjRegisterReq.getKeyword().length; i++){
+            String insertKeywordQuery = "INSERT INTO Pj_keyword (pj_num, keyword) VALUES(?,?)";
+            this.jdbcTemplate.update(insertKeywordQuery, postPjRegisterReq.getPj_num(), postPjRegisterReq.getKeyword()[i]);
         }
-        if(postPjRegisterReq.getKeyword2() != null){
-            String registrationPjKeywordQuery = "insert into Pj_keyword(pj_num, keyword) VALUES (?,?)";
-            Object[] registrationKeywordParms = new Object[]{
-                    postPjRegisterReq.getPj_num(),
-                    postPjRegisterReq.getKeyword2()
-            };
-            this.jdbcTemplate.update(registrationPjKeywordQuery, registrationKeywordParms);
-        }
-        if(postPjRegisterReq.getKeyword3() != null){
-            String registrationPjKeywordQuery = "insert into Pj_keyword(pj_num, keyword) VALUES (?,?)";
-            Object[] registrationKeywordParms = new Object[]{
-                    postPjRegisterReq.getPj_num(),
-                    postPjRegisterReq.getKeyword3()
-            };
-            this.jdbcTemplate.update(registrationPjKeywordQuery, registrationKeywordParms);
-        }
-        if(postPjRegisterReq.getKeyword4() != null){
-            String registrationPjKeywordQuery = "insert into Pj_keyword(pj_num, keyword) VALUES (?,?)";
-            Object[] registrationKeywordParms = new Object[]{
-                    postPjRegisterReq.getPj_num(),
-                    postPjRegisterReq.getKeyword4()
-            };
-            this.jdbcTemplate.update(registrationPjKeywordQuery, registrationKeywordParms);
-        }
+
         String lastInsertPjnameQuery = postPjRegisterReq.getPj_name();
         return lastInsertPjnameQuery;
     }
@@ -231,10 +204,10 @@ public class ProjectDao {
 
     //프로젝트 삭제
     public String pjDel(DelPjDelReq getPjDelReq) {
-        String pjKeowrdDelQuery = "delete from Pj_keyword where pj_num = ?";
-        this.jdbcTemplate.update(pjKeowrdDelQuery, getPjDelReq.getPj_num());
+//        String pjKeowrdDelQuery = "delete from Pj_keyword where pj_num = ?";
+//        this.jdbcTemplate.update(pjKeowrdDelQuery, getPjDelReq.getPj_num());
 
-        String pjDelQuery = "delete from Project where pj_num = ?";
+        String pjDelQuery = "update Project set pj_status = '삭제' where pj_num = ? ";
         this.jdbcTemplate.update(pjDelQuery, getPjDelReq.getPj_num());
 
         return "삭제가 완료되었습니다.";
@@ -252,4 +225,17 @@ public class ProjectDao {
             return "신청이 완료되었습니다.";
         }
     }
+
+    //특정 프로젝트 리스트 조회
+    public List<GetApplyListRes> pjApplyList(String pj_num) {
+        String pjApplyListQuery = "select User.user_id, user_nickname, user_grade, user_prPhoto from User, Pj_request where User.user_id = Pj_request.user_id and pj_num = ?";
+        return this.jdbcTemplate.query(pjApplyListQuery,
+                (rs,rowNum) -> new GetApplyListRes(
+                        rs.getString("user_id"),
+                        rs.getString("user_nickname"),
+                        rs.getString("user_grade"),
+                        rs.getString("user_prPhoto")),
+                pj_num);
+    }
+
 }

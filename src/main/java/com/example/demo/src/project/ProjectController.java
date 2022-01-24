@@ -65,6 +65,7 @@ public class ProjectController {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
+
     //유저가 찜한 프로젝트 조회
     @ResponseBody
     @PostMapping("/likePj")
@@ -76,6 +77,7 @@ public class ProjectController {
             return new BaseResponse<>(exception.getStatus());
         }
     }
+
     //유저가 조회했던 프로젝트 조회
     @ResponseBody
     @PostMapping("/project-inquiry")
@@ -183,6 +185,18 @@ public class ProjectController {
                 else
                     return new BaseResponse<>(postPjApplyRes);
         }catch (BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    //프로젝트 신청 현황
+    @ResponseBody
+    @GetMapping("/apply-list")
+    public BaseResponse<List<GetApplyListRes>> pjApplyList(@RequestParam(required = false) String pj_num) {
+        try {
+            List<GetApplyListRes> getApplyListRes = projectProvider.pjApplyList(pj_num);
+            return new BaseResponse<>(getApplyListRes);
+        } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
     }

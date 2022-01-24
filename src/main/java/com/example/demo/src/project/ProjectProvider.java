@@ -133,5 +133,14 @@ public class ProjectProvider {
         }
     }
 
+    //특정 프로젝트 신청 현황 리스트
+    public List<GetApplyListRes> pjApplyList(String pj_num) throws BaseException{
+        try {
+            List<GetApplyListRes> getApplyListRes = projectDao.pjApplyList(pj_num);
+            return getApplyListRes;
+        }catch (Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 
 }
