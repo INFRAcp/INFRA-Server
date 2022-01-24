@@ -72,7 +72,7 @@ public class ReportController {
 
     // [Delete] 특정 사용자의 특정 신고글 삭제
     @ResponseBody
-    @DeleteMapping("")
+    @PatchMapping("")
     public BaseResponse<String> deleteReport(@RequestBody PostReportDelReq postReportDelReq) {
         if (postReportDelReq.getUser_id() == null || postReportDelReq.getReportedUser_id() == null){
             return new BaseResponse<>(POST_REPORTS_DELETE_ERROR);
