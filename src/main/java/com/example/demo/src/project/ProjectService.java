@@ -46,12 +46,24 @@ public class ProjectService {
     }
 
     //프로젝트 삭제
-    public GetpjDelRes pjDel(GetPjDelReq getPjDelReq) throws BaseException{
+    public DelPjDelRes pjDel(DelPjDelReq getPjDelReq) throws BaseException{
         try {
             String pjDel = projectDao.pjDel(getPjDelReq);
-            return new GetpjDelRes(pjDel);
+            return new DelPjDelRes(pjDel);
         }catch (Exception exception){
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
+    //프로젝트 지원
+    public PostPjApplyRes pjApply(PostPjApplyReq postPjApplyReq) throws BaseException{
+        try {
+            String pjApplyName = projectDao.pjApply(postPjApplyReq);
+            return new PostPjApplyRes(pjApplyName);
+        }catch (Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+
 }

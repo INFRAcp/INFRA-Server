@@ -7,8 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class Pj_keyword {
-    private int pj_num;
-    private String keyword;
+public class PostPjParticipateRes {
+    private String user_nickname;
+    private String user_prPhoto;
 }
-

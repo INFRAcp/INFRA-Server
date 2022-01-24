@@ -6,7 +6,6 @@ import lombok.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-//프로젝트에 참여한 팀원들 조회
-public class PostPj_participateReq {
-    private int pj_num;
+public class PostPjLikeReq {
+    private String user_id;
 }
