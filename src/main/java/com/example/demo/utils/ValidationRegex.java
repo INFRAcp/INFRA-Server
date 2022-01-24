@@ -14,7 +14,7 @@ public class ValidationRegex {
 
     // 전화번호 형식 체크
     public static boolean isRegexPhone(String target) {
-        String regex = "^01(?:0|1|[6-9])[.-]?(\\d{3}|\\d{4})[.-]?(\\d{4})$";
+        String regex = "^01(?:0|1|[6-9])-(\\d{3}|\\d{4})-(\\d{4})$";
         Pattern pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(target);
         return matcher.find();
