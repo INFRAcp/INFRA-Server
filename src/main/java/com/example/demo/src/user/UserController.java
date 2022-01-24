@@ -46,17 +46,21 @@ public class UserController {
                 || postUserReq.getUser_email() == null || postUserReq.getUser_name() == null || postUserReq.getUser_phone() == null) {
             return new BaseResponse<>(POST_USERS_EMPTY_INFO);
         }
-        if (!isRegexName(postUserReq.getUser_name())) {   // 이름 형식 체크
-            return new BaseResponse<>(POST_USERS_INVALID_NAME);
+
+        if (!isRegexId(postUserReq.getUser_id())) {   // id 형식 체크
+            return new BaseResponse<>(POST_USERS_INVALID_ID);
         }
         if (!isRegexPw(postUserReq.getUser_pw())) {    // 비밀번호 형식 체크
             return new BaseResponse<>(POST_USERS_INVALID_PW);
         }
-        if (!isRegexEmail(postUserReq.getUser_email())) {    // 이메일 형식 체크
-            return new BaseResponse<>(POST_USERS_INVALID_EMAIL);
+        if (!isRegexName(postUserReq.getUser_name())) {   // 이름 형식 체크
+            return new BaseResponse<>(POST_USERS_INVALID_NAME);
         }
         if (!isRegexPhone(postUserReq.getUser_phone())) {    // 핸드폰 번호 형식 체크
             return new BaseResponse<>(POST_USERS_INVALID_PHONE);
+        }
+        if (!isRegexEmail(postUserReq.getUser_email())) {    // 이메일 형식 체크
+            return new BaseResponse<>(POST_USERS_INVALID_EMAIL);
         }
         try {
             PostUserRes postUserRes = userService.createUser(postUserReq);

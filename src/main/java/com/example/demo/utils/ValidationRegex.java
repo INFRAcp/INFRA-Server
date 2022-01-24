@@ -20,6 +20,14 @@ public class ValidationRegex {
         return matcher.find();
     }
 
+    // id 형식 체크
+    public static boolean isRegexId(String target){
+        String regex = "^(?=.*[A-Za-z])(?=.*[0-9])[A-Za-z0-9]{6,}$";
+        Pattern pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(target);
+        return matcher.find();
+    }
+
     // 비밀번호 형식 체크
     public static boolean isRegexPw(String target) {
         String regex = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[$@$!%*#?&])[A-Za-z\\d$@$!%*#?&]{8,20}$";
