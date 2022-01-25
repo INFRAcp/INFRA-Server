@@ -80,41 +80,6 @@ public class ProjectProvider {
         }
     }
 
-    //프로젝트 null 값 체크
-    private BaseResponse<PostPjRegisterRes> postPjNullCheck(@RequestBody PostPjRegisterReq postPjRegisterReq) {
-        if(postPjRegisterReq.getPj_header()==null){
-            return new BaseResponse<>(POST_PROJECT_EMPTY_HEADER);
-        }
-        if(postPjRegisterReq.getPj_field()==null){
-            return new BaseResponse<>(POST_PROJECT_EMPTY_FIELD);
-        }
-        if(postPjRegisterReq.getPj_content()==null){
-            return new BaseResponse<>(POST_PROJECT_EMPTY_CONTENT);
-        }
-        if(postPjRegisterReq.getPj_name()==null){
-            return new BaseResponse<>(POST_PROJECT_EMPTY_NAME);
-        }
-        if(postPjRegisterReq.getPj_subField()==null){
-            return new BaseResponse<>(POST_PROJECT_EMPTY_SUBFIELD);
-        }
-        if(postPjRegisterReq.getPj_progress()==null){
-            return new BaseResponse<>(POST_PROJECT_EMPTY_PROGRESS);
-        }
-        if(postPjRegisterReq.getPj_endTerm()==null){
-            return new BaseResponse<>(POST_PROJECT_EMPTY_END_TERM);
-        }
-        if(postPjRegisterReq.getPj_startTerm()==null){
-            return new BaseResponse<>(POST_PROJECT_EMPTY_START_TERM);
-        }
-        if(postPjRegisterReq.getPj_deadline()==null){
-            return new BaseResponse<>(POST_PROJECT_EMPTY_DEADLINE);
-        }
-        if(postPjRegisterReq.getPj_totalPerson()==0){
-            return new BaseResponse<>(POST_PROJECT_EMPTY_TOTAL_PERSON);
-        }
-        return null;
-    }
-
     public List<PostPjParticipateRes> getTeam(PostPjParticipateReq postPj_participateReq) throws BaseException{
         try{
             List<PostPjParticipateRes> postPj_participateRes = projectDao.getTeam(postPj_participateReq);
