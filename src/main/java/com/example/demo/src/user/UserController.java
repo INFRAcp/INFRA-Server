@@ -87,4 +87,25 @@ public class UserController {
             return new BaseResponse<>(exception.getStatus());
         }
     }
+
+    /**
+     * ID 중복 체크 API
+     * [GET] /user/valid-id/:user_id
+     */
+    @ResponseBody
+    @GetMapping("/valid-id/{user_id}")
+    public BaseResponse<String> validId(@PathVariable("user_id") String user_id) {
+        if (!isRegexId(user_id)) {   // id 형식 체크
+            return new BaseResponse<>(POST_USERS_INVALID_ID);
+        }
+
+        try {
+            if (userProvider.checkId(user_id) == 1) {
+                throw new BaseException(POST_USERS_EXISTS_ID);
+            }
+            return new BaseResponse<>("사용가능한 아이디입니다.");
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
 }
