@@ -80,6 +80,7 @@ public class ProjectProvider {
         }
     }
 
+
     public List<PostPjParticipateRes> getTeam(PostPjParticipateReq postPj_participateReq) throws BaseException{
         try{
             List<PostPjParticipateRes> postPj_participateRes = projectDao.getTeam(postPj_participateReq);
@@ -98,6 +99,16 @@ public class ProjectProvider {
         }
     }
 
+    //본인이 지원한 프로젝트 신청 현황
+    public List<PostUserApplyRes> getUserApply(PostUserApplyReq postUserApplyReq) throws BaseException{
+        try{
+            List<PostUserApplyRes> postUserApplyRes = projectDao.getUserApply(postUserApplyReq);
+            return postUserApplyRes;
+        }catch(Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
     //특정 프로젝트 신청 현황 리스트
     public List<GetApplyListRes> pjApplyList(String pj_num) throws BaseException{
         try {
@@ -107,5 +118,4 @@ public class ProjectProvider {
             throw new BaseException(DATABASE_ERROR);
         }
     }
-
 }
