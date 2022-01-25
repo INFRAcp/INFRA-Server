@@ -27,9 +27,7 @@ public class PostPjRegisterReq {
     private int pj_totalPerson =0;
     private int pj_recruitPerson;
     private Timestamp pj_time;
+    private String pj_status;
 
-    private String keyword1 = null;
-    private String keyword2 = null;
-    private String keyword3 = null;
-    private String keyword4 = null;
+    private String [] keyword;
 }
