@@ -1,7 +1,5 @@
 package com.example.demo.src.project;
 
-import com.example.demo.config.BaseException;
-import com.example.demo.config.BaseResponseStatus;
 import com.example.demo.src.project.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -10,7 +8,6 @@ import org.springframework.stereotype.Repository;
 import javax.sql.DataSource;
 import java.sql.Timestamp;
 import java.util.List;
-import java.util.Map;
 
 @Repository
 public class ProjectDao {
@@ -23,7 +20,8 @@ public class ProjectDao {
 
     //프로젝트 조회
     public List<GetProjectRes> getProjects() {
-        String getProjectQuery = "select Project.pj_num, User_id, pj_views, pj_header, pj_field, pj_content, pj_name, pj_subField, pj_progress, pj_endTerm,pj_startTerm, pj_deadline, pj_totalPerson,pj_recruitPerson, pj_time from Project";
+
+        String getProjectQuery = "select Project.pj_num, User_id, pj_views, pj_header, pj_field, pj_content, pj_name, pj_subField, pj_progress, pj_endTerm,pj_startTerm, pj_deadline, pj_totalPerson,pj_recruitPerson, pj_time from Project where pj_status = '등록'";
         return this.jdbcTemplate.query(getProjectQuery,
                 (rs, rowNum) -> new GetProjectRes(
                         rs.getString("pj_header"),
@@ -204,8 +202,6 @@ public class ProjectDao {
 
     //프로젝트 삭제
     public String pjDel(DelPjDelReq getPjDelReq) {
-//        String pjKeowrdDelQuery = "delete from Pj_keyword where pj_num = ?";
-//        this.jdbcTemplate.update(pjKeowrdDelQuery, getPjDelReq.getPj_num());
 
         String pjDelQuery = "update Project set pj_status = '삭제' where pj_num = ? ";
         this.jdbcTemplate.update(pjDelQuery, getPjDelReq.getPj_num());

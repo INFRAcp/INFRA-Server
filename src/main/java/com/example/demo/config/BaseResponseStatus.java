@@ -16,19 +16,7 @@ public enum BaseResponseStatus {
     // x300 : 프로젝트 관련
     SEARCH_LENGTH_ERROR(false, 1300, "검색어 2글자 이상 입력해주세요."),
 
-    //프로젝트 등록시 빈값 에러
-    POST_PROJECT_EMPTY_HEADER(false, 1310, "프로젝트 제목을 입력해주세요."),
-    POST_PROJECT_EMPTY_FIELD(false, 1311, "프로젝트 분야를 입력해주세요."),
-    POST_PROJECT_EMPTY_CONTENT(false, 1312, "프로젝트 내용을 입력해주세요."),
-    POST_PROJECT_EMPTY_NAME(false, 1313, "프로젝트 이름을 입력해주세요."),
-    POST_PROJECT_EMPTY_SUBFIELD(false, 1314, "프로젝트 세부 분야를 입력해주세요."),
-    POST_PROJECT_EMPTY_PROGRESS(false, 1315, "프로젝트 진도를 입력해주세요."),
-    POST_PROJECT_EMPTY_END_TERM(false, 1316, "프로젝트 종료 시점을 입력해주세요."),
-    POST_PROJECT_EMPTY_START_TERM(false, 1317, "프로젝트 시작 시점을 입력해주세요."),
-    POST_PROJECT_EMPTY_DEADLINE(false, 1318, "프로젝트 모집 마감일을 입력해주세요."),
-    POST_PROJECT_EMPTY_TOTAL_PERSON(false, 1319, "프로젝트 모집 인원을 입력해주세요."),
 
-    POST_PROJECT_COINCIDE_CHECK(false, 1320,"이미 지원한 프로젝트입니다."),
 
     /**
      * 2000 : Request 오류
@@ -38,6 +26,8 @@ public enum BaseResponseStatus {
     EMPTY_JWT(false, 2001, "JWT를 입력해주세요."),
     INVALID_JWT(false, 2002, "유효하지 않은 JWT입니다."),
     INVALID_USER_JWT(false, 2003, "권한이 없는 유저의 접근입니다."),
+
+
 
     // users
     USERS_EMPTY_USER_ID(false, 2010, "유저 아이디 값을 확인해주세요."),
@@ -51,7 +41,24 @@ public enum BaseResponseStatus {
     POST_USERS_EXISTS_ID(false, 2020, "중복된 아이디입니다."),
     POST_USERS_EXISTS_PHONE(false, 2021, "중복된 핸드폰 번호입니다."),
 
+    //프로젝트 등록시 빈값 에러
+    POST_PROJECT_EMPTY_HEADER(false, 2310, "프로젝트 제목을 입력해주세요."),
+    POST_PROJECT_EMPTY_FIELD(false, 2311, "프로젝트 분야를 입력해주세요."),
+    POST_PROJECT_EMPTY_CONTENT(false, 2312, "프로젝트 내용을 입력해주세요."),
+    POST_PROJECT_EMPTY_NAME(false, 2313, "프로젝트 이름을 입력해주세요."),
+    POST_PROJECT_EMPTY_SUBFIELD(false, 2314, "프로젝트 세부 분야를 입력해주세요."),
+    POST_PROJECT_EMPTY_PROGRESS(false, 2315, "프로젝트 진도를 입력해주세요."),
+    POST_PROJECT_EMPTY_END_TERM(false, 2316, "프로젝트 종료 시점을 입력해주세요."),
+    POST_PROJECT_EMPTY_START_TERM(false, 2317, "프로젝트 시작 시점을 입력해주세요."),
+    POST_PROJECT_EMPTY_DEADLINE(false, 2318, "프로젝트 모집 마감일을 입력해주세요."),
+    POST_PROJECT_EMPTY_TOTAL_PERSON(false, 2319, "프로젝트 모집 인원을 입력해주세요."),
 
+
+    POST_PROJECT_COINCIDE_CHECK(false, 2320,"이미 지원한 프로젝트입니다."),
+
+    //프로젝트 등록시 키워드 글자수 초과
+    POST_PROJECT_KEYWORD_EXCEED(false,2321,"키워드 5글자를 초과하였습니다."),
+    POST_PROJECT_KEYWORD_CNT_EXCEED(false,2322,"키워드 4개를 초과하였습니다."),
     /**
      * 3000 : Response 오류
      */

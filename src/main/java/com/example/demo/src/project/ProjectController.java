@@ -108,6 +108,7 @@ public class ProjectController {
     public BaseResponse<PostPjRegisterRes> pjRegistration(@RequestBody PostPjRegisterReq postPjRegisterReq){
         try{
             PjNullCheck(postPjRegisterReq.getPj_header(), postPjRegisterReq.getPj_field(), postPjRegisterReq.getPj_content(), postPjRegisterReq.getPj_name(), postPjRegisterReq.getPj_subField(), postPjRegisterReq.getPj_progress(), postPjRegisterReq.getPj_endTerm(), postPjRegisterReq.getPj_startTerm(), postPjRegisterReq.getPj_deadline(), postPjRegisterReq.getPj_totalPerson());
+            PjKeywordCheck(postPjRegisterReq.getKeyword());
             PostPjRegisterRes postPjRegisterRes = projectService.registrationPj(postPjRegisterReq);
             return new BaseResponse<>(postPjRegisterRes);
         } catch (BaseException exception) {
@@ -149,12 +150,25 @@ public class ProjectController {
         }
     }
 
+    //키워드 값 확인
+    private void PjKeywordCheck(String [] keyword) throws BaseException{
+        if(keyword.length > 4){
+            throw new BaseException(POST_PROJECT_KEYWORD_CNT_EXCEED);
+        }
+        for(int j=0; j<keyword.length; j++){
+            if(keyword[j].length() > 5){
+                throw new BaseException(POST_PROJECT_KEYWORD_EXCEED);
+            }
+        }
+    }
+
     //프로젝트 수정
     @ResponseBody
     @PatchMapping("/modify")
     public BaseResponse<PatchPjModifyRes> pjModify(@RequestBody PatchPjModifyReq patchPjModifyReq){
         try {
             PjNullCheck(patchPjModifyReq.getPj_header(), patchPjModifyReq.getPj_field(), patchPjModifyReq.getPj_content(), patchPjModifyReq.getPj_name(), patchPjModifyReq.getPj_subField(), patchPjModifyReq.getPj_progress(), patchPjModifyReq.getPj_endTerm(), patchPjModifyReq.getPj_startTerm(), patchPjModifyReq.getPj_deadline(), patchPjModifyReq.getPj_totalPerson());
+            PjKeywordCheck(patchPjModifyReq.getKeyword());
             PatchPjModifyRes patchPjModifyRes = projectService.pjModify(patchPjModifyReq);
             return new BaseResponse<>(patchPjModifyRes);
         }catch (BaseException exception){
