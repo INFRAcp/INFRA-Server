@@ -41,6 +41,13 @@ public class ProjectController {
         try{
             if(search == null){
                 List<GetProjectRes> getProjectRes = projectProvider.getProjects();
+
+                for(int i=0; i<getProjectRes.size(); i++){
+                    if(getProjectRes.get(i).getPj_DaySub() <= 2 && getProjectRes.get(i).getPj_DaySub() >= 0){
+                        getProjectRes.get(i).setPj_recruit("마감임박");
+                    }
+                }
+
                 return new BaseResponse<>(getProjectRes);
             }
             List<GetProjectRes> getProjectRes = projectProvider.getProjectsByKeyword(search);

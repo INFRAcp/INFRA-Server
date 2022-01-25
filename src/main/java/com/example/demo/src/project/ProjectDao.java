@@ -237,4 +237,30 @@ public class ProjectDao {
                 pj_num);
     }
 
+    //프로젝트 신청한 유저 승인
+    public String pjApprove(PatchPjApproveReq patchPjApproveReq) {
+        String pjApproveQuery = "update Pj_request set pj_inviteStatus = '승인완료' where user_id = ? and pj_num = ? and pj_inviteStatus = '신청'";
+        Object[] pjApproveParams = new Object[]{
+                patchPjApproveReq.getUser_id(),
+                patchPjApproveReq.getPj_num()
+        };
+        this.jdbcTemplate.update(pjApproveQuery, pjApproveParams);
+
+        return "승인완료";
+    }
+
+    //본인이 지원한 프로젝트 신청 현황
+    public List<PostUserApplyRes> getUserApply(PostUserApplyReq postUserApplyReq) {
+        String getApplyQuery = "select Pj_request.pj_num, pj_inviteStatus, pj_name, pj_views, pj_header from Pj_request, Project where Pj_request.pj_num = Project.pj_num and Pj_request.user_id = ?";
+        String getApplyParams = postUserApplyReq.getUser_id();
+        return this.jdbcTemplate.query(getApplyQuery,
+                (rs, rowNum) -> new PostUserApplyRes(
+                        rs.getInt("pj_num"),
+                        rs.getString("pj_inviteStatus"),
+                        rs.getString("pj_name"),
+                        rs.getInt("pj_views"),
+                        rs.getString("pj_header")),
+                getApplyParams
+        );
+    }
 }
