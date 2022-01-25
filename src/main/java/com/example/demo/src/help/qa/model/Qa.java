@@ -9,8 +9,8 @@ import lombok.Setter;
 @AllArgsConstructor
 
 public class Qa {
-    private int QA_num;
-    private String User_id;
-    private String QA_q;
-    private String QA_a;
+    private int qa_num;
+    private String user_id;
+    private String qa_q;
+    private String qa_a;
 }

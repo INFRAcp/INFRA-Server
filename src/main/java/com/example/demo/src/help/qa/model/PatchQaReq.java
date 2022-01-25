@@ -9,6 +9,6 @@ import lombok.Setter;
 @AllArgsConstructor
 
 public class PatchQaReq {
-    private int QA_num;
-    private String QA_q;
+    private int qa_num;
+    private String qa_q;
 }

@@ -27,63 +27,81 @@ public class QaDao {
 
         return this.jdbcTemplate.query(getQaQuery,
                 (rs, rowNum)-> new GetQaRes(
-                        rs.getInt("QA_num"),
-                        rs.getString("User_id"),
-                        rs.getString("QA_q"),
-                        rs.getString("QA_a")
+                        rs.getInt("qa_num"),
+                        rs.getString("user_id"),
+                        rs.getString("qa_q"),
+                        rs.getString("qa_a"),
+                        rs.getString("qa_aTime"),
+                        rs.getString("qa_qTime"),
+                        rs.getString("qa_status")
                 )
         );
     }
 
-    // 특정 질문 조회 (해당 User_id 를 갖는)
-    public List<GetQaRes> getQaByUserId(String User_id) {
-        String getQaByUserIdQuery = "select * from QA Where User_id = ?";
-        String getQaByUserIdParam = User_id;
+    // 특정 질문 조회 (해당 user_id 를 갖는)
+    public List<GetQaRes> getQaByUserId(String user_id) {
+        String getQaByUserIdQuery = "select * from QA Where user_id = ?";
+        String getQaByUserIdParam = user_id;
 
         return this.jdbcTemplate.query(getQaByUserIdQuery,
                 (rs, rowNum) -> new GetQaRes(
-                        rs.getInt("QA_num"),
-                        rs.getString("User_id"),
-                        rs.getString("QA_q"),
-                        rs.getString("QA_a")
+                        rs.getInt("qa_num"),
+                        rs.getString("user_id"),
+                        rs.getString("qa_q"),
+                        rs.getString("qa_a"),
+                        rs.getString("qa_aTime"),
+                        rs.getString("qa_qTime"),
+                        rs.getString("qa_status")
                 ),
                 getQaByUserIdParam);
     }
 
-    // 해당 QA_num을 갖는 질문 삭제
-    public int deleteQa(int QA_num){
-        String deleteQuary = "delete from QA where QA_num = ?";
+    // 해당 qa_num을 갖는 질문 삭제
+    public int deleteQa(int qa_num){
+        String deleteQuary = "delete from QA where qa_num = ?";
 
-        return this.jdbcTemplate.update(deleteQuary, QA_num);
+        return this.jdbcTemplate.update(deleteQuary, qa_num);
     }
 
-    // 해당 QA_num을 갖는 질문 수정
+    // 해당 qa_num을 갖는 질문 수정
     public int modifyQa(PatchQaReq patchQaReq){
-        String modifyQaQuary = "update QA set Qa_q = ? where QA_num = ?";
-        Object[] modifyQaParam = new Object[]{patchQaReq.getQA_q(), patchQaReq.getQA_num()};
+        String modifyQaQuary = "update QA set qa_q = ? where qa_num = ?";
+        Object[] modifyQaParam = new Object[]{patchQaReq.getQa_q(), patchQaReq.getQa_num()};
 
         return this.jdbcTemplate.update(modifyQaQuary, modifyQaParam);
     }
 
     // 특정 질문 조회 (해당 qa_num 를 갖는)
-    public List<GetQaRes> getQaByQaNum(int qa_num) {
-        String getQaByQaNumQuery = "select * from QA Where QA_num = ?";
+    public GetQaRes getQaByQaNum(int qa_num) {
+        String getQaByQaNumQuery = "select * from QA Where qa_num = ?";
         int getQaByQaNumParam = qa_num;
 
-        return this.jdbcTemplate.query(getQaByQaNumQuery,
+        return this.jdbcTemplate.queryForObject(getQaByQaNumQuery,
                 (rs, rowNum) -> new GetQaRes(
-                        rs.getInt("QA_num"),
-                        rs.getString("User_id"),
-                        rs.getString("QA_q"),
-                        rs.getString("QA_a")
+                        rs.getInt("qa_num"),
+                        rs.getString("user_id"),
+                        rs.getString("qa_q"),
+                        rs.getString("qa_a"),
+                        rs.getString("qa_aTime"),
+                        rs.getString("qa_qTime"),
+                        rs.getString("qa_status")
                 ),
                 getQaByQaNumParam);
     }
 
+    // 질문 등록
     public int uploadQa(PostQaReq postQaReq) {
-        String uploadQaQuery = "insert into QA (QA_num, User_id, QA_q, QA_a) VALUES (?,?,?,?)";
-        Object[] uploadQaParam = new Object[]{postQaReq.getQA_num(), postQaReq.getUser_id(), postQaReq.getQA_q(), postQaReq.getQA_a()};
+        String uploadQaQuery = "insert into QA (user_id, qa_q) VALUES (?,?)";
+        Object[] uploadQaParam = new Object[]{postQaReq.getUser_id(), postQaReq.getQa_q()};
 
         return this.jdbcTemplate.update(uploadQaQuery, uploadQaParam);
+    }
+
+    // 해당 qa_num을 갖는 질문 삭제
+    public int modifyQa2(int num){
+        String modifyQaQuary = "update QA set qa_status = ? where qa_num = ?";
+        Object[] modifyQaParam = new Object[]{"삭제", num};
+
+        return this.jdbcTemplate.update(modifyQaQuary, modifyQaParam);
     }
 }

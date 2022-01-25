@@ -38,10 +38,10 @@ public class QaProvider {
         }
     }
 
-    // 특정 질문 조회 (해당 User_id 를 갖는)
-    public List<GetQaRes> getQaByUser_id(String User_id) throws BaseException {
+    // 특정 질문 조회 (해당 user_id 를 갖는)
+    public List<GetQaRes> getQaByUser_id(String user_id) throws BaseException {
         try{
-            List<GetQaRes> getQaRes = qaDao.getQaByUserId(User_id);
+            List<GetQaRes> getQaRes = qaDao.getQaByUserId(user_id);
             return getQaRes;
         }
         catch (Exception exception){
@@ -49,10 +49,9 @@ public class QaProvider {
         }
     }
 
-    // 특정 질문 조회 (해당 qa_num 를 갖는)
-    public List<GetQaRes> getQaByQaNum(int qa_num) throws BaseException {
+    public GetQaRes getQaByQaNum(int qa_num) throws BaseException {
         try{
-            List<GetQaRes> getQaRes = qaDao.getQaByQaNum(qa_num);
+            GetQaRes getQaRes = qaDao.getQaByQaNum(qa_num);
             return getQaRes;
         }
         catch (Exception exception){
