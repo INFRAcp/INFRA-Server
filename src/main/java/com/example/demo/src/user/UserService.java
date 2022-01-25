@@ -15,12 +15,6 @@ import org.springframework.stereotype.Service;
 
 import static com.example.demo.config.BaseResponseStatus.*;
 
-/**
- * Service란?
- * Controller에 의해 호출되어 실제 비즈니스 로직과 트랜잭션을 처리: Create, Update, Delete 의 로직 처리
- * 요청한 작업을 처리하는 관정을 하나의 작업으로 묶음
- * dao를 호출하여 DB CRUD를 처리 후 Controller로 반환
- */
 @Service
 public class UserService {
     final Logger logger = LoggerFactory.getLogger(this.getClass()); // Log 처리부분: Log를 기록하기 위해 필요한 함수입니다.
@@ -40,33 +34,30 @@ public class UserService {
 
     // 회원가입(POST)
     public PostUserRes createUser(PostUserReq postUserReq) throws BaseException {
-        // id 중복 확인
-        if (userProvider.checkId(postUserReq.getId()) == 1) {
+        if (userProvider.checkId(postUserReq.getUser_id()) == 1) {  // id 중복 확인
             throw new BaseException(POST_USERS_EXISTS_ID);
         }
-
-        // 이메일 중복 확인
-        if (userProvider.checkEmail(postUserReq.getEmail()) == 1) {
+        if (userProvider.checkNickname(postUserReq.getUser_nickname()) == 1) {  // nickname 중복 확인
+            throw new BaseException(POST_USERS_EXISTS_NICKNAME);
+        }
+        if (userProvider.checkEmail(postUserReq.getUser_email()) == 1) { // 이메일 중복 확인
             throw new BaseException(POST_USERS_EXISTS_EMAIL);
         }
-
-        // 전화번호 중복 확인
-        if (userProvider.checkPhone(postUserReq.getPhone()) == 1) {
+        if (userProvider.checkPhone(postUserReq.getUser_phone()) == 1) { // 전화번호 중복 확인
             throw new BaseException(POST_USERS_EXISTS_PHONE);
         }
 
         String pwd;
-        try {
-            // 비밀번호 암호화
-            pwd = new AES128(Secret.USER_INFO_PASSWORD_KEY).encrypt(postUserReq.getPw()); // 암호화코드
-            postUserReq.setPw(pwd);
+        try {   // 비밀번호 암호화
+            pwd = new AES128(Secret.USER_INFO_PASSWORD_KEY).encrypt(postUserReq.getUser_pw()); // 암호화코드
+            postUserReq.setUser_pw(pwd);
         } catch (Exception ignored) { // 암호화가 실패하였을 경우 에러 발생
             throw new BaseException(PASSWORD_ENCRYPTION_ERROR);
         }
 
         try {
             userDao.createUser(postUserReq);
-            String userId = postUserReq.getId();
+            String userId = postUserReq.getUser_id();
             String jwt = jwtService.createJwt(userId);
             return new PostUserRes(userId, jwt);
         } catch (Exception exception) { // DB에 이상이 있는 경우
@@ -78,8 +69,8 @@ public class UserService {
     public void modifyUserPw(PatchUserReq patchUserReq) throws BaseException {
         String pwd;
         try {   // 비밀번호 암호화
-            pwd = new AES128(Secret.USER_INFO_PASSWORD_KEY).encrypt(patchUserReq.getPw()); // 암호화코드
-            patchUserReq.setPw(pwd);
+            pwd = new AES128(Secret.USER_INFO_PASSWORD_KEY).encrypt(patchUserReq.getUser_pw()); // 암호화코드
+            patchUserReq.setUser_pw(pwd);
         } catch (Exception ignored) { // 암호화가 실패하였을 경우 에러 발생
             throw new BaseException(PASSWORD_ENCRYPTION_ERROR);
         }
@@ -93,4 +84,5 @@ public class UserService {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
 }

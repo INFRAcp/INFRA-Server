@@ -12,8 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 import static com.example.demo.config.BaseResponseStatus.*;
-import static com.example.demo.utils.ValidationRegex.isRegexEmail;
-import static com.example.demo.utils.ValidationRegex.isRegexPhone;
+import static com.example.demo.utils.ValidationRegex.*;
 
 @RestController
 @RequestMapping("/user")
@@ -42,16 +41,25 @@ public class UserController {
     @ResponseBody
     @PostMapping("/sign-up")
     public BaseResponse<PostUserRes> createUser(@RequestBody PostUserReq postUserReq) {
-        if (postUserReq.getId() == null || postUserReq.getPw() == null || postUserReq.getNickname() == null
-                || postUserReq.getEmail() == null || postUserReq.getName() == null || postUserReq.getPhone() == null) {
+        if (postUserReq.getUser_id() == null || postUserReq.getUser_pw() == null || postUserReq.getUser_nickname() == null
+                || postUserReq.getUser_email() == null || postUserReq.getUser_name() == null || postUserReq.getUser_phone() == null) {
             return new BaseResponse<>(POST_USERS_EMPTY_INFO);
         }
 
-        if (!isRegexEmail(postUserReq.getEmail())) {    // 이메일 형식 체크
-            return new BaseResponse<>(POST_USERS_INVALID_EMAIL);
+        if (!isRegexId(postUserReq.getUser_id())) {   // id 형식 체크
+            return new BaseResponse<>(POST_USERS_INVALID_ID);
         }
-        if (!isRegexPhone(postUserReq.getPhone())) {    // 핸드폰 번호 형식 체크
+        if (!isRegexPw(postUserReq.getUser_pw())) {    // 비밀번호 형식 체크
+            return new BaseResponse<>(POST_USERS_INVALID_PW);
+        }
+        if (!isRegexName(postUserReq.getUser_name())) {   // 이름 형식 체크
+            return new BaseResponse<>(POST_USERS_INVALID_NAME);
+        }
+        if (!isRegexPhone(postUserReq.getUser_phone())) {    // 핸드폰 번호 형식 체크
             return new BaseResponse<>(POST_USERS_INVALID_PHONE);
+        }
+        if (!isRegexEmail(postUserReq.getUser_email())) {    // 이메일 형식 체크
+            return new BaseResponse<>(POST_USERS_INVALID_EMAIL);
         }
         try {
             PostUserRes postUserRes = userService.createUser(postUserReq);
@@ -61,6 +69,7 @@ public class UserController {
         }
     }
 
+
     /**
      * 로그인 API
      * [POST] /user/logIn
@@ -68,7 +77,7 @@ public class UserController {
     @ResponseBody
     @PostMapping("/log-in")
     public BaseResponse<PostLoginRes> logIn(@RequestBody PostLoginReq postLoginReq) {
-        if (postLoginReq.getId() == null || postLoginReq.getPw() == null) {
+        if (postLoginReq.getUser_id() == null || postLoginReq.getUser_pw() == null) {
             return new BaseResponse<>(POST_USERS_EMPTY_INFO);
         }
         try {
@@ -79,59 +88,6 @@ public class UserController {
         }
     }
 
-
-    /**
-     * 모든 회원들의  조회 API
-     * [GET] /user
-     * <p>
-     * 또는
-     * <p>
-     * 해당 닉네임을 같는 유저들의 정보 조회 API
-     * [GET] /user? NickName=
-     */
-    //Query String
-    @ResponseBody   // return되는 자바 객체를 JSON으로 바꿔서 HTTP body에 담는 어노테이션.
-    //  JSON은 HTTP 통신 시, 데이터를 주고받을 때 많이 쓰이는 데이터 포맷.
-    @GetMapping("") // (GET) 127.0.0.1:9000/app/users
-    // GET 방식의 요청을 매핑하기 위한 어노테이션
-    public BaseResponse<List<GetUserRes>> getUsers(@RequestParam(required = false) String nickname) {
-        //  @RequestParam은, 1개의 HTTP Request 파라미터를 받을 수 있는 어노테이션(?뒤의 값). default로 RequestParam은 반드시 값이 존재해야 하도록 설정되어 있지만, (전송 안되면 400 Error 유발)
-        //  지금 예시와 같이 required 설정으로 필수 값에서 제외 시킬 수 있음
-        //  defaultValue를 통해, 기본값(파라미터가 없는 경우, 해당 파라미터의 기본값 설정)을 지정할 수 있음
-        try {
-            if (nickname == null) { // query string인 nickname이 없을 경우, 그냥 전체 유저정보를 불러온다.
-                List<GetUserRes> getUsersRes = userProvider.getUsers();
-                return new BaseResponse<>(getUsersRes);
-            }
-            // query string인 nickname이 있을 경우, 조건을 만족하는 유저정보들을 불러온다.
-            List<GetUserRes> getUsersRes = userProvider.getUsersByNickname(nickname);
-            return new BaseResponse<>(getUsersRes);
-        } catch (BaseException exception) {
-            return new BaseResponse<>((exception.getStatus()));
-        }
-    }
-
-    /**
-     * /**
-     * 회원 1명 조회 API
-     * [GET] /user/:userIdx
-     */
-    // Path-variable
-    @ResponseBody
-    @GetMapping("/{userIdx}") // (GET) 127.0.0.1:9000/app/users/:userIdx
-    public BaseResponse<GetUserRes> getUser(@PathVariable("userIdx") int userIdx) {
-        // @PathVariable RESTful(URL)에서 명시된 파라미터({})를 받는 어노테이션, 이 경우 userId값을 받아옴.
-        //  null값 or 공백값이 들어가는 경우는 적용하지 말 것
-        //  .(dot)이 포함된 경우, .을 포함한 그 뒤가 잘려서 들어감
-        // Get Users
-        try {
-            GetUserRes getUserRes = userProvider.getUser(userIdx);
-            return new BaseResponse<>(getUserRes);
-        } catch (BaseException exception) {
-            return new BaseResponse<>((exception.getStatus()));
-        }
-
-    }
 
     /**
      * 비밀번호 변경 API
@@ -145,11 +101,11 @@ public class UserController {
             if (!userId.equals(userIdByJwt)) {
                 return new BaseResponse<>(INVALID_USER_JWT);
             }
-            if (user.getPw() == null) {
+            if (user.getUser_pw() == null) {
                 return new BaseResponse<>(POST_USERS_EMPTY_INFO);
             }
 
-            userService.modifyUserPw(PatchUserReq.builder().id(userId).pw(user.getPw()).build());
+            userService.modifyUserPw(PatchUserReq.builder().user_id(userId).user_pw(user.getUser_pw()).build());
 
             String result = "비밀번호가 성공적으로 변경되었습니다.";
             return new BaseResponse<>(result);
@@ -157,4 +113,25 @@ public class UserController {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
+
+
+    /**
+     * 회원정보조회 API
+     * [POST] /user/{user_id}
+     */
+    @ResponseBody
+    @GetMapping("/{user_id}")
+    public BaseResponse<List<GetUserRes>> getUser(@PathVariable("user_id") String user_id){
+        try {
+            String userIdByJwt = jwtService.getUserId();
+            if(!user_id.equals(userIdByJwt)) {
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
+            List<GetUserRes> getUserRes = userProvider.getUser(user_id);
+            return new BaseResponse<>(getUserRes);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
 }
