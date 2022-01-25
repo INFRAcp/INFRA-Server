@@ -21,7 +21,7 @@ public class ProjectDao {
     //프로젝트 조회
     public List<GetProjectRes> getProjects() {
 
-        String getProjectQuery = "select Project.pj_num, User_id, pj_views, pj_header, pj_field, pj_content, pj_name, pj_subField, pj_progress, pj_endTerm,pj_startTerm, pj_deadline, pj_totalPerson,pj_recruitPerson, pj_time from Project where pj_status = '등록'";
+        String getProjectQuery = "select Project.pj_num, User_id, pj_views, pj_header, pj_field, pj_content, pj_name, pj_subField, pj_progress, pj_endTerm,pj_startTerm, pj_deadline, pj_totalPerson,pj_recruitPerson, pj_time, DATEDIFF(pj_deadline,now()) from Project where pj_status = '등록'";
         return this.jdbcTemplate.query(getProjectQuery,
                 (rs, rowNum) -> new GetProjectRes(
                         rs.getString("pj_header"),
@@ -30,14 +30,15 @@ public class ProjectDao {
                         rs.getString("pj_progress"),
                         rs.getString("pj_deadline"),
                         rs.getInt("pj_totalPerson"),
-                        rs.getInt("pj_recruitPerson")
-                )
-        );
+                        rs.getInt("pj_recruitPerson"),
+                        "모집중",
+                        rs.getInt("DATEDIFF(pj_deadline,now())")
+        ));
     }
 
     //검색 프로젝트 조회
     public List<GetProjectRes> getProjectsBySearch(String search) {
-        String getProjectsBySearchQuery = "select distinct pj_header, pj_field, pj_name, pj_progress, pj_deadline, pj_totalPerson, pj_recruitPerson from Project, Pj_keyword where pj_name like ? or pj_content like ? or keyword like ? or pj_subfield like ?";
+        String getProjectsBySearchQuery = "select distinct pj_header, pj_field, pj_name, pj_progress, pj_deadline, pj_totalPerson, pj_recruitPerson, DATEDIFF(pj_deadline,now()) from Project, Pj_keyword where pj_name like ? or pj_content like ? or keyword like ? or pj_subfield like ?";
         String getProjectsBySearchParams = '%' + search + '%';
 
         return this.jdbcTemplate.query(getProjectsBySearchQuery,
@@ -48,7 +49,9 @@ public class ProjectDao {
                         rs.getString("pj_progress"),
                         rs.getString("pj_deadline"),
                         rs.getInt("pj_totalPerson"),
-                        rs.getInt("pj_recruitPerson")),
+                        rs.getInt("pj_recruitPerson"),
+                        "모집중",
+                        rs.getInt("DATEDIFF(pj_deadline,now())")),
                 getProjectsBySearchParams,
                 getProjectsBySearchParams,
                 getProjectsBySearchParams,

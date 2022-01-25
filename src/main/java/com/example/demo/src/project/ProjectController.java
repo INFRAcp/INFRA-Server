@@ -41,7 +41,14 @@ public class ProjectController {
         try{
             if(search == null){
                 List<GetProjectRes> getProjectRes = projectProvider.getProjects();
-                return new BaseResponse<>(getProjectRes);
+
+                for(int i=0; i<getProjectRes.size(); i++){
+                    if(getProjectRes.get(i).getPj_DaySub() <= 2 && getProjectRes.get(i).getPj_DaySub() >= 0){
+                        getProjectRes.get(i).setPj_recruit("마감임박");
+                    }
+                }
+
+            return new BaseResponse<>(getProjectRes);
             }
             List<GetProjectRes> getProjectRes = projectProvider.getProjectsByKeyword(search);
             return new BaseResponse<>(getProjectRes);
@@ -107,6 +114,7 @@ public class ProjectController {
     @PostMapping("/registration")
     public BaseResponse<PostPjRegisterRes> pjRegistration(@RequestBody PostPjRegisterReq postPjRegisterReq){
         try{
+            PjDateCheck(postPjRegisterReq.getPj_deadline(), postPjRegisterReq.getPj_startTerm(), postPjRegisterReq.getPj_endTerm());
             PjNullCheck(postPjRegisterReq.getPj_header(), postPjRegisterReq.getPj_field(), postPjRegisterReq.getPj_content(), postPjRegisterReq.getPj_name(), postPjRegisterReq.getPj_subField(), postPjRegisterReq.getPj_progress(), postPjRegisterReq.getPj_endTerm(), postPjRegisterReq.getPj_startTerm(), postPjRegisterReq.getPj_deadline(), postPjRegisterReq.getPj_totalPerson());
             PjKeywordCheck(postPjRegisterReq.getKeyword());
             PostPjRegisterRes postPjRegisterRes = projectService.registrationPj(postPjRegisterReq);
@@ -116,7 +124,17 @@ public class ProjectController {
         }
     }
 
-    //프로젝트 오류 값 확인
+    //프로젝트 기한 오류 확인
+    private void PjDateCheck(LocalDate pj_deadline, LocalDate pj_startTerm, LocalDate pj_endTerm) throws BaseException{
+        if (pj_deadline.isBefore(pj_startTerm)){
+            throw new BaseException(POST_PROJECT_DEADLINE_BEFORE_START);
+        }
+        if (pj_endTerm.isBefore(pj_startTerm)){
+            throw new BaseException(POST_PROJECT_END_BEFORE_START);
+        }
+    }
+
+    //프로젝트 null 값 확인
     private void PjNullCheck(String pj_header, String pj_field, String pj_content, String pj_name, String pj_subField, String pj_progress, LocalDate pj_endTerm, LocalDate pj_startTerm, LocalDate pj_deadline, int pj_totalPerson) throws BaseException{
         if(pj_header==null){
             throw new BaseException(POST_PROJECT_EMPTY_HEADER);
@@ -150,7 +168,7 @@ public class ProjectController {
         }
     }
 
-    //키워드 값 확인
+    //키워드 값 확인 프로젝트 5글자, 4개 제한
     private void PjKeywordCheck(String [] keyword) throws BaseException{
         if(keyword.length > 4){
             throw new BaseException(POST_PROJECT_KEYWORD_CNT_EXCEED);
@@ -162,11 +180,13 @@ public class ProjectController {
         }
     }
 
+
     //프로젝트 수정
     @ResponseBody
     @PatchMapping("/modify")
     public BaseResponse<PatchPjModifyRes> pjModify(@RequestBody PatchPjModifyReq patchPjModifyReq){
         try {
+            PjDateCheck(patchPjModifyReq.getPj_deadline(), patchPjModifyReq.getPj_startTerm(), patchPjModifyReq.getPj_endTerm());
             PjNullCheck(patchPjModifyReq.getPj_header(), patchPjModifyReq.getPj_field(), patchPjModifyReq.getPj_content(), patchPjModifyReq.getPj_name(), patchPjModifyReq.getPj_subField(), patchPjModifyReq.getPj_progress(), patchPjModifyReq.getPj_endTerm(), patchPjModifyReq.getPj_startTerm(), patchPjModifyReq.getPj_deadline(), patchPjModifyReq.getPj_totalPerson());
             PjKeywordCheck(patchPjModifyReq.getKeyword());
             PatchPjModifyRes patchPjModifyRes = projectService.pjModify(patchPjModifyReq);
