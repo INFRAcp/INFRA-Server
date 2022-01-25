@@ -226,36 +226,37 @@ public class ProjectController {
     //프로젝트신청한 유저 승인
     @ResponseBody
     @PatchMapping("/approve")
-    public BaseResponse<PatchPjApproveRes> pjApprove(@RequestBody PatchPjApproveReq patchPjApproveReq){
-        try{
+    public BaseResponse<PatchPjApproveRes> pjApprove(@RequestBody PatchPjApproveReq patchPjApproveReq) {
+        try {
             PatchPjApproveRes patchPjApproveRes = projectService.pjApprove(patchPjApproveReq);
             return new BaseResponse<>(patchPjApproveRes);
-        }catch (BaseException exception){
-            return new BaseResponse<>((exception.getStatus()));
-        }
-
-    //프로젝트 신청 현황
-    @ResponseBody
-    @GetMapping("/apply-list")
-    public BaseResponse<List<GetApplyListRes>> pjApplyList(@RequestParam(required = false) String pj_num) {
-        try {
-            List<GetApplyListRes> getApplyListRes = projectProvider.pjApplyList(pj_num);
-            return new BaseResponse<>(getApplyListRes);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
 
-    //본인이 지원한 프로젝트 신청 현황
-    @ResponseBody
-    @PostMapping("/apply-mylist")
-    public BaseResponse<List<PostUserApplyRes>> userApply(@RequestBody PostUserApplyReq postUserApplyReq){
-        try{
-            List<PostUserApplyRes> postUserApplyRes = projectProvider.getUserApply(postUserApplyReq);
-            return new BaseResponse<>(postUserApplyRes);
-        }catch(BaseException exception){
-            return new BaseResponse<>(exception.getStatus());
+        //프로젝트 신청 현황
+        @ResponseBody
+        @GetMapping("/apply-list")
+        public BaseResponse<List<GetApplyListRes>> pjApplyList(@RequestParam(required = false) String pj_num) {
+            try {
+                List<GetApplyListRes> getApplyListRes = projectProvider.pjApplyList(pj_num);
+                return new BaseResponse<>(getApplyListRes);
+            } catch (BaseException exception) {
+                return new BaseResponse<>((exception.getStatus()));
+            }
         }
-    }
 
+        //본인이 지원한 프로젝트 신청 현황
+        @ResponseBody
+        @PostMapping("/apply-mylist")
+        public BaseResponse<List<PostUserApplyRes>> userApply (@RequestBody PostUserApplyReq postUserApplyReq){
+            try {
+                List<PostUserApplyRes> postUserApplyRes = projectProvider.getUserApply(postUserApplyReq);
+                return new BaseResponse<>(postUserApplyRes);
+            } catch (BaseException exception) {
+                return new BaseResponse<>(exception.getStatus());
+            }
+
+    }
 }
