@@ -56,12 +56,7 @@ public class QaDao {
                 getQaByUserIdParam);
     }
 
-    // 해당 qa_num을 갖는 질문 삭제
-    public int deleteQa(int qa_num){
-        String deleteQuary = "delete from QA where qa_num = ?";
 
-        return this.jdbcTemplate.update(deleteQuary, qa_num);
-    }
 
     // 해당 qa_num을 갖는 질문 수정
     public int modifyQa(PatchQaReq patchQaReq){

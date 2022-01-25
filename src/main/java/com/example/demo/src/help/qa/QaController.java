@@ -65,25 +65,7 @@ public class QaController {
         }
     }
 
-    /*
-    * [DELETE] /:qa_num
-    * 해당 qa_num을 갖는 질문 삭제 API
-    * */
 
-    @ResponseBody
-    @DeleteMapping("/{qa_num}")
-
-    public BaseResponse<String> deleteQa(@PathVariable("qa_num") int qa_num){
-        try {
-            qaService.deleteQa(qa_num);
-
-            String result = Integer.toString(qa_num) + "번 질문이 삭제되었습니다.";
-            return new BaseResponse<>(result);
-        }
-        catch (BaseException exception) {
-            return new BaseResponse<>(exception.getStatus());
-        }
-    }
 
     /*
     * [PATCH] /modify/:qa_num
