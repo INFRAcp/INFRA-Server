@@ -1,7 +1,5 @@
 package com.example.demo.src.project;
 
-import com.example.demo.config.BaseException;
-import com.example.demo.config.BaseResponseStatus;
 import com.example.demo.src.project.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -10,7 +8,6 @@ import org.springframework.stereotype.Repository;
 import javax.sql.DataSource;
 import java.sql.Timestamp;
 import java.util.List;
-import java.util.Map;
 
 @Repository
 public class ProjectDao {
@@ -106,7 +103,7 @@ public class ProjectDao {
     }
     //프로젝트에 참여한 팀원들 조회
     public List<PostPjParticipateRes> getTeam(PostPjParticipateReq postPj_participateReq) {
-        String getTeam_Query = "select User_nickname, User_prPhoto from User where User_id in (select User_id from Pj_request where pj_inviteStatus = '승인완료' and pj_num = ?)";
+        String getTeam_Query = "select User_nickname, User_prPhoto from User where User_id in (select User_id from Pj_request where pj_status = '승인완료' and pj_num = ?)";
         Integer getParams = postPj_participateReq.getPj_num();
         return this.jdbcTemplate.query(getTeam_Query,
                 (rs, rowNum) -> new PostPjParticipateRes(
@@ -115,6 +112,7 @@ public class ProjectDao {
                 getParams
                 );
     }
+
     //유저가 조회했던 프로젝트 조회
     public List<PostPjInquiryRes> proInquiry(PostPjInquiryReq postPj_inquiryReq) {
         String getPj_inquiryQuery = "select pj_num, pj_header, pj_views, pj_field, pj_name, pj_subField, pj_progress, pj_deadline, pj_totalPerson, pj_recruitPerson, pj_time from Project where pj_num in (select pj_num from Pj_inquiry where user_id = ?)";
@@ -228,7 +226,6 @@ public class ProjectDao {
         return patchPjModifyReq.getPj_name();
     }
 
-    //프로젝트 삭제
     public String pjDel(DelPjDelReq getPjDelReq) {
         String pjKeowrdDelQuery = "delete from Pj_keyword where pj_num = ?";
         this.jdbcTemplate.update(pjKeowrdDelQuery, getPjDelReq.getPj_num());
@@ -250,5 +247,32 @@ public class ProjectDao {
             this.jdbcTemplate.update(pjApplyQuery, postPjApplyReq.getUser_id(), postPjApplyReq.getPj_num());
             return "신청이 완료되었습니다.";
         }
+    }
+
+    //프로젝트 신청한 유저 승인
+    public String pjApprove(PatchPjApproveReq patchPjApproveReq) {
+        String pjApproveQuery = "update Pj_request set pj_inviteStatus = '승인완료' where user_id = ? and pj_num = ? and pj_inviteStatus = '신청'";
+        Object[] pjApproveParams = new Object[]{
+                patchPjApproveReq.getUser_id(),
+                patchPjApproveReq.getPj_num()
+        };
+        this.jdbcTemplate.update(pjApproveQuery, pjApproveParams);
+
+        return "승인완료";
+    }
+
+    //본인이 지원한 프로젝트 신청 현황
+    public List<PostUserApplyRes> getUserApply(PostUserApplyReq postUserApplyReq) {
+        String getApplyQuery = "select Pj_request.pj_num, pj_inviteStatus, pj_name, pj_views, pj_header from Pj_request, Project where Pj_request.pj_num = Project.pj_num and Pj_request.user_id = ?";
+        String getApplyParams = postUserApplyReq.getUser_id();
+        return this.jdbcTemplate.query(getApplyQuery,
+                (rs, rowNum) -> new PostUserApplyRes(
+                        rs.getInt("pj_num"),
+                        rs.getString("pj_inviteStatus"),
+                        rs.getString("pj_name"),
+                        rs.getInt("pj_views"),
+                        rs.getString("pj_header")),
+                getApplyParams
+        );
     }
 }

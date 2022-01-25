@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
 
+import java.util.List;
+
 import static com.example.demo.config.BaseResponseStatus.*;
 
 @Service
@@ -65,5 +67,14 @@ public class ProjectService {
         }
     }
 
+    //프로젝트 신청한 유저 승인
+    public PatchPjApproveRes pjApprove(PatchPjApproveReq patchPjApproveReq) throws BaseException{
+        try{
+            String PjApprove = projectDao.pjApprove(patchPjApproveReq);
+            return new PatchPjApproveRes(PjApprove);
+        }catch (Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 
 }

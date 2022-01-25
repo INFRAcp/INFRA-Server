@@ -133,5 +133,15 @@ public class ProjectProvider {
         }
     }
 
+    //본인이 지원한 프로젝트 신청 현황
+    public List<PostUserApplyRes> getUserApply(PostUserApplyReq postUserApplyReq) throws BaseException{
+        try{
+            List<PostUserApplyRes> postUserApplyRes = projectDao.getUserApply(postUserApplyReq);
+            return postUserApplyRes;
+        }catch(Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
 
 }
