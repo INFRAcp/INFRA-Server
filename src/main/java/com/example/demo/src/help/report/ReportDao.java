@@ -20,7 +20,7 @@ public class ReportDao {
 
     // [POST] 새로운 신고 등록하기
     public void createReport(PostReportReq postReportReq) {
-        String createReportQuery = "insert into dev_infraDB.User_Report (User_id, ReportedUser_id, rp_category, rp_field, rp_opinion) " +
+        String createReportQuery = "insert into dev_infraDB.User_Report (user_id, reportedUser_id, rp_category, rp_field, rp_opinion) " +
                 "VALUES (?,?,?,?,?)";
         Object[] createReportParams = new Object[]
                 {postReportReq.getUser_id(), postReportReq.getReportedUser_id(), postReportReq.getRp_category(),
@@ -30,20 +30,20 @@ public class ReportDao {
 
     // [POST] 특정 사용자가 신고했던 목록 조회
     public List<PostReportUserRes> getReports(PostReportUserReq postReportUserReq) {
-        String postReportUserQuery = "select * from dev_infraDB.User_Report where User_id = ?";
+        String postReportUserQuery = "select * from dev_infraDB.User_Report where user_id = ?";
         String postReportUserParams = postReportUserReq.getUser_id();
         return this.jdbcTemplate.query(postReportUserQuery,
                 (rs, rowNum) -> new PostReportUserRes(
-                        rs.getString("ReportedUser_id"),
+                        rs.getString("reportedUser_id"),
                         rs.getString("rp_category"),
                         rs.getString("rp_field"),
                         rs.getString("rp_opinion")),
                 postReportUserParams);
     }
 
-    // [Delete] 특정 사용자의 특정 신고글 삭제
+    // [PATCH] 특정 사용자의 특정 신고글 삭제
     public int deleteReport(PostReportDelReq postReportDelReq) throws BaseException {
-        String deleteReportQuery = "delete from dev_infraDB.User_Report where User_id = ? and ReportedUser_id = ?";
+        String deleteReportQuery = "update User_Report set rp_status = '삭제' where user_id = ? and reportedUser_id = ?";
         Object[] deleteReportParams = new Object[]
                 {postReportDelReq.getUser_id(), postReportDelReq.getReportedUser_id()};
         return this.jdbcTemplate.update(deleteReportQuery, deleteReportParams);

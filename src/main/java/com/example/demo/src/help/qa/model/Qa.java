@@ -1,4 +1,4 @@
-package com.example.demo.src.help.report.model;
+package com.example.demo.src.help.qa.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,7 +8,9 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 
-public class PostReportDelRes {
+public class Qa {
+    private int qa_num;
     private String user_id;
-    private String reportedUser_id;
+    private String qa_q;
+    private String qa_a;
 }

@@ -2,15 +2,14 @@ package com.example.demo.src.user;
 
 import com.example.demo.config.BaseException;
 import com.example.demo.config.BaseResponse;
-import com.example.demo.src.user.model.PostLoginReq;
-import com.example.demo.src.user.model.PostLoginRes;
-import com.example.demo.src.user.model.PostUserReq;
-import com.example.demo.src.user.model.PostUserRes;
+import com.example.demo.src.user.model.*;
 import com.example.demo.utils.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 import static com.example.demo.config.BaseResponseStatus.*;
 import static com.example.demo.utils.ValidationRegex.*;
@@ -106,6 +105,51 @@ public class UserController {
             return new BaseResponse<>("사용가능한 아이디입니다.");
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
+    /**
+     * 비밀번호 변경 API
+     * [PATCH] /user/update-pw/:userId
+     */
+    @ResponseBody
+    @PatchMapping("/update-pw/{userId}")
+    public BaseResponse<String> modifyUserName(@PathVariable("userId") String userId, @RequestBody User user) {
+        try {
+            String userIdByJwt = jwtService.getUserId();    //jwt에서 id 추출
+            if (!userId.equals(userIdByJwt)) {
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
+            if (user.getUser_pw() == null) {
+                return new BaseResponse<>(POST_USERS_EMPTY_INFO);
+            }
+
+            userService.modifyUserPw(PatchUserReq.builder().user_id(userId).user_pw(user.getUser_pw()).build());
+
+            String result = "비밀번호가 성공적으로 변경되었습니다.";
+            return new BaseResponse<>(result);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+
+    /**
+     * 회원정보조회 API
+     * [POST] /user/{user_id}
+     */
+    @ResponseBody
+    @GetMapping("/{user_id}")
+    public BaseResponse<List<GetUserRes>> getUser(@PathVariable("user_id") String user_id) {
+        try {
+            String userIdByJwt = jwtService.getUserId();
+            if (!user_id.equals(userIdByJwt)) {
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
+            List<GetUserRes> getUserRes = userProvider.getUser(user_id);
+            return new BaseResponse<>(getUserRes);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
         }
     }
 }

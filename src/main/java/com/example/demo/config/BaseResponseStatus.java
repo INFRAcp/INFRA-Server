@@ -20,7 +20,7 @@ public enum BaseResponseStatus {
     REQUEST_ERROR(false, 2000, "입력값을 확인해주세요."),
     EMPTY_JWT(false, 2001, "JWT를 입력해주세요."),
     INVALID_JWT(false, 2002, "유효하지 않은 JWT입니다."),
-    INVALID_USER_JWT(false, 2003, "권한이 없는 유저의 접근입니다."),
+    INVALID_USER_JWT(false,2003,"권한이 없는 유저의 접근입니다."),
 
     // users
     USERS_EMPTY_USER_ID(false, 2010, "유저 아이디 값을 확인해주세요."),
@@ -39,6 +39,13 @@ public enum BaseResponseStatus {
     POST_USERS_EXISTS_PHONE(false, 2021, "중복된 핸드폰 번호입니다."),
 
 
+
+    // [POST] /report
+    POST_REPORTS_EMPTY_INFO(false, 2501, "신고 접수에 필요한 모든 항목을 작성해주세요."),
+    POST_REPORTS_DELETE_ERROR(false, 2502, "신고 철회 요청에 실패하였습니다."),
+
+    DELETE_FAIL_QA(false, 2511, "질문 삭제 실패"),
+    MODIFY_FAIL_QA(false, 2512, "질문 수정 실패"),
     /**
      * 3000 : Response 오류
      */
@@ -47,7 +54,8 @@ public enum BaseResponseStatus {
 
     // [POST] /users
     DUPLICATED_EMAIL(false, 3013, "중복된 이메일입니다."),
-    FAILED_TO_LOGIN(false, 3014, "없는 아이디거나 비밀번호가 틀렸습니다."),
+    FAILED_TO_LOGIN(false,3014,"없는 아이디거나 비밀번호가 틀렸습니다."),
+
 
 
     /**
@@ -64,6 +72,8 @@ public enum BaseResponseStatus {
     PASSWORD_DECRYPTION_ERROR(false, 4012, "비밀번호 복호화에 실패하였습니다."),
 
 
+    // 5000 : 필요시 만들어서 쓰세요
+
     // 5000 : 프로젝트 관련
     SEARCH_LENGTH_ERROR(false, 5010, "검색어 2글자 이상 입력해주세요."),
 
@@ -77,14 +87,10 @@ public enum BaseResponseStatus {
     POST_PROJECT_EMPTY_END_TERM(false, 5026, "프로젝트 종료 시점을 입력해주세요."),
     POST_PROJECT_EMPTY_START_TERM(false, 5027, "프로젝트 시작 시점을 입력해주세요."),
     POST_PROJECT_EMPTY_DEADLINE(false, 5028, "프로젝트 모집 마감일을 입력해주세요."),
-    POST_PROJECT_EMPTY_TOTAL_PERSON(false, 5029, "프로젝트 모집 인원을 입력해주세요."),
+    POST_PROJECT_EMPTY_TOTAL_PERSON(false, 5029, "프로젝트 모집 인원을 입력해주세요.");
 
     // 6000 : 필요시 만들어서 쓰세요
 
-    // [POST] /report
-    POST_REPORTS_EMPTY_INFO(false, 6011, "신고 접수에 필요한 모든 항목을 작성해주세요."),
-    POST_REPORTS_EMPTY_USERID(false, 6012, "작성 권한이 없습니다. 로그인해주세요."),
-    POST_REPORTS_DELETE_ERROR(false, 6013, "신고 철회 요청에 실패하였습니다.");
 
     private final boolean isSuccess;
     private final int code;

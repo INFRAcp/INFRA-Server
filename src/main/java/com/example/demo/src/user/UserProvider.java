@@ -2,6 +2,7 @@ package com.example.demo.src.user;
 
 import com.example.demo.config.BaseException;
 import com.example.demo.config.secret.Secret;
+import com.example.demo.src.user.model.GetUserRes;
 import com.example.demo.src.user.model.PostLoginReq;
 import com.example.demo.src.user.model.PostLoginRes;
 import com.example.demo.src.user.model.User;
@@ -11,6 +12,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 import static com.example.demo.config.BaseResponseStatus.*;
 
@@ -83,6 +86,16 @@ public class UserProvider {
     public int checkNickname(String nickname) throws BaseException {
         try {
             return userDao.checkNickname(nickname);
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+    
+    // 회원 정보 조회
+    public List<GetUserRes> getUser(String user_id) throws BaseException {
+        try {
+            List<GetUserRes> getUserRes = userDao.getUser(user_id);
+            return getUserRes;
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }

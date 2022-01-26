@@ -1,15 +1,13 @@
 package com.example.demo.src.user;
 
 
-import com.example.demo.src.user.model.PatchUserReq;
-import com.example.demo.src.user.model.PostLoginReq;
-import com.example.demo.src.user.model.PostUserReq;
-import com.example.demo.src.user.model.User;
+import com.example.demo.src.user.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
+import java.util.List;
 
 @Repository
 public class UserDao {
@@ -50,7 +48,7 @@ public class UserDao {
 
     // 핸드폰 번호 확인
     public int checkPhone(String phone) {
-        String checkPhoneQuery = "select exists(select user_phone from User where user_phone = ?)";
+        String checkPhoneQuery = "select exists(select User_Phone from User where User_phone = ?)";
         return this.jdbcTemplate.queryForObject(checkPhoneQuery, int.class, phone);
     }
 
@@ -70,5 +68,23 @@ public class UserDao {
         return this.jdbcTemplate.queryForObject(getPwdQuery,
                 (rs, rowNum) -> User.builder().user_id(rs.getString("user_id")).
                         user_pw(rs.getString("user_pw")).build(), getPwdParams);
+    }
+
+    // 회원정보 조회
+    public List<GetUserRes> getUser(String user_id) {
+        String getUserQuery = "select user_id, user_nickname, user_phone, user_email, user_name, user_prPhoto, user_prProfile" +
+                " from User where user_id = ?";
+        String getUserParams = user_id;
+        return this.jdbcTemplate.query(getUserQuery,
+                (rs, rowNum) -> new GetUserRes(
+                        rs.getString("user_id"),
+                        //rs.getString("user_pw"),
+                        rs.getString("user_nickname"),
+                        rs.getString("user_phone"),
+                        rs.getString("user_email"),
+                        rs.getString("user_name"),
+                        rs.getString("user_prPhoto"),
+                        rs.getString("user_prProfile")),
+        getUserParams);
     }
 }
