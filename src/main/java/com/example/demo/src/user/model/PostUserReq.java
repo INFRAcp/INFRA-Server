@@ -7,12 +7,10 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PostUserReq {
-    private String id;
-    private String pw;
-    private String nickname;
-    private String phone;
-    private String email;
-    private String name;
-    private String prPhoto;
-    private String prProfile;
+    private String user_id;
+    private String user_pw;
+    private String user_nickname;
+    private String user_phone;
+    private String user_email;
+    private String user_name;
 }

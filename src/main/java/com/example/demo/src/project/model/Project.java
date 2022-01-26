@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class Project {
     private int pj_num;
-    private String User_id;
+    private String user_id;
     private int pj_views;
     private String pj_header;
     private String pj_field;
@@ -20,8 +20,8 @@ public class Project {
     private String pj_subField;
     private String pj_progress;
     private String pj_deadline;
-    private int pj_total_person;
-    private int pj_recruit_person;
+    private int pj_totalPerson;
+    private int pj_recruitPerson;
     private String pj_time;
 
 }

@@ -13,6 +13,11 @@ public enum BaseResponseStatus {
     SUCCESS(true, 1000, "요청에 성공하였습니다."),
 
 
+    // x300 : 프로젝트 관련
+    SEARCH_LENGTH_ERROR(false, 1300, "검색어 2글자 이상 입력해주세요."),
+
+
+
     /**
      * 2000 : Request 오류
      */
@@ -22,19 +27,53 @@ public enum BaseResponseStatus {
     INVALID_JWT(false, 2002, "유효하지 않은 JWT입니다."),
     INVALID_USER_JWT(false, 2003, "권한이 없는 유저의 접근입니다."),
 
+
+
     // users
     USERS_EMPTY_USER_ID(false, 2010, "유저 아이디 값을 확인해주세요."),
 
     // [POST] /users
     POST_USERS_EMPTY_EMAIL(false, 2015, "이메일을 입력해주세요."),
     POST_USERS_INVALID_EMAIL(false, 2016, "이메일 형식을 확인해주세요."),
+    POST_USERS_INVALID_ID(false, 2024, "아이디 형식을 확인해주세요"),
+    POST_USERS_INVALID_PW(false, 2022, "비밀번호 형식을 확인해주세요"),
+    POST_USERS_INVALID_NAME(false, 2023, "이름 형식을 확인해주세요"),
     POST_USERS_INVALID_PHONE(false, 2019, "핸드폰 번호 형식을 확인해주세요."),
     POST_USERS_EXISTS_EMAIL(false, 2017, "중복된 이메일입니다."),
     POST_USERS_EMPTY_INFO(false, 2018, "필수 정보가 비어있습니다."),
     POST_USERS_EXISTS_ID(false, 2020, "중복된 아이디입니다."),
     POST_USERS_EXISTS_PHONE(false, 2021, "중복된 핸드폰 번호입니다."),
 
+    //프로젝트 등록시 빈값 에러
+    POST_PROJECT_EMPTY_HEADER(false, 2310, "프로젝트 제목을 입력해주세요."),
+    POST_PROJECT_EMPTY_FIELD(false, 2311, "프로젝트 분야를 입력해주세요."),
+    POST_PROJECT_EMPTY_CONTENT(false, 2312, "프로젝트 내용을 입력해주세요."),
+    POST_PROJECT_EMPTY_NAME(false, 2313, "프로젝트 이름을 입력해주세요."),
+    POST_PROJECT_EMPTY_SUBFIELD(false, 2314, "프로젝트 세부 분야를 입력해주세요."),
+    POST_PROJECT_EMPTY_PROGRESS(false, 2315, "프로젝트 진도를 입력해주세요."),
+    POST_PROJECT_EMPTY_END_TERM(false, 2316, "프로젝트 종료 시점을 입력해주세요."),
+    POST_PROJECT_EMPTY_START_TERM(false, 2317, "프로젝트 시작 시점을 입력해주세요."),
+    POST_PROJECT_EMPTY_DEADLINE(false, 2318, "프로젝트 모집 마감일을 입력해주세요."),
+    POST_PROJECT_EMPTY_TOTAL_PERSON(false, 2319, "프로젝트 모집 인원을 입력해주세요."),
 
+
+    POST_PROJECT_COINCIDE_CHECK(false, 2320,"이미 지원한 프로젝트입니다."),
+
+    //프로젝트 등록시 키워드 글자수 초과
+    POST_PROJECT_KEYWORD_EXCEED(false,2321,"키워드 5글자를 초과하였습니다."),
+    POST_PROJECT_KEYWORD_CNT_EXCEED(false,2322,"키워드 4개를 초과하였습니다."),
+
+    //프로젝트 날짜 오류
+    POST_PROJECT_DEADLINE_BEFORE_START(false,2323,"예상 시작일이 마감일 이전에 있습니다."),
+    POST_PROJECT_END_BEFORE_START(false,2324,"예상 시작일이 예상 종료일보다 이전에 있습니다."),
+
+
+    // [POST] /report
+    POST_REPORTS_EMPTY_INFO(false, 2501, "신고 접수에 필요한 모든 항목을 작성해주세요."),
+    POST_REPORTS_DELETE_ERROR(false, 2502, "신고 철회 요청에 실패하였습니다."),
+
+    DELETE_FAIL_QA(false, 2511, "질문 삭제 실패"),
+    MODIFY_FAIL_QA(false, 2512, "질문 수정 실패"),
     /**
      * 3000 : Response 오류
      */
@@ -43,7 +82,8 @@ public enum BaseResponseStatus {
 
     // [POST] /users
     DUPLICATED_EMAIL(false, 3013, "중복된 이메일입니다."),
-    FAILED_TO_LOGIN(false, 3014, "없는 아이디거나 비밀번호가 틀렸습니다."),
+    FAILED_TO_LOGIN(false,3014,"없는 아이디거나 비밀번호가 틀렸습니다."),
+
 
 
     /**
@@ -57,23 +97,10 @@ public enum BaseResponseStatus {
     MODIFY_FAIL_USERPW(false, 4015, "비밀번호 수정 실패"),
 
     PASSWORD_ENCRYPTION_ERROR(false, 4011, "비밀번호 암호화에 실패하였습니다."),
-    PASSWORD_DECRYPTION_ERROR(false, 4012, "비밀번호 복호화에 실패하였습니다."),
+    PASSWORD_DECRYPTION_ERROR(false, 4012, "비밀번호 복호화에 실패하였습니다.");
 
+    // 5000 : 필요시 만들어서 쓰세요
 
-    // 5000 : 프로젝트 관련
-    SEARCH_LENGTH_ERROR(false, 5010, "검색어 2글자 이상 입력해주세요."),
-
-    //프로젝트 등록시 빈값 에러
-    POST_PROJECT_EMPTY_HEADER(false, 5020, "프로젝트 제목을 입력해주세요."),
-    POST_PROJECT_EMPTY_FIELD(false, 5021, "프로젝트 분야를 입력해주세요."),
-    POST_PROJECT_EMPTY_CONTENT(false, 5022, "프로젝트 내용을 입력해주세요."),
-    POST_PROJECT_EMPTY_NAME(false, 5023, "프로젝트 이름을 입력해주세요."),
-    POST_PROJECT_EMPTY_SUBFIELD(false, 5024, "프로젝트 세부 분야를 입력해주세요."),
-    POST_PROJECT_EMPTY_PROGRESS(false, 5025, "프로젝트 진도를 입력해주세요."),
-    POST_PROJECT_EMPTY_END_TERM(false, 5026, "프로젝트 종료 시점을 입력해주세요."),
-    POST_PROJECT_EMPTY_START_TERM(false, 5027, "프로젝트 시작 시점을 입력해주세요."),
-    POST_PROJECT_EMPTY_DEADLINE(false, 5028, "프로젝트 모집 마감일을 입력해주세요."),
-    POST_PROJECT_EMPTY_TOTAL_PERSON(false, 5029, "프로젝트 모집 인원을 입력해주세요.");
 
     // 6000 : 필요시 만들어서 쓰세요
 

@@ -18,8 +18,12 @@ import lombok.Setter;
  * User 클래스는 스프링에서 사용하는 Objec이다.
  */
 public class GetUserRes {
-    private int userIdx;
-    private String nickname;
-    private String email;
-    private String password;
+    private String user_id;
+    //private String user_pw;
+    private String user_nickname;
+    private String user_phone;
+    private String user_email;
+    private String user_name;
+    private String user_prPhoto;
+    private String user_prProfile;
 }

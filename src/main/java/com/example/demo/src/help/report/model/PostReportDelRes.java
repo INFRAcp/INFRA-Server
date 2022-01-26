@@ -1,4 +1,4 @@
-package com.example.demo.src.user.model;
+package com.example.demo.src.help.report.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,7 +7,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class PostUserRes {
+
+public class PostReportDelRes {
     private String user_id;
-    private String jwt;
+    private String reportedUser_id;
 }

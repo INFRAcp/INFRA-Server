@@ -1,4 +1,4 @@
-package com.example.demo.src.user.model;
+package com.example.demo.src.help.qa.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,7 +7,10 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class PostUserRes {
+
+public class Qa {
+    private int qa_num;
     private String user_id;
-    private String jwt;
+    private String qa_q;
+    private String qa_a;
 }

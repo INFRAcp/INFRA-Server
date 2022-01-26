@@ -1,13 +1,12 @@
-package com.example.demo.src.user.model;
+package com.example.demo.src.project.model;
 
 import lombok.*;
 
-@Builder
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class PatchUserReq {
+//유저가 조회했던 프로젝트 조회 Req
+public class PostPjInquiryReq {
     private String user_id;
-    private String user_pw;
 }

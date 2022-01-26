@@ -1,13 +1,13 @@
-package com.example.demo.src.user.model;
+package com.example.demo.src.help.report.model;
 
 import lombok.*;
 
-@Builder
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class PatchUserReq {
+
+public class PostReportDelReq {
     private String user_id;
-    private String user_pw;
+    private String reportedUser_id;
 }
