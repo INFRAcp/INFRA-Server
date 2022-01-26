@@ -4,7 +4,6 @@ import lombok.*;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.util.List;
 
 @Getter
 @Setter
@@ -21,16 +20,14 @@ public class PostPjRegisterReq {
     private String pj_name=null;
     private String pj_subField=null;
     private String pj_progress=null;
-    private LocalDate pj_end_term=null;
+    private LocalDate pj_endTerm =null;
 
-    private LocalDate pj_start_term=null;
+    private LocalDate pj_startTerm =null;
     private LocalDate pj_deadline=null;
-    private int pj_total_person=0;
-    private int pj_recruit_person;
+    private int pj_totalPerson =0;
+    private int pj_recruitPerson;
     private Timestamp pj_time;
+    private String pj_status;
 
-    private String keyword1 = null;
-    private String keyword2 = null;
-    private String keyword3 = null;
-    private String keyword4 = null;
+    private String [] keyword;
 }

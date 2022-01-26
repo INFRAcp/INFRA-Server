@@ -7,6 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class PostPjRegisterRes {
-    private String pj_name;
+public class GetPjKeywordRes {
+    private int pj_num;
+    private String keyword;
 }

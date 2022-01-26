@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @AllArgsConstructor
-public class PostPj_likeRes {
+public class PostPjLikeRes {
     private int pj_num;
     private String pj_header;
     private int pj_views;
@@ -19,8 +19,8 @@ public class PostPj_likeRes {
     private String pj_subField;
     private String pj_progress;
     private String pj_deadline;
-    private int pj_total_person;
-    private int pj_recruit_person;
+    private int pj_totalPerson;
+    private int pj_recruitPerson;
     private String pj_time;
 
 }
