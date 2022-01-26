@@ -1,7 +1,10 @@
 package com.example.demo.src.user;
 
 
-import com.example.demo.src.user.model.*;
+import com.example.demo.src.user.model.PatchUserReq;
+import com.example.demo.src.user.model.PostLoginReq;
+import com.example.demo.src.user.model.PostUserReq;
+import com.example.demo.src.user.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -48,7 +51,7 @@ public class UserDao {
 
     // 핸드폰 번호 확인
     public int checkPhone(String phone) {
-        String checkPhoneQuery = "select exists(select user_phone from User where user_phone = ?)";
+        String checkPhoneQuery = "select exists(select User_Phone from User where User_phone = ?)";
         return this.jdbcTemplate.queryForObject(checkPhoneQuery, int.class, phone);
     }
 

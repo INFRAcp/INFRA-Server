@@ -91,6 +91,8 @@ public class UserProvider {
         }
     }
 
+    // nickname 중복 체크
+    public int checkNickname(String nickname) throws BaseException {
     // 회원정보 조회(Get)
     public List<GetUserRes> getUser(String user_id) throws BaseException {
         try {
