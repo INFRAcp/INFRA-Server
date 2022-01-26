@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class PostPj_inquiryRes {
+public class PostPjInquiryRes {
     private int pj_num;
     private String pj_header;
     private int pj_views;
@@ -16,7 +16,7 @@ public class PostPj_inquiryRes {
     private String pj_subField;
     private String pj_progress;
     private String pj_deadline;
-    private int pj_total_person;
-    private int pj_recruit_person;
+    private int pj_totalPerson;
+    private int pj_recruitPerson;
     private String pj_time;
 }
