@@ -7,6 +7,6 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class PostPjRegisterRes {
-    private String pj_name;
+public class PatchPjApproveRes {
+    private String pj_inviteStatus;
 }

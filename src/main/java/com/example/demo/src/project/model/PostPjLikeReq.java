@@ -6,6 +6,6 @@ import lombok.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class PostPj_likeReq {
-    private String User_id;
+public class PostPjLikeReq {
+    private String user_id;
 }

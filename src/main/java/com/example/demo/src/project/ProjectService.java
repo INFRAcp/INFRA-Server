@@ -1,16 +1,14 @@
 package com.example.demo.src.project;
 
 import com.example.demo.config.BaseException;
-import com.example.demo.config.BaseResponseStatus;
-import com.example.demo.src.project.model.PatchPjModifyReq;
-import com.example.demo.src.project.model.PatchPjModifyRes;
-import com.example.demo.src.project.model.PostPjRegisterReq;
-import com.example.demo.src.project.model.PostPjRegisterRes;
+import com.example.demo.src.project.model.*;
 import com.example.demo.utils.JwtService;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
+
+import java.util.List;
 
 import static com.example.demo.config.BaseResponseStatus.*;
 
@@ -32,8 +30,8 @@ public class ProjectService {
     //프로젝트 등록
     public PostPjRegisterRes registrationPj(PostPjRegisterReq postPjRegisterReq) throws BaseException{
         try{
-            String Pj_registerSucese = projectDao.registrationPj(postPjRegisterReq);
-            return new PostPjRegisterRes(Pj_registerSucese);
+            String pjRegisterSucese = projectDao.pjRegistration(postPjRegisterReq);
+            return new PostPjRegisterRes(pjRegisterSucese);
         }catch (Exception exception){
             throw new BaseException(DATABASE_ERROR);
         }
@@ -48,4 +46,35 @@ public class ProjectService {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
+    //프로젝트 삭제
+    public DelPjDelRes pjDel(DelPjDelReq getPjDelReq) throws BaseException{
+        try {
+            String pjDel = projectDao.pjDel(getPjDelReq);
+            return new DelPjDelRes(pjDel);
+        }catch (Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    //프로젝트 지원
+    public PostPjApplyRes pjApply(PostPjApplyReq postPjApplyReq) throws BaseException{
+        try {
+            String pjApplyName = projectDao.pjApply(postPjApplyReq);
+            return new PostPjApplyRes(pjApplyName);
+        }catch (Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    //프로젝트 신청한 유저 승인
+    public PatchPjApproveRes pjApprove(PatchPjApproveReq patchPjApproveReq) throws BaseException{
+        try{
+            String PjApprove = projectDao.pjApprove(patchPjApproveReq);
+            return new PatchPjApproveRes(PjApprove);
+        }catch (Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
 }
