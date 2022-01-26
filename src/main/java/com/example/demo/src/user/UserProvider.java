@@ -90,10 +90,8 @@ public class UserProvider {
             throw new BaseException(DATABASE_ERROR);
         }
     }
-
-    // nickname 중복 체크
-    public int checkNickname(String nickname) throws BaseException {
-    // 회원정보 조회(Get)
+    
+    // 회원 정보 조회
     public List<GetUserRes> getUser(String user_id) throws BaseException {
         try {
             List<GetUserRes> getUserRes = userDao.getUser(user_id);
