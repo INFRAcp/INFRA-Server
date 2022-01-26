@@ -44,20 +44,20 @@ public class QaController {
     @ResponseBody
     @GetMapping("")
 
-    public BaseResponse<List<GetQaRes>> getQa(@RequestParam(required = false) String user){
+    public BaseResponse<List<GetQaRes>> getQa(@RequestParam(required = false) String user_id){
         try {
             // Query String (user_id) 가 없을 경우 -> 전체 질문을 가져옴
-            if (user == null){
+            if (user_id == null){
                 List<GetQaRes> getQaRes = qaProvider.getQa();
                 return new BaseResponse<>(getQaRes);
             }
             // Query String (user_id) 가 있을 경우 -> User_id에 맞는 질문을 가져옴
             // jwt
             String userIdByJwt = jwtService.getUserId();
-            if(!user.equals(userIdByJwt)) {
+            if(!user_id.equals(userIdByJwt)) {
                 return new BaseResponse<>(INVALID_USER_JWT);
             }
-            List<GetQaRes> getQaRes = qaProvider.getQaByUser_id(user);
+            List<GetQaRes> getQaRes = qaProvider.getQaByUser_id(user_id);
             return new BaseResponse<>(getQaRes);
         }
         catch (BaseException exception){
@@ -65,31 +65,29 @@ public class QaController {
         }
     }
 
-
-
     /*
     * [PATCH] /modify/:qa_num
     * 해당 qa_num을 갖는 질문 수정 API
     * */
 
     @ResponseBody
-    @PatchMapping("/modify/{num}")
+    @PatchMapping("/modify/{qa_num}")
 
-    public BaseResponse<GetQaRes> modifyQa(@PathVariable("num") int num, @RequestBody Qa qa){
+    public BaseResponse<GetQaRes> modifyQa(@PathVariable("qa_num") int qa_num, @RequestBody Qa qa){
         try {
             // jwt
             String userIdByJwt = jwtService.getUserId();
-            GetQaRes getQaRes = qaProvider.getQaByQaNum(num);
+            GetQaRes getQaRes = qaProvider.getQaByQaNum(qa_num);
 
             if(!getQaRes.getUser_id().equals(userIdByJwt)) {
                 return new BaseResponse<>(INVALID_USER_JWT);
             }
 
-            PatchQaReq patchQaReq = new PatchQaReq(num, qa.getQa_q());
+            PatchQaReq patchQaReq = new PatchQaReq(qa_num, qa.getQa_q());
             qaService.modifyQa(patchQaReq);
 
             // 반영된 이후 getQaRes를 받아옴
-            GetQaRes getQaRes2 = qaProvider.getQaByQaNum(num);
+            GetQaRes getQaRes2 = qaProvider.getQaByQaNum(qa_num);
             return new BaseResponse<>(getQaRes2);
         }
         catch (BaseException exception){
@@ -127,22 +125,22 @@ public class QaController {
      * */
 
     @ResponseBody
-    @PatchMapping("/del/{num}")
+    @PatchMapping("/del/{qa_num}")
 
-    public BaseResponse<GetQaRes> deleteQa2(@PathVariable("num") int num){
+    public BaseResponse<GetQaRes> deleteQa2(@PathVariable("qa_num") int qa_num){
         try {
             // jwt
             String userIdByJwt = jwtService.getUserId();
-            GetQaRes getQaRes = qaProvider.getQaByQaNum(num);
+            GetQaRes getQaRes = qaProvider.getQaByQaNum(qa_num);
 
             if(!getQaRes.getUser_id().equals(userIdByJwt)) {
                 return new BaseResponse<>(INVALID_USER_JWT);
             }
 
-            qaService.modifyQa2(num);
+            qaService.modifyQa2(qa_num);
 
             // 반영된 이후 getQaRes를 받아옴
-            GetQaRes getQaRes2 = qaProvider.getQaByQaNum(num);
+            GetQaRes getQaRes2 = qaProvider.getQaByQaNum(qa_num);
             return new BaseResponse<>(getQaRes2);
         }
         catch (BaseException exception){

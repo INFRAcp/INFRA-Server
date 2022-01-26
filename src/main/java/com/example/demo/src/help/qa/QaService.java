@@ -51,9 +51,9 @@ public class QaService {
     }
 
     // 해당 qa_num을 갖는 질문 삭제
-    public void modifyQa2(int num) throws BaseException{
+    public void modifyQa2(int qa_num) throws BaseException{
         try {
-            int result = qaDao.modifyQa2(num);
+            int result = qaDao.modifyQa2(qa_num);
             if (result == 0) {
                 throw new BaseException(DELETE_FAIL_QA);
             }
