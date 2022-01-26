@@ -26,9 +26,14 @@ public class QaService {
         this.qaProvider = qaProvider;
     }
 
-
-
-    // 해당 qa_num을 갖는 질문 수정
+    /**
+     * 해당 qa_num을 갖는 질문 수정
+     *
+     * @param  PatchQaReq (qa_num, qa_q)
+     * @return
+     * @throws BaseException
+     * @author shinhyeon
+     */
     public void modifyQa(PatchQaReq patchQaReq) throws BaseException{
         try {
             int result = qaDao.modifyQa(patchQaReq);
@@ -40,7 +45,14 @@ public class QaService {
         }
     }
 
-    // qa 등록
+    /**
+     * qa 등록
+     *
+     * @param  PostQaReq(user_id, qa_q)
+     * @return
+     * @throws BaseException
+     * @author shinhyeon
+     */
     @Transactional
     public void uploadQa(PostQaReq postQaReq) throws BaseException{
         try {
@@ -50,7 +62,14 @@ public class QaService {
         }
     }
 
-    // 해당 qa_num을 갖는 질문 삭제
+    /**
+     * 질문 삭제
+     *
+     * @param  qa_num
+     * @return
+     * @throws BaseException
+     * @author shinhyeon
+     */
     public void modifyQa2(int qa_num) throws BaseException{
         try {
             int result = qaDao.modifyQa2(qa_num);

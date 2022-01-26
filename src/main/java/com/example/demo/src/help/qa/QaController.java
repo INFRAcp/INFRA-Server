@@ -33,13 +33,14 @@ public class QaController {
         this.jwtService = jwtService;
     }
 
-    /*
-    * [GET]
-    * 모든 질문 조회 API
-    *
-    * [GET] /? user=
-    * 해당 user(id)를 갖는 질문 조회 API
-    * */
+    /**
+     * 모든 질문 조회 API
+     * [GET] /qa?user=
+     *
+     * @param user_id
+     * @return List<질문 번호, 아이디, 질문, 답변, 질문한 시간, 답변한 시간, status>
+     * @author shinhyeon
+     */
 
     @ResponseBody
     @GetMapping("")
@@ -65,10 +66,14 @@ public class QaController {
         }
     }
 
-    /*
-    * [PATCH] /modify/:qa_num
-    * 해당 qa_num을 갖는 질문 수정 API
-    * */
+    /**
+     * [PATCH] qa/modify/:qa_num
+     * 해당 qa_num을 갖는 질문 수정 API
+     *
+     * @param qa_num
+     * @param qa
+     * @return 질문 번호, 아이디, 질문, 답변, 질문한 시간, 답변한 시간, status
+     */
 
     @ResponseBody
     @PatchMapping("/modify/{qa_num}")
@@ -95,10 +100,14 @@ public class QaController {
         }
     }
 
-    /*
-    * [POST]
-    * 질문 등록 API
-    * */
+    /**
+     * [POST] /qa
+     * 질문 등록 API
+     *
+     * @param postQaReq(user_id, qa_q)
+     * @return
+     * @author shinhyeon
+     */
 
     @ResponseBody
     @PostMapping("")
@@ -119,10 +128,14 @@ public class QaController {
         }
     }
 
-    /*
+    /**
      * [PATCH] /del/:qa_num
      * 해당 qa_num을 갖는 질문 삭제 API
-     * */
+     *
+     * @param qa_num
+     * @return List<질문 번호, 아이디, 질문, 답변, 질문한 시간, 답변한 시간, status>
+     * @author shinhyeon
+     */
 
     @ResponseBody
     @PatchMapping("/del/{qa_num}")
