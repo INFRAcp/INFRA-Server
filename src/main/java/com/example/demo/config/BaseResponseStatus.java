@@ -43,8 +43,11 @@ public enum BaseResponseStatus {
     POST_USERS_EMPTY_INFO(false, 2018, "필수 정보가 비어있습니다."),
     POST_USERS_EXISTS_ID(false, 2020, "중복된 아이디입니다."),
     POST_USERS_EXISTS_PHONE(false, 2021, "중복된 핸드폰 번호입니다."),
+    POST_USERS_EXISTS_NICKNAME(false, 2022, "중복된 닉네임 입니다."),
 
-    //프로젝트 등록시 빈값 에러
+
+
+    // Project 프로젝트 등록시 빈값 에러
     POST_PROJECT_EMPTY_HEADER(false, 2310, "프로젝트 제목을 입력해주세요."),
     POST_PROJECT_EMPTY_FIELD(false, 2311, "프로젝트 분야를 입력해주세요."),
     POST_PROJECT_EMPTY_CONTENT(false, 2312, "프로젝트 내용을 입력해주세요."),
