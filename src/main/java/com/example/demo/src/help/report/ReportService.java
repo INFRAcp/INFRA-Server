@@ -1,7 +1,7 @@
 package com.example.demo.src.help.report;
 
 import com.example.demo.config.BaseException;
-import com.example.demo.src.help.report.model.PostReportDelReq;
+import com.example.demo.src.help.report.model.PatchReportReq;
 import com.example.demo.src.help.report.model.PostReportReq;
 import com.example.demo.src.help.report.model.PostReportRes;
 import com.example.demo.utils.JwtService;
@@ -29,7 +29,13 @@ public class ReportService {
         this.jwtService = jwtService;
     }
 
-    // [POST] 새로운 신고 등록하기
+
+    /**
+     * 새로운 신고 등록 API
+     * @param postReportReq
+     * @return
+     * @throws BaseException
+     */
     public PostReportRes createReport(PostReportReq postReportReq) throws BaseException {
         try {
             reportDao.createReport(postReportReq);
@@ -41,10 +47,15 @@ public class ReportService {
         }
     }
 
-    // [PATCH] 특정 사용자의 특정 신고글 삭제
-    public int deleteReport(PostReportDelReq postReportDelReq) throws BaseException {
+    /**
+     * 특정 사용자의 특정 신고글 삭제 API
+     * @param patchReportReq
+     * @return
+     * @throws BaseException
+     */
+    public int deleteReport(PatchReportReq patchReportReq) throws BaseException {
         try {
-            return reportDao.deleteReport(postReportDelReq);
+            return reportDao.deleteReport(patchReportReq);
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }

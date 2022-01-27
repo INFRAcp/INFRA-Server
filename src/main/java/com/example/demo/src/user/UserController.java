@@ -91,6 +91,7 @@ public class UserController {
      * ID 중복 체크 API
      * [GET] /user/valid-id/:user_id
      */
+
     @ResponseBody
     @GetMapping("/valid-id/{user_id}")
     public BaseResponse<String> validId(@PathVariable("user_id") String user_id) {
@@ -133,10 +134,13 @@ public class UserController {
         }
     }
 
-
     /**
      * 회원정보조회 API
      * [POST] /user/{user_id}
+     *
+     * @param user_id
+     * @return
+     * @author yewon
      */
     @ResponseBody
     @GetMapping("/{user_id}")
@@ -152,4 +156,29 @@ public class UserController {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
+
+    /**
+     * 회원탈퇴  API
+     * [PATCH] /user/{user_id}
+     *
+     * @param user_id
+     * @return
+     * @author yewon
+     */
+    @ResponseBody
+    @PatchMapping("/{user_id}")
+    public BaseResponse<String> delUser(@PathVariable("user_id") String user_id) {
+        try {
+            String userIdByJwt = jwtService.getUserId();
+            if (!user_id.equals(userIdByJwt)) {
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
+            userService.delUser(user_id);
+            String result = "탈퇴가 정상적으로 처리되었습니다.";
+            return new BaseResponse<>(result);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
 }

@@ -82,7 +82,13 @@ public class UserProvider {
         }
     }
 
-    // nickname 중복 체크
+
+    /**
+     * nickname 중복 체크
+     * @param nickname
+     * @return int 닉네임 중복여부
+     * @throws BaseException
+     */
     public int checkNickname(String nickname) throws BaseException {
         try {
             return userDao.checkNickname(nickname);
@@ -90,8 +96,15 @@ public class UserProvider {
             throw new BaseException(DATABASE_ERROR);
         }
     }
-    
-    // 회원 정보 조회
+
+
+    /**
+     * 회원정보 조회 API
+     * @param user_id
+     * @return List 아이디, 닉네임, 전화번호, 이메일, 이름
+     * @throws BaseException
+     * @author yewon
+     */
     public List<GetUserRes> getUser(String user_id) throws BaseException {
         try {
             List<GetUserRes> getUserRes = userDao.getUser(user_id);

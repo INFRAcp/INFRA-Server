@@ -85,4 +85,19 @@ public class UserService {
         }
     }
 
+    /**
+     * 회원탈퇴 API
+     * @param user_id
+     * @return
+     * @throws BaseException
+     * @author yewon
+     */
+    public void delUser(String user_id) throws BaseException {
+        try {
+            userDao.delUser(user_id);
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
 }

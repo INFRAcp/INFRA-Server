@@ -18,7 +18,10 @@ public class ReportDao {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
-    // [POST] 새로운 신고 등록하기
+    /**
+     * 새로운 신고 등록 API
+     * @param postReportReq
+     */
     public void createReport(PostReportReq postReportReq) {
         String createReportQuery = "insert into dev_infraDB.User_Report (user_id, reportedUser_id, rp_category, rp_field, rp_opinion) " +
                 "VALUES (?,?,?,?,?)";
@@ -28,12 +31,17 @@ public class ReportDao {
         this.jdbcTemplate.update(createReportQuery, createReportParams);
     }
 
-    // [POST] 특정 사용자가 신고했던 목록 조회
-    public List<PostReportUserRes> getReports(PostReportUserReq postReportUserReq) {
+
+    /**
+     * 특정 사용자가 신고했던 목록 조회 API
+     * @param getReportReq
+     * @return
+     */
+    public List<GetReportRes> getReports(GetReportReq getReportReq) {
         String postReportUserQuery = "select * from dev_infraDB.User_Report where user_id = ?";
-        String postReportUserParams = postReportUserReq.getUser_id();
+        String postReportUserParams = getReportReq.getUser_id();
         return this.jdbcTemplate.query(postReportUserQuery,
-                (rs, rowNum) -> new PostReportUserRes(
+                (rs, rowNum) -> new GetReportRes(
                         rs.getString("reportedUser_id"),
                         rs.getString("rp_category"),
                         rs.getString("rp_field"),
@@ -41,11 +49,17 @@ public class ReportDao {
                 postReportUserParams);
     }
 
-    // [PATCH] 특정 사용자의 특정 신고글 삭제
-    public int deleteReport(PostReportDelReq postReportDelReq) throws BaseException {
+
+    /**
+     * 특정 사용자의 특정 신고글 삭제 API
+     * @param patchReportReq
+     * @return
+     * @throws BaseException
+     */
+    public int deleteReport(PatchReportReq patchReportReq) throws BaseException {
         String deleteReportQuery = "update User_Report set rp_status = '삭제' where user_id = ? and reportedUser_id = ?";
         Object[] deleteReportParams = new Object[]
-                {postReportDelReq.getUser_id(), postReportDelReq.getReportedUser_id()};
+                {patchReportReq.getUser_id(), patchReportReq.getReportedUser_id()};
         return this.jdbcTemplate.update(deleteReportQuery, deleteReportParams);
         }
     }

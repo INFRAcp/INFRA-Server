@@ -70,9 +70,14 @@ public class UserDao {
                         user_pw(rs.getString("user_pw")).build(), getPwdParams);
     }
 
-    // 회원정보 조회
+    /**
+     * 회원정보 조회 API
+     * @param user_id
+     * @return List 아이디,닉네임
+     * @author yewon
+     */
     public List<GetUserRes> getUser(String user_id) {
-        String getUserQuery = "select user_id, user_nickname, user_phone, user_email, user_name, user_prPhoto, user_prProfile" +
+        String getUserQuery = "select user_id, user_nickname, user_phone, user_email, user_name" +
                 " from User where user_id = ?";
         String getUserParams = user_id;
         return this.jdbcTemplate.query(getUserQuery,
@@ -82,9 +87,18 @@ public class UserDao {
                         rs.getString("user_nickname"),
                         rs.getString("user_phone"),
                         rs.getString("user_email"),
-                        rs.getString("user_name"),
-                        rs.getString("user_prPhoto"),
-                        rs.getString("user_prProfile")),
+                        rs.getString("user_name")),
         getUserParams);
+    }
+
+    /**
+     * 회원탈퇴 API
+     * @param user_id
+     * @author yewon
+     */
+    public void delUser(String user_id) {
+        String delUserQuery = "update User set user_status = 'DEL', user_leaveTime = now() where user_id = ?";
+        String delUserParams = user_id;
+        this.jdbcTemplate.update(delUserQuery, delUserParams);
     }
 }
