@@ -31,7 +31,14 @@ public class UserProvider {
     }
 
 
-    // 로그인(password 검사)
+    /**
+     * 로그인 - password 검사
+     *
+     * @param postLoginReq - user_id, user_pw
+     * @return PostLoginRes - user_id, jwt
+     * @throws BaseException
+     * @author yunhee
+     */
     public PostLoginRes logIn(PostLoginReq postLoginReq) throws BaseException {
         if (checkId(postLoginReq.getUser_id()) == 0) {
             throw new BaseException(FAILED_TO_LOGIN);
@@ -55,7 +62,14 @@ public class UserProvider {
         }
     }
 
-    // id 중복 체크
+    /**
+     * id 중복 체크
+     *
+     * @param id
+     * @return int - 이미 존재하면 1, 없으면 0
+     * @throws BaseException
+     * @author yunhee
+     */
     public int checkId(String id) throws BaseException {
         try {
             return userDao.checkId(id);
@@ -64,7 +78,15 @@ public class UserProvider {
         }
     }
 
-    // 이메일 중복 체크
+
+    /**
+     * 이메일 중복 체크
+     *
+     * @param email
+     * @return int - 이미 존재하면 1, 없으면 0
+     * @throws BaseException
+     * @author yunhee
+     */
     public int checkEmail(String email) throws BaseException {
         try {
             return userDao.checkEmail(email);
@@ -73,7 +95,15 @@ public class UserProvider {
         }
     }
 
-    // 핸드폰 번호 체크
+
+    /**
+     * 핸드폰 번호 중복 체크
+     *
+     * @param phone
+     * @return int - 이미 존재하면 1, 없으면 0
+     * @throws BaseException
+     * @author yunhee
+     */
     public int checkPhone(String phone) throws BaseException {
         try {
             return userDao.checkPhone(phone);
@@ -82,7 +112,14 @@ public class UserProvider {
         }
     }
 
-    // nickname 중복 체크
+    /**
+     * nickname 중복 체크
+     *
+     * @param nickname
+     * @return int - 이미 존재하면 1, 없으면 0
+     * @throws BaseException
+     * @author yunhee
+     */
     public int checkNickname(String nickname) throws BaseException {
         try {
             return userDao.checkNickname(nickname);
@@ -90,7 +127,7 @@ public class UserProvider {
             throw new BaseException(DATABASE_ERROR);
         }
     }
-    
+
     // 회원 정보 조회
     public List<GetUserRes> getUser(String user_id) throws BaseException {
         try {

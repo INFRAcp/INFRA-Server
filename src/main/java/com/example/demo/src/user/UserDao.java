@@ -18,7 +18,12 @@ public class UserDao {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
-    // 회원가입
+    /**
+     * 회원가입
+     *
+     * @param postUserReq - id, pw, nickname, phone, email, name
+     * @author yunhee
+     */
     public void createUser(PostUserReq postUserReq) {
         String createUserQuery = "insert into User (user_id, user_pw, user_nickname, user_grade, user_phone, " +
                 "user_email, user_name)" +
@@ -28,31 +33,61 @@ public class UserDao {
         this.jdbcTemplate.update(createUserQuery, createUserParams);
     }
 
-    // id 확인
+    /**
+     * id 증복 체크
+     *
+     * @param id
+     * @return int - 이미 존재하면 1, 없으면 0
+     * @author yunhee
+     */
     public int checkId(String id) {
         String checkIdQuery = "select exists(select user_id from User where user_id = ?)";
         return this.jdbcTemplate.queryForObject(checkIdQuery, int.class, id);
     }
 
-    // nickname 중복 체크
+    /**
+     * nickname 중복 체크
+     *
+     * @param nickname
+     * @return int - 이미 존재하면 1, 없으면 0
+     * @author yunhee
+     */
     public int checkNickname(String nickname) {
         String checkNicknameQuery = "select exists(select user_nickname from User where user_nickname = ?)";
         return this.jdbcTemplate.queryForObject(checkNicknameQuery, int.class, nickname);
     }
 
-    // 이메일 확인
+    /**
+     * email 중복 체크
+     *
+     * @param email
+     * @return int - 이미 존재하면 1, 없으면 0
+     * @author yunhee
+     */
     public int checkEmail(String email) {
         String checkEmailQuery = "select exists(select user_email from User where user_email = ?)";
         return this.jdbcTemplate.queryForObject(checkEmailQuery, int.class, email);
     }
 
-    // 핸드폰 번호 확인
+    /**
+     * 핸드폰 번호 중복 체크
+     *
+     * @param phone
+     * @return int - 이미 존재하면 1, 없으면 0
+     * @author yunhee
+     */
     public int checkPhone(String phone) {
         String checkPhoneQuery = "select exists(select User_Phone from User where User_phone = ?)";
         return this.jdbcTemplate.queryForObject(checkPhoneQuery, int.class, phone);
     }
 
-    // 비밀번호 변경
+    /**
+     * 비밀번호 변경
+     *
+     * @param patchUserReq
+     * @return int - 변경된 행의 수
+     * @author yunhee
+     */
     public int modifyUserPw(PatchUserReq patchUserReq) {
         String modifyUserNameQuery = "update User set user_pw = ? where user_id = ? ";
         Object[] modifyUserNameParams = new Object[]{patchUserReq.getUser_pw(), patchUserReq.getUser_id()};
@@ -60,7 +95,13 @@ public class UserDao {
     }
 
 
-    // 로그인
+    /**
+     * 로그인
+     *
+     * @param postLoginReq - id
+     * @return User - id, pw
+     * @author yunhee
+     */
     public User getPwd(PostLoginReq postLoginReq) {
         String getPwdQuery = "select user_id, user_pw from User where user_id = ?";
         String getPwdParams = postLoginReq.getUser_id();
@@ -85,6 +126,6 @@ public class UserDao {
                         rs.getString("user_name"),
                         rs.getString("user_prPhoto"),
                         rs.getString("user_prProfile")),
-        getUserParams);
+                getUserParams);
     }
 }

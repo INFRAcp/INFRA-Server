@@ -32,7 +32,14 @@ public class UserService {
 
     }
 
-    // 회원가입(POST)
+    /**
+     * 회원가입
+     *
+     * @param postUserReq
+     * @return PostUserRes - user_id, jwt
+     * @throws BaseException
+     * @author yunhee
+     */
     public PostUserRes createUser(PostUserReq postUserReq) throws BaseException {
         if (userProvider.checkId(postUserReq.getUser_id()) == 1) {  // id 중복 확인
             throw new BaseException(POST_USERS_EXISTS_ID);
@@ -65,7 +72,14 @@ public class UserService {
         }
     }
 
-    // 비밀번호 변경(Patch)
+    /**
+     * 비밀번호 변경
+     *
+     * @param patchUserReq
+     * @return
+     * @throws BaseException
+     * @author yunhee
+     */
     public void modifyUserPw(PatchUserReq patchUserReq) throws BaseException {
         String pwd;
         try {   // 비밀번호 암호화

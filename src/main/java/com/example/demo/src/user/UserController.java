@@ -37,6 +37,10 @@ public class UserController {
     /**
      * 회원가입 API
      * [POST] /user/sign-up
+     *
+     * @param postUserReq - id, pw, name, email, phone, nickname
+     * @return BaseResponse
+     * @author yunhee
      */
     @ResponseBody
     @PostMapping("/sign-up")
@@ -72,6 +76,10 @@ public class UserController {
     /**
      * 로그인 API
      * [POST] /user/logIn
+     *
+     * @param postLoginReq - id, pw
+     * @return BaseResponse
+     * @author yunhee
      */
     @ResponseBody
     @PostMapping("/log-in")
@@ -90,6 +98,10 @@ public class UserController {
     /**
      * ID 중복 체크 API
      * [GET] /user/valid-id/:user_id
+     *
+     * @param user_id
+     * @return BaseResponse
+     * @author yunhee
      */
     @ResponseBody
     @GetMapping("/valid-id/{user_id}")
