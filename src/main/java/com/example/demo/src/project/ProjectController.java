@@ -180,7 +180,6 @@ public class ProjectController {
         }
     }
 
-
     //프로젝트 수정
     @ResponseBody
     @PatchMapping("/modify")
@@ -235,28 +234,51 @@ public class ProjectController {
         }
     }
 
-        //프로젝트 신청 현황
-        @ResponseBody
-        @GetMapping("/apply-list")
-        public BaseResponse<List<GetApplyListRes>> pjApplyList(@RequestParam(required = false) String pj_num) {
-            try {
-                List<GetApplyListRes> getApplyListRes = projectProvider.pjApplyList(pj_num);
-                return new BaseResponse<>(getApplyListRes);
-            } catch (BaseException exception) {
-                return new BaseResponse<>((exception.getStatus()));
-            }
+    //프로젝트 신청 현황
+    @ResponseBody
+    @GetMapping("/apply-list")
+    public BaseResponse<List<GetApplyListRes>> pjApplyList(@RequestParam(required = false) String pj_num) {
+        try {
+            List<GetApplyListRes> getApplyListRes = projectProvider.pjApplyList(pj_num);
+            return new BaseResponse<>(getApplyListRes);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
         }
+    }
 
-        //본인이 지원한 프로젝트 신청 현황
-        @ResponseBody
-        @PostMapping("/apply-mylist")
-        public BaseResponse<List<PostUserApplyRes>> userApply (@RequestBody PostUserApplyReq postUserApplyReq){
-            try {
-                List<PostUserApplyRes> postUserApplyRes = projectProvider.getUserApply(postUserApplyReq);
-                return new BaseResponse<>(postUserApplyRes);
-            } catch (BaseException exception) {
-                return new BaseResponse<>(exception.getStatus());
-            }
+    //본인이 지원한 프로젝트 신청 현황
+    @ResponseBody
+    @PostMapping("/apply-mylist")
+    public BaseResponse<List<PostUserApplyRes>> userApply (@RequestBody PostUserApplyReq postUserApplyReq){
+        try {
+            List<PostUserApplyRes> postUserApplyRes = projectProvider.getUserApply(postUserApplyReq);
+            return new BaseResponse<>(postUserApplyRes);
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
 
+    //프로젝트 찜 등록
+    @ResponseBody
+    @PostMapping("/like")
+    public BaseResponse<PostLikeRegisterRes> likeRegister(@RequestBody PostLikeRegisterReq postLikeRegisterReq){
+        try{
+            PostLikeRegisterRes postLikeRegisterRes = projectService.likeRegister(postLikeRegisterReq);
+            return new BaseResponse<>(postLikeRegisterRes);
+        }catch (BaseException exception){
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
+    //프로젝트 찜 삭제
+    @ResponseBody
+    @DeleteMapping("/like-del")
+    public BaseResponse<PostLikeRegisterRes> likeDel(@RequestBody PostLikeRegisterReq postLikeRegisterReq){
+        try{
+            PostLikeRegisterRes postLikeRegisterRes = projectService.likeDel(postLikeRegisterReq);
+            return new BaseResponse<>(postLikeRegisterRes);
+        }catch (BaseException exception){
+            return new BaseResponse<>(exception.getStatus());
+        }
     }
 }

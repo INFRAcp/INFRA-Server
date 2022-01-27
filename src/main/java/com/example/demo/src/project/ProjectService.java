@@ -77,4 +77,23 @@ public class ProjectService {
         }
     }
 
+    //프로젝트 찜 등록
+    public PostLikeRegisterRes likeRegister(PostLikeRegisterReq postLikeRegisterReq) throws BaseException{
+        try{
+            String postLikeRegisterRes = projectDao.likeRegister(postLikeRegisterReq);
+            return new PostLikeRegisterRes(postLikeRegisterRes);
+        }catch (Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    //프로젝트 찜 삭제
+    public PostLikeRegisterRes likeDel(PostLikeRegisterReq postLikeRegisterReq) throws BaseException{
+        try{
+            String postLikeDelRes = projectDao.likeDel(postLikeRegisterReq);
+            return new PostLikeRegisterRes(postLikeDelRes);
+        }catch (Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 }
