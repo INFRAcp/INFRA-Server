@@ -1,5 +1,6 @@
 package com.example.demo.src.project;
 
+import com.example.demo.src.help.qa.model.GetQaRes;
 import com.example.demo.src.project.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -262,4 +263,27 @@ public class ProjectDao {
                 pj_num);
     }
 
+    /**
+     * 팀원 평가 조회
+     *
+     * @param user_id
+     * @return List <평가한 id, 평가 받은 id, 프로젝트 num, 의견, 책임감, 역량, 팀워크, 리더쉽>
+     * @author shinhyeon
+     */
+    public List<GetEvalRes> getEval(String passiveUser_id) {
+        String getEvalQuery = "select * from Pj_evaluate where passiveUser_id = ? order By pj_num";
+
+        return this.jdbcTemplate.query(getEvalQuery,
+                (rs, rowNum)-> new GetEvalRes(
+                        rs.getString("user_id"),
+                        rs.getString("passiveUser_id"),
+                        rs.getInt("pj_num"),
+                        rs.getString("opinion"),
+                        rs.getFloat("responsibility"),
+                        rs.getFloat("ability"),
+                        rs.getFloat("teamwork"),
+                        rs.getFloat("leadership")),
+                passiveUser_id
+        );
+    }
 }

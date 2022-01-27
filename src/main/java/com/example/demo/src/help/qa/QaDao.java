@@ -22,7 +22,7 @@ public class QaDao {
     }
 
     /**
-     * 모든 질문 조회
+     * 모든 질문 조회x
      *
      * @param
      * @return List<질문 번호, 아이디, 질문, 답변, 질문한 시간, 답변한 시간, status></질문>

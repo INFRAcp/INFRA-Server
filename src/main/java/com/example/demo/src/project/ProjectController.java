@@ -2,6 +2,8 @@ package com.example.demo.src.project;
 
 import com.example.demo.config.BaseException;
 import com.example.demo.config.BaseResponse;
+import com.example.demo.src.help.qa.model.GetQaRes;
+import com.example.demo.src.help.qa.model.PostQaReq;
 import com.example.demo.src.project.model.*;
 import com.example.demo.utils.JwtService;
 import org.slf4j.Logger;
@@ -258,5 +260,34 @@ public class ProjectController {
                 return new BaseResponse<>(exception.getStatus());
             }
 
+    }
+
+    /**
+     * [GET] /project/evaluate?user_id=
+     * 팀원 평가 조회 API
+     *
+     * @param user_id
+     * @return List <평가한 id, 평가 받은 id, 프로젝트 num, 의견, 책임감, 역량, 팀워크, 리더쉽>
+     * @author shinhyeon
+     */
+
+    @ResponseBody
+    @GetMapping("/evaluate")
+
+    public BaseResponse<List<GetEvalRes>> getEval(@RequestParam String passiveUser_id){
+        try {
+            // Query String (user_id) 가 받은 평가들만 조회
+            // jwt
+            String userIdByJwt = jwtService.getUserId();
+            if(!passiveUser_id.equals(userIdByJwt)) {
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
+
+            List<GetEvalRes> getEvalRes = projectProvider.getEval(passiveUser_id);
+            return new BaseResponse<>(getEvalRes);
+        }
+        catch (BaseException exception){
+            return new BaseResponse<>(exception.getStatus());
+        }
     }
 }

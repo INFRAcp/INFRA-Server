@@ -118,4 +118,21 @@ public class ProjectProvider {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
+    /**
+     * 팀원 평가 조회
+     *
+     * @param user_id
+     * @return List <평가한 id, 평가 받은 id, 프로젝트 num, 의견, 책임감, 역량, 팀워크, 리더쉽>
+     * @throws BaseException
+     * @author shinhyeon
+     */
+    public List<GetEvalRes> getEval(String passiveUser_id) throws BaseException{
+        try {
+            List<GetEvalRes> getEvalRes = projectDao.getEval(passiveUser_id);
+            return getEvalRes;
+        }catch (Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 }
