@@ -193,7 +193,7 @@ public class UserController {
      * @author yewon
      */
 
-    @GetMapping("/kakao")
+    @GetMapping("/kakao/log-in")
     public String kakaoLogin(@RequestParam("code") String code) throws UnsupportedEncodingException {
         System.out.println("kakao code : " + code);    // 인가코드 리턴
         String access_Token = UserService.getAccessToken(code);     // access_token 가져오기
@@ -210,7 +210,7 @@ public class UserController {
      * @return
      * @author yewon
      */
-    @GetMapping("/kakao/logout")
+    @GetMapping("/kakao/log-out")
     public String logOut(HttpSession session) {
         String access_Token = (String)session.getAttribute("access_Token");
         session.invalidate();
