@@ -1,6 +1,7 @@
 package com.example.demo.src.project;
 
 import com.example.demo.src.help.qa.model.GetQaRes;
+import com.example.demo.src.help.qa.model.PostQaReq;
 import com.example.demo.src.project.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -282,8 +283,57 @@ public class ProjectDao {
                         rs.getFloat("responsibility"),
                         rs.getFloat("ability"),
                         rs.getFloat("teamwork"),
-                        rs.getFloat("leadership")),
+                        rs.getFloat("leadership")
+                ),
                 passiveUser_id
         );
+    }
+
+    /**
+     * 질문 등록
+     *
+     * @param PostEvalReq
+     * @return int
+     * @author shinhyeon
+     */
+
+    public int uploadEval(PostEvalReq postEvalReq) {
+        String uploadEvalQuery = "insert into Pj_evaluate (user_id, passiveUser_id, pj_num, opinion, responsibility, ability, teamwork, leadership) VALUES (?,?,?,?,?,?,?,?)";
+        Object[] uploadEvalParms = new Object[]{
+                postEvalReq.getUser_id(),
+                postEvalReq.getPassiveUser_id(),
+                postEvalReq.getPj_num(),
+                postEvalReq.getOpinion(),
+                postEvalReq.getResponsibility(),
+                postEvalReq.getAbility(),
+                postEvalReq.getTeamwork(),
+                postEvalReq.getLeadership()
+        };
+
+        return this.jdbcTemplate.update(uploadEvalQuery, uploadEvalParms);
+    }
+
+    // 평가하는 인원의 승인 상태 조회
+    public String getPjInviteStatus1(PostEvalReq postEvalReq) {
+        String getPjInviteStatusQuery = "select pj_inviteStatus from Pj_request where user_id = ? and pj_num = ?";
+
+        Object[] getPjInviteStatusParms = new Object[]{
+                postEvalReq.getUser_id(),
+                postEvalReq.getPj_num()
+        };
+
+        return this.jdbcTemplate.queryForObject(getPjInviteStatusQuery, getPjInviteStatusParms, String.class);
+    }
+
+    // 평가받는 인원의 승인 상태 조회
+    public String getPjInviteStatus2(PostEvalReq postEvalReq) {
+        String getPjInviteStatusQuery = "select pj_inviteStatus from Pj_request where user_id = ? and pj_num = ?";
+
+        Object[] getPjInviteStatusParms = new Object[]{
+                postEvalReq.getPassiveUser_id(),
+                postEvalReq.getPj_num()
+        };
+
+        return this.jdbcTemplate.queryForObject(getPjInviteStatusQuery, getPjInviteStatusParms, String.class);
     }
 }

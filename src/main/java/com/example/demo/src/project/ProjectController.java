@@ -290,4 +290,70 @@ public class ProjectController {
             return new BaseResponse<>(exception.getStatus());
         }
     }
+
+    /**
+     * [POST] /project/evaluate
+     * 팀원 평가 등록 API
+     *
+     * @param
+     * @return List <평가한 id, 평가 받은 id, 프로젝트 num, 의견, 책임감, 역량, 팀워크, 리더쉽>
+     * @author shinhyeon
+     */
+
+    @ResponseBody
+    @PostMapping("/evaluate")
+
+    public BaseResponse<String> uploadEval(@RequestBody PostEvalReq postEvalReq){
+        try {
+            // jwt (평가하는 user_id 와 jwt의 id 를 비교)
+            String userIdByJwt = jwtService.getUserId();
+            if(!postEvalReq.getUser_id().equals(userIdByJwt)) {
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
+
+            // 평가 점수 범위 validation
+            EvalScoreCheck(postEvalReq.getResponsibility(), postEvalReq.getAbility(), postEvalReq.getTeamwork(), postEvalReq.getLeadership());
+            // 프로젝트 참여 인원 validation
+            EvalMemberCheck(postEvalReq);
+
+            projectService.uploadEval(postEvalReq);
+
+            return new BaseResponse<>(SUCCESS);
+
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
+    private void EvalScoreCheck(float responsibility, float ability, float teamwork, float leadership) throws BaseException {
+        if(responsibility<0 || responsibility>5){
+            throw new BaseException(POST_PROJECT_EVALUATE_SCORE);
+        }
+        if(ability<0 || ability>5){
+            throw new BaseException(POST_PROJECT_EVALUATE_SCORE);
+        }
+        if(teamwork<0 || teamwork>5){
+            throw new BaseException(POST_PROJECT_EVALUATE_SCORE);
+        }
+        if(leadership<0 || leadership>5){
+            throw new BaseException(POST_PROJECT_EVALUATE_SCORE);
+        }
+    }
+
+    private void EvalMemberCheck(PostEvalReq postEvalReq) throws BaseException {
+        String pj_inviteStatus_user = projectProvider.getPjInviteStatus1(postEvalReq);
+        String pj_inviteStatus_passiveUser = projectProvider.getPjInviteStatus2(postEvalReq);
+
+        if(!pj_inviteStatus_user.equals("승인완료")){
+            throw new BaseException(POST_PROJECT_EVALUATE_MEMBER1);
+        }
+        if(!pj_inviteStatus_passiveUser.equals("승인완료")){
+            throw new BaseException(POST_PROJECT_EVALUATE_MEMBER2);
+        }
+
+    }
+
+    private void EvalMemberCheck2(PostEvalReq postEvalReq) throws BaseException {
+
+    }
 }

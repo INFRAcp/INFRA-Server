@@ -70,6 +70,11 @@ public enum BaseResponseStatus {
     POST_PROJECT_DEADLINE_BEFORE_START(false,2323,"예상 시작일이 마감일 이전에 있습니다."),
     POST_PROJECT_END_BEFORE_START(false,2324,"예상 시작일이 예상 종료일보다 이전에 있습니다."),
 
+    // 팀원 평가
+    // [Post] /evaluate
+    POST_PROJECT_EVALUATE_SCORE(false, 2350,"평가 점수 범위는 0 ~ 5 이어야 합니다."),
+    POST_PROJECT_EVALUATE_MEMBER1(false, 2351,"평가 권한이 없습니다. (프로젝트에 참여해야 평가 권한이 주어집니다.)"),
+    POST_PROJECT_EVALUATE_MEMBER2(false, 2352,"해당 프로젝트의 참여 인원이 아닙니다. 프로젝트 번호와 평가 인원의 이름을 확인해주세요."),
 
     // [POST] /report
     POST_REPORTS_EMPTY_INFO(false, 2501, "신고 접수에 필요한 모든 항목을 작성해주세요."),

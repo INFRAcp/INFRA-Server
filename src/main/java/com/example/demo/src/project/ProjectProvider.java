@@ -135,4 +135,24 @@ public class ProjectProvider {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
+    // 평가하는 인원의 승인 상태 조회
+    public String getPjInviteStatus1(PostEvalReq postEvalReq) throws BaseException{
+        try{
+            String pj_inviteStatus = projectDao.getPjInviteStatus1(postEvalReq);
+            return pj_inviteStatus;
+        }catch(Exception exception){
+            throw new BaseException(POST_PROJECT_EVALUATE_MEMBER1);
+        }
+    }
+
+    // 평가받는 인원의 승인 상태 조회
+    public String getPjInviteStatus2(PostEvalReq postEvalReq) throws BaseException{
+        try{
+            String pj_inviteStatus = projectDao.getPjInviteStatus2(postEvalReq);
+            return pj_inviteStatus;
+        }catch(Exception exception){
+            throw new BaseException(POST_PROJECT_EVALUATE_MEMBER2);
+        }
+    }
 }

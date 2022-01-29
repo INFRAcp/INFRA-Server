@@ -1,6 +1,7 @@
 package com.example.demo.src.project;
 
 import com.example.demo.config.BaseException;
+import com.example.demo.src.help.qa.model.PostQaReq;
 import com.example.demo.src.project.model.*;
 import com.example.demo.utils.JwtService;
 import org.slf4j.LoggerFactory;
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 import static com.example.demo.config.BaseResponseStatus.*;
@@ -77,4 +79,20 @@ public class ProjectService {
         }
     }
 
+    /**
+     * 팀원 평가 등록
+     *
+     * @param  PostEvalReq
+     * @return
+     * @throws BaseException
+     * @author shinhyeon
+     */
+    public void uploadEval(PostEvalReq postEvalReq) throws BaseException{
+        try {
+            projectDao.uploadEval(postEvalReq);
+
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 }
