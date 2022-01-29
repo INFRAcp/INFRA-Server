@@ -77,17 +77,16 @@ public class UserDao {
      * @author yewon
      */
     public List<GetUserRes> getUser(String user_id) {
-        String getUserQuery = "select user_id, user_nickname, user_phone, user_email, user_name" +
+        String getUserQuery = "select user_id, user_phone, user_email" +
                 " from User where user_id = ?";
         String getUserParams = user_id;
         return this.jdbcTemplate.query(getUserQuery,
                 (rs, rowNum) -> new GetUserRes(
                         rs.getString("user_id"),
                         //rs.getString("user_pw"),
-                        rs.getString("user_nickname"),
                         rs.getString("user_phone"),
-                        rs.getString("user_email"),
-                        rs.getString("user_name")),
+                        rs.getString("user_email")),
+
         getUserParams);
     }
 
