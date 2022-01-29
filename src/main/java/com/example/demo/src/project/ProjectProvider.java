@@ -122,8 +122,8 @@ public class ProjectProvider {
     /**
      * 팀원 평가 조회
      *
-     * @param user_id
-     * @return List <평가한 id, 평가 받은 id, 프로젝트 num, 의견, 책임감, 역량, 팀워크, 리더쉽>
+     * @param passiveUser_id
+     * @return List <GetEvalRes>
      * @throws BaseException
      * @author shinhyeon
      */
@@ -137,9 +137,9 @@ public class ProjectProvider {
     }
 
     // 평가하는 인원의 승인 상태 조회
-    public String getPjInviteStatus1(PostEvalReq postEvalReq) throws BaseException{
+    public String getPjInviteStatus1(String user_id, Integer pj_num) throws BaseException{
         try{
-            String pj_inviteStatus = projectDao.getPjInviteStatus1(postEvalReq);
+            String pj_inviteStatus = projectDao.getPjInviteStatus1(user_id, pj_num);
             return pj_inviteStatus;
         }catch(Exception exception){
             throw new BaseException(POST_PROJECT_EVALUATE_MEMBER1);
@@ -147,9 +147,9 @@ public class ProjectProvider {
     }
 
     // 평가받는 인원의 승인 상태 조회
-    public String getPjInviteStatus2(PostEvalReq postEvalReq) throws BaseException{
+    public String getPjInviteStatus2(String passiveUser_id, Integer pj_num) throws BaseException{
         try{
-            String pj_inviteStatus = projectDao.getPjInviteStatus2(postEvalReq);
+            String pj_inviteStatus = projectDao.getPjInviteStatus2(passiveUser_id, pj_num);
             return pj_inviteStatus;
         }catch(Exception exception){
             throw new BaseException(POST_PROJECT_EVALUATE_MEMBER2);

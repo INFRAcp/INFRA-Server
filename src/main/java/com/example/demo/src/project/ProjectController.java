@@ -295,8 +295,8 @@ public class ProjectController {
      * [POST] /project/evaluate
      * 팀원 평가 등록 API
      *
-     * @param
-     * @return List <평가한 id, 평가 받은 id, 프로젝트 num, 의견, 책임감, 역량, 팀워크, 리더쉽>
+     * @param PostEvalReq
+     * @return
      * @author shinhyeon
      */
 
@@ -314,7 +314,7 @@ public class ProjectController {
             // 평가 점수 범위 validation
             EvalScoreCheck(postEvalReq.getResponsibility(), postEvalReq.getAbility(), postEvalReq.getTeamwork(), postEvalReq.getLeadership());
             // 프로젝트 참여 인원 validation
-            EvalMemberCheck(postEvalReq);
+            EvalMemberCheck(postEvalReq.getUser_id(), postEvalReq.getPassiveUser_id(), postEvalReq.getPj_num());
 
             projectService.uploadEval(postEvalReq);
 
@@ -325,6 +325,7 @@ public class ProjectController {
         }
     }
 
+    // 평가 점수 범위 validation 함수
     private void EvalScoreCheck(float responsibility, float ability, float teamwork, float leadership) throws BaseException {
         if(responsibility<0 || responsibility>5){
             throw new BaseException(POST_PROJECT_EVALUATE_SCORE);
@@ -340,9 +341,10 @@ public class ProjectController {
         }
     }
 
-    private void EvalMemberCheck(PostEvalReq postEvalReq) throws BaseException {
-        String pj_inviteStatus_user = projectProvider.getPjInviteStatus1(postEvalReq);
-        String pj_inviteStatus_passiveUser = projectProvider.getPjInviteStatus2(postEvalReq);
+    // 프로젝트 참여 인원 validation 함수
+    private void EvalMemberCheck(String user_id, String passiveUser_id, Integer pj_num) throws BaseException {
+        String pj_inviteStatus_user = projectProvider.getPjInviteStatus1(user_id, pj_num);
+        String pj_inviteStatus_passiveUser = projectProvider.getPjInviteStatus2(passiveUser_id, pj_num);
 
         if(!pj_inviteStatus_user.equals("승인완료")){
             throw new BaseException(POST_PROJECT_EVALUATE_MEMBER1);
@@ -353,7 +355,53 @@ public class ProjectController {
 
     }
 
-    private void EvalMemberCheck2(PostEvalReq postEvalReq) throws BaseException {
+    @ResponseBody
+    @PatchMapping("/evaluate/modify")
 
+    public BaseResponse<String> modifyEval(@RequestBody PatchEvalReq patchEvalReq){
+        try{
+            // jwt
+            String userIdByJwt = jwtService.getUserId();
+
+            if(!patchEvalReq.getUser_id().equals(userIdByJwt)) {
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
+
+            // 평가 점수 범위 validation
+            EvalScoreCheck(patchEvalReq.getResponsibility(), patchEvalReq.getAbility(), patchEvalReq.getTeamwork(), patchEvalReq.getLeadership());
+            // 프로젝트 참여 인원 validation
+            EvalMemberCheck(patchEvalReq.getUser_id(), patchEvalReq.getPassiveUser_id(), patchEvalReq.getPj_num());
+
+            projectService.modifyEval(patchEvalReq);
+
+            return new BaseResponse<>(SUCCESS);
+        }
+        catch (BaseException exception){
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
+    @ResponseBody
+    @PatchMapping("/evaluate/del")
+
+    public BaseResponse<String> delEval(@RequestBody PatchEvalDelReq patchEvalDelReq){
+        try{
+            // jwt
+            String userIdByJwt = jwtService.getUserId();
+
+            if(!patchEvalDelReq.getUser_id().equals(userIdByJwt)) {
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
+
+            // 프로젝트 참여 인원 validation
+            EvalMemberCheck(patchEvalDelReq.getUser_id(), patchEvalDelReq.getPassiveUser_id(), patchEvalDelReq.getPj_num());
+
+            projectService.delEval(patchEvalDelReq);
+
+            return new BaseResponse<>(SUCCESS);
+        }
+        catch (BaseException exception){
+            return new BaseResponse<>(exception.getStatus());
+        }
     }
 }

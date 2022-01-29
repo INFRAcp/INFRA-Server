@@ -83,13 +83,31 @@ public class ProjectService {
      * 팀원 평가 등록
      *
      * @param  PostEvalReq
-     * @return
+     * @return x
      * @throws BaseException
      * @author shinhyeon
      */
     public void uploadEval(PostEvalReq postEvalReq) throws BaseException{
         try {
             projectDao.uploadEval(postEvalReq);
+
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    public void modifyEval(PatchEvalReq patchEvalReq) throws BaseException{
+        try {
+            projectDao.modifyEval(patchEvalReq);
+
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    public void delEval(PatchEvalDelReq patchEvalDelReq) throws BaseException{
+        try {
+            projectDao.delEval(patchEvalDelReq);
 
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
