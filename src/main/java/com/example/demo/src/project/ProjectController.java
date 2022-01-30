@@ -52,7 +52,7 @@ public class ProjectController {
                     }
                 }
 
-                return new BaseResponse<>(getProjectRes);
+            return new BaseResponse<>(getProjectRes);
             }
             List<GetProjectRes> getProjectRes = projectProvider.getProjectsByKeyword(search);
             for(int i=0; i<getProjectRes.size(); i++){
@@ -352,5 +352,27 @@ public class ProjectController {
                 return new BaseResponse<>(exception.getStatus());
             }
 
+    //프로젝트 찜 등록
+    @ResponseBody
+    @PostMapping("/like")
+    public BaseResponse<PostLikeRegisterRes> likeRegister(@RequestBody PostLikeRegisterReq postLikeRegisterReq){
+        try{
+            PostLikeRegisterRes postLikeRegisterRes = projectService.likeRegister(postLikeRegisterReq);
+            return new BaseResponse<>(postLikeRegisterRes);
+        }catch (BaseException exception){
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
+    //프로젝트 찜 삭제
+    @ResponseBody
+    @DeleteMapping("/like-del")
+    public BaseResponse<PostLikeRegisterRes> likeDel(@RequestBody PostLikeRegisterReq postLikeRegisterReq){
+        try{
+            PostLikeRegisterRes postLikeRegisterRes = projectService.likeDel(postLikeRegisterReq);
+            return new BaseResponse<>(postLikeRegisterRes);
+        }catch (BaseException exception){
+            return new BaseResponse<>(exception.getStatus());
+        }
     }
 }
