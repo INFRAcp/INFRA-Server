@@ -8,8 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
 
-import java.util.List;
-
 import static com.example.demo.config.BaseResponseStatus.*;
 
 @Service
@@ -27,7 +25,12 @@ public class ProjectService {
         this.jwtService = jwtService;
     }
 
-    //프로젝트 등록
+    /**
+     * 프로젝트 등록
+     * @param postPjRegisterReq
+     * @return PostPjRegisterRes 프로젝트 이름
+     * @author 한규범
+     */
     public PostPjRegisterRes registrationPj(PostPjRegisterReq postPjRegisterReq) throws BaseException{
         try{
             String pjRegisterSucese = projectDao.pjRegistration(postPjRegisterReq);
@@ -37,7 +40,12 @@ public class ProjectService {
         }
     }
 
-    //프로젝트 수정
+    /**
+     *프로젝트 수정
+     * @param patchPjModifyReq
+     * @return PatchPjModifyRes 프로젝트 이름
+     * @author 한규범
+     */
     public PatchPjModifyRes pjModify(PatchPjModifyReq patchPjModifyReq)throws BaseException{
         try {
             String PjModify = projectDao.pjModify(patchPjModifyReq);
@@ -47,17 +55,27 @@ public class ProjectService {
         }
     }
 
-    //프로젝트 삭제
-    public DelPjDelRes pjDel(DelPjDelReq getPjDelReq) throws BaseException{
+    /**
+     * 프로젝트 삭제
+     * @param delPjDelReq
+     * @return DelPjDelRes 결과 메시지
+     * @author 한규범
+     */
+    public DelPjDelRes pjDel(DelPjDelReq delPjDelReq) throws BaseException{
         try {
-            String pjDel = projectDao.pjDel(getPjDelReq);
+            String pjDel = projectDao.pjDel(delPjDelReq);
             return new DelPjDelRes(pjDel);
         }catch (Exception exception){
             throw new BaseException(DATABASE_ERROR);
         }
     }
 
-    //프로젝트 지원
+    /**
+     * 프로젝트 지원
+     * @param postPjApplyReq
+     * @return PostPjApplyRes 완료 메시지
+     * @author 한규범
+     */
     public PostPjApplyRes pjApply(PostPjApplyReq postPjApplyReq) throws BaseException{
         try {
             String pjApplyName = projectDao.pjApply(postPjApplyReq);
@@ -67,7 +85,12 @@ public class ProjectService {
         }
     }
 
-    //프로젝트 신청한 유저 승인
+    /**
+     * 프로젝트신청한 유저 승인
+     * @param patchPjApproveReq
+     * @return PatchPjApproveRes 완료 메시지
+     * @author 윤성식
+     */
     public PatchPjApproveRes pjApprove(PatchPjApproveReq patchPjApproveReq) throws BaseException{
         try{
             String PjApprove = projectDao.pjApprove(patchPjApproveReq);

@@ -38,7 +38,7 @@ public class UserService {
             throw new BaseException(POST_USERS_EXISTS_ID);
         }
         if (userProvider.checkNickname(postUserReq.getUser_nickname()) == 1) {  // nickname 중복 확인
-            throw new BaseException(POST_USERS_EXISTS_NICKNAME);
+//            throw new BaseException(POST_USERS_EXISTS_NICKNAME);
         }
         if (userProvider.checkEmail(postUserReq.getUser_email()) == 1) { // 이메일 중복 확인
             throw new BaseException(POST_USERS_EXISTS_EMAIL);

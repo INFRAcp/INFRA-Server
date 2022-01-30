@@ -74,6 +74,11 @@ public enum BaseResponseStatus {
 
     DELETE_FAIL_QA(false, 2511, "질문 삭제 실패"),
     MODIFY_FAIL_QA(false, 2512, "질문 수정 실패"),
+
+
+
+    POST_SMS_PHONECHECK_ERROE(false, 2601, "해당번호로 이미 가입하였습니다."),
+
     /**
      * 3000 : Response 오류
      */
@@ -100,7 +105,6 @@ public enum BaseResponseStatus {
     PASSWORD_DECRYPTION_ERROR(false, 4012, "비밀번호 복호화에 실패하였습니다.");
 
     // 5000 : 필요시 만들어서 쓰세요
-
 
     // 6000 : 필요시 만들어서 쓰세요
 

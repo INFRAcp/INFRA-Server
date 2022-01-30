@@ -33,8 +33,12 @@ public class ProjectController {
         this.jwtService = jwtService;
     }
 
-
-    //프로젝트 전체 조회
+    /**
+     * 프로젝트 전체, 검색 조회
+     * @param search
+     * @return List 제목, 분야, 이름, 진행, 모집마감일, 전체인원, 모집인원, (모집, 마감임박), 마감 남은 일수
+     * @author 한규범, 윤성식
+     */
     @ResponseBody
     @GetMapping("/inquiry")
     public BaseResponse<List<GetProjectRes>> getProjects(@RequestParam(required = false) String search){
@@ -48,16 +52,26 @@ public class ProjectController {
                     }
                 }
 
-            return new BaseResponse<>(getProjectRes);
+                return new BaseResponse<>(getProjectRes);
             }
             List<GetProjectRes> getProjectRes = projectProvider.getProjectsByKeyword(search);
+            for(int i=0; i<getProjectRes.size(); i++){
+                if(getProjectRes.get(i).getPj_DaySub() <= 2 && getProjectRes.get(i).getPj_DaySub() >= 0){
+                    getProjectRes.get(i).setPj_recruit("마감임박");
+                }
+            }
             return new BaseResponse<>(getProjectRes);
         } catch (BaseException exception){
             return new BaseResponse<>((exception.getStatus()));
         }
     }
 
-    //프로젝트 키워드 조회
+    /**
+     * 프로젝트 키워드 조회
+     * @param search
+     * @return List 프로젝트 번호, 키워드
+     * @author 한규범, 윤성식
+     */
     @ResponseBody
     @GetMapping("/keyword")
     public BaseResponse<List<GetPjKeywordRes>> getPj_keywords(@RequestParam(required = false) String search){
@@ -73,7 +87,12 @@ public class ProjectController {
         }
     }
 
-    //유저가 찜한 프로젝트 조회
+    /**
+     * 유저가 찜한 프로젝트 조회
+     * @param postPj_likeReq
+     * @return List 프로젝트 번호, 제목, 조회수, 분야, 이름, 세부분야, 진행상황, 모집마감일, 총 모집인원, 현재 모집인원, 게시일
+     * @author 한규범
+     */
     @ResponseBody
     @PostMapping("/likePj")
     public BaseResponse<List<PostPjLikeRes>> like(@RequestBody PostPjLikeReq postPj_likeReq){
@@ -85,7 +104,13 @@ public class ProjectController {
         }
     }
 
-    //유저가 조회했던 프로젝트 조회
+
+    /**
+     * 유저가 조회했던 프로젝트 조회
+     * @param postPj_inquiryReq
+     * @return List 프로젝트 번호, 프로젝트 제목, 조회수, 프로젝트 분야, 이름, 세부분야, 진행, 마감일, 전체인원, 모집 중인 인원, 프로젝트 등록 시간
+     * @author 한규범
+     */
     @ResponseBody
     @PostMapping("/project-inquiry")
     public BaseResponse<List<PostPjInquiryRes>> proInquiry(@RequestBody PostPjInquiryReq postPj_inquiryReq){
@@ -97,7 +122,12 @@ public class ProjectController {
         }
     }
 
-    //프로젝트에 참여한 팀원들 조회
+    /**
+     * 프로젝트에 참여한 팀원들 조회
+     * @param postPj_participateReq
+     * @return List 유저 닉네임, 유저 사진
+     * @author 윤성식
+     */
     @ResponseBody
     @PostMapping("/team")
     public BaseResponse<List<PostPjParticipateRes>> getTeam(@RequestBody PostPjParticipateReq postPj_participateReq){
@@ -109,7 +139,12 @@ public class ProjectController {
         }
     }
 
-    //프로젝트 등록
+    /**
+     * 프로젝트 등록
+     * @param postPjRegisterReq
+     * @return PostPjRegisterRes 프로젝트 이름
+     * @author 한규범
+     */
     @ResponseBody
     @PostMapping("/registration")
     public BaseResponse<PostPjRegisterRes> pjRegistration(@RequestBody PostPjRegisterReq postPjRegisterReq){
@@ -124,7 +159,14 @@ public class ProjectController {
         }
     }
 
-    //프로젝트 기한 오류 확인
+    /**
+     * 프로젝트 게시 날짜 관련 오류
+     * @param pj_deadline
+     * @param pj_startTerm
+     * @param pj_endTerm
+     * @throws BaseException
+     * @author 한규범
+     */
     private void PjDateCheck(LocalDate pj_deadline, LocalDate pj_startTerm, LocalDate pj_endTerm) throws BaseException{
         if (pj_deadline.isBefore(pj_startTerm)){
             throw new BaseException(POST_PROJECT_DEADLINE_BEFORE_START);
@@ -134,7 +176,21 @@ public class ProjectController {
         }
     }
 
-    //프로젝트 null 값 확인
+    /**
+     * 프로젝트 null 값 확인
+     * @param pj_header
+     * @param pj_field
+     * @param pj_content
+     * @param pj_name
+     * @param pj_subField
+     * @param pj_progress
+     * @param pj_endTerm
+     * @param pj_startTerm
+     * @param pj_deadline
+     * @param pj_totalPerson
+     * @throws BaseException
+     * @author 한규범
+     */
     private void PjNullCheck(String pj_header, String pj_field, String pj_content, String pj_name, String pj_subField, String pj_progress, LocalDate pj_endTerm, LocalDate pj_startTerm, LocalDate pj_deadline, int pj_totalPerson) throws BaseException{
         if(pj_header==null){
             throw new BaseException(POST_PROJECT_EMPTY_HEADER);
@@ -168,7 +224,12 @@ public class ProjectController {
         }
     }
 
-    //키워드 값 확인 프로젝트 5글자, 4개 제한
+    /**
+     * 키워드 값 확인 프로젝트 5글자, 4개 제한
+     * @param keyword
+     * @throws BaseException
+     * @author 한규범
+     */
     private void PjKeywordCheck(String [] keyword) throws BaseException{
         if(keyword.length > 4){
             throw new BaseException(POST_PROJECT_KEYWORD_CNT_EXCEED);
@@ -181,7 +242,13 @@ public class ProjectController {
     }
 
 
-    //프로젝트 수정
+
+    /**
+     *프로젝트 수정
+     * @param patchPjModifyReq
+     * @return PatchPjModifyRes 프로젝트 이름
+     * @author 한규범
+     */
     @ResponseBody
     @PatchMapping("/modify")
     public BaseResponse<PatchPjModifyRes> pjModify(@RequestBody PatchPjModifyReq patchPjModifyReq){
@@ -196,7 +263,12 @@ public class ProjectController {
         }
     }
 
-    //프로젝트 삭제
+    /**
+     * 프로젝트 삭제
+     * @param delPjDelReq
+     * @return DelPjDelRes 결과 메시지
+     * @author 한규범
+     */
     @ResponseBody
     @DeleteMapping("/del")
     public BaseResponse<DelPjDelRes> pjDel(@RequestBody DelPjDelReq delPjDelReq){
@@ -208,7 +280,13 @@ public class ProjectController {
         }
     }
 
-    //프로젝트 지원
+
+    /**
+     * 프로젝트 지원
+     * @param postPjApplyReq
+     * @return PostPjApplyRes 완료 메시지
+     * @author 한규범
+     */
     @ResponseBody
     @PostMapping("/apply")
     public BaseResponse<PostPjApplyRes> pjApply(@RequestBody PostPjApplyReq postPjApplyReq){
@@ -223,7 +301,12 @@ public class ProjectController {
         }
     }
 
-    //프로젝트신청한 유저 승인
+    /**
+     * 프로젝트신청한 유저 승인
+     * @param patchPjApproveReq
+     * @return PatchPjApproveRes 완료 메시지
+     * @author 윤성식
+     */
     @ResponseBody
     @PatchMapping("/approve")
     public BaseResponse<PatchPjApproveRes> pjApprove(@RequestBody PatchPjApproveReq patchPjApproveReq) {
@@ -235,19 +318,30 @@ public class ProjectController {
         }
     }
 
-        //프로젝트 신청 현황
-        @ResponseBody
-        @GetMapping("/apply-list")
-        public BaseResponse<List<GetApplyListRes>> pjApplyList(@RequestParam(required = false) String pj_num) {
-            try {
-                List<GetApplyListRes> getApplyListRes = projectProvider.pjApplyList(pj_num);
-                return new BaseResponse<>(getApplyListRes);
-            } catch (BaseException exception) {
-                return new BaseResponse<>((exception.getStatus()));
-            }
-        }
 
-        //본인이 지원한 프로젝트 신청 현황
+    /**
+     * 프로젝트 신청 현황
+     * @param pj_num
+     * @return List 유저ID, 유저 평점, 유저 사진, 프로젝트 번호
+     * @author 윤성식
+     */
+    @ResponseBody
+    @GetMapping("/apply-list")
+    public BaseResponse<List<GetApplyListRes>> pjApplyList(@RequestParam(required = false) String pj_num) {
+        try {
+            List<GetApplyListRes> getApplyListRes = projectProvider.pjApplyList(pj_num);
+            return new BaseResponse<>(getApplyListRes);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    /**
+     * 본인이 지원한 프로젝트 신청 현황
+     * @param postUserApplyReq
+     * @return List 프로젝트 번호, 참여 상태, 프로젝트 이름, 조회수, 프로젝트 제목
+     * @author 윤성식
+     */
         @ResponseBody
         @PostMapping("/apply-mylist")
         public BaseResponse<List<PostUserApplyRes>> userApply (@RequestBody PostUserApplyReq postUserApplyReq){
