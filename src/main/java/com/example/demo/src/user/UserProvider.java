@@ -128,7 +128,14 @@ public class UserProvider {
         }
     }
 
-    // 회원 정보 조회
+
+    /**
+     * 회원정보 조회 API
+     * @param user_id
+     * @return List 아이디, 닉네임, 전화번호, 이메일, 이름
+     * @throws BaseException
+     * @author yewon
+     */
     public List<GetUserRes> getUser(String user_id) throws BaseException {
         try {
             List<GetUserRes> getUserRes = userDao.getUser(user_id);

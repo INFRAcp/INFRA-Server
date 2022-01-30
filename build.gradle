@@ -27,7 +27,12 @@ repositories {
 
 //스프링 부트 디펜던시 추가 하는곳
 dependencies {
+
+    // 카카오 로그인 API에 대한 의존성 추가
+    implementation 'com.google.code.gson:gson:2.8.9'
+
     implementation 'org.jetbrains:annotations:19.0.0'
+
 
     // Spring Boot Starter
     testImplementation('org.springframework.boot:spring-boot-starter-test')
@@ -42,6 +47,7 @@ dependencies {
     //runtimeOnly 'mysql:mysql-connector-java:5.1.47' //mysql5
     implementation('org.springframework.boot:spring-boot-starter-jdbc')
     compile('org.springframework.boot:spring-boot-starter-data-jpa') //mysql 5버전의 경우 삭제.
+
 
 
     // Web

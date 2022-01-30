@@ -9,6 +9,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import static com.example.demo.config.BaseResponseStatus.*;
@@ -103,6 +105,7 @@ public class UserController {
      * @return BaseResponse
      * @author yunhee
      */
+
     @ResponseBody
     @GetMapping("/valid-id/{user_id}")
     public BaseResponse<String> validId(@PathVariable("user_id") String user_id) {
@@ -145,10 +148,13 @@ public class UserController {
         }
     }
 
-
     /**
      * 회원정보조회 API
      * [POST] /user/{user_id}
+     *
+     * @param user_id
+     * @return
+     * @author yewon
      */
     @ResponseBody
     @GetMapping("/{user_id}")
@@ -164,4 +170,85 @@ public class UserController {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
+
+    /**
+     * 회원탈퇴  API
+     * [PATCH] /user/{user_id}
+     *
+     * @param user_id
+     * @return
+     * @author yewon
+     */
+    @ResponseBody
+    @PatchMapping("/{user_id}")
+    public BaseResponse<String> delUser(@PathVariable("user_id") String user_id) {
+        try {
+            String userIdByJwt = jwtService.getUserId();
+            if (!user_id.equals(userIdByJwt)) {
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
+            userService.delUser(user_id);
+            String result = "탈퇴가 정상적으로 처리되었습니다.";
+            return new BaseResponse<>(result);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+
+    /**
+     * 카카오 로그인 API
+     * [POST] /user/kakao
+     *
+     * @param code
+     * @return
+     * @author yewon
+     */
+
+    @GetMapping("/kakao/log-in")
+    public String kakaoLogin(@RequestParam("code") String code) throws UnsupportedEncodingException {
+        System.out.println("kakao code : " + code);    // 인가코드 리턴
+        String access_Token = UserService.getAccessToken(code);     // access_token 가져오기
+        //System.out.println("controller access_token : " + access_Token);
+        UserService.getUserInfo(access_Token);
+        //HashMap<String, Object> userInfo = UserService.getUserInfo(access_Token);
+        //System.out.println(userInfo);   // 사용자 정보
+        return "로그인 되었습니다.";
+    }
+
+    /**
+     * 카카오 로그아웃 API
+     * @param session
+     * @return
+     * @author yewon
+     */
+    @GetMapping("/kakao/log-out")
+    public String logOut(HttpSession session) {
+        String access_Token = (String)session.getAttribute("access_Token");
+        session.invalidate();
+        return "로그아웃 되었습니다.";
+    }
+
+    /**
+     * 카카오 연결 끊기 API
+     * @param session
+     * @return
+     * @author yewon
+     */
+    @GetMapping("/kakao/unlink")
+    public String sessionOut(HttpSession session) {
+        String access_Token = (String)session.getAttribute("access_Token");
+        session.invalidate();
+        if(access_Token != null && !"".equals(access_Token)){
+            UserService.kakaoLogout(access_Token);
+            //session.removeAttribute("userId");
+        }else{
+            System.out.println("access_Token is null");
+            return "redirect:/";
+        }
+        return "연결이 끊어졌습니다.";
+    }
+
 }
+
+
