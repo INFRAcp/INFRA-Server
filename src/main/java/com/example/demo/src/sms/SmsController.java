@@ -26,7 +26,6 @@ public class SmsController {
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private SmsService smsService;
-    private int value;
     public SmsController(SmsService smsService) {
         this.smsService = smsService;
     }
@@ -44,7 +43,8 @@ public class SmsController {
             request.setContent("인프라 회원가입 \n 인증번호 : "+Integer.toString(certification));
             PostSmsRes data = smsService.sendSms(request.getRecipientPhoneNumber(), request.getContent());
 
-            this.value = certification;
+            data.setCertifyValue(certification);
+
             return new BaseResponse<>(data);
         }catch (BaseException exception){
             return new BaseResponse((exception.getStatus()));
@@ -52,12 +52,4 @@ public class SmsController {
     }
 
 
-//    @PostMapping("/check")
-//    public BaseResponse<PostSmsCheckRes> smsCheck(@RequestBody PostSmsCheckReq postSmsCheckReq){
-//        try {
-//            PostSmsCheckRes postSmsCheckRes = smsService.smscheck()
-//        }catch (BaseException exception){
-//            return new BaseResponse<>(exception.getStatus());
-//        }
-//    }
 }

@@ -16,4 +16,5 @@ public class PostSmsRes {
     private LocalDateTime localDateTime = LocalDateTime.now();
     private String statusCode;
     private String statusName;
+    private int certifyValue;
 }
