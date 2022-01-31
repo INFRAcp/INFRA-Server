@@ -25,11 +25,11 @@ public class ProjectDao {
      */
     public List<GetProjectRes> getProjects() {
 
-        String getProjectQuery = "select Project.pj_num, User_id, pj_views, pj_header, pj_field, pj_content, pj_name, pj_subField, pj_progress, pj_endTerm,pj_startTerm, pj_deadline, pj_totalPerson,pj_recruitPerson, pj_time, DATEDIFF(pj_deadline,now()) from Project where pj_status = '등록'";
+        String getProjectQuery = "select Project.pj_num, user_id, pj_views, pj_header, pj_categoryNum, pj_content, pj_name, pj_subCategoryNum, pj_progress, pj_endTerm,pj_startTerm, pj_deadline, pj_totalPerson,pj_recruitPerson, pj_time, DATEDIFF(pj_deadline,now()) from Project where pj_status = '등록'";
         return this.jdbcTemplate.query(getProjectQuery,
                 (rs, rowNum) -> new GetProjectRes(
                         rs.getString("pj_header"),
-                        rs.getString("pj_field"),
+                        rs.getString("pj_categoryNum"),
                         rs.getString("pj_name"),
                         rs.getString("pj_progress"),
                         rs.getString("pj_deadline"),
@@ -69,6 +69,7 @@ public class ProjectDao {
                         rs.getInt("pj_recruitPerson"),
                         "모집중",
                         rs.getInt("DATEDIFF(pj_deadline,now())")),
+                getProjectsBySearchParams,
                 getProjectsBySearchParams,
                 getProjectsBySearchParams,
                 getProjectsBySearchParams,
@@ -165,16 +166,16 @@ public class ProjectDao {
      * @author 한규범
      */
     public List<PostPjInquiryRes> proInquiry(PostPjInquiryReq postPj_inquiryReq) {
-        String getPj_inquiryQuery = "select pj_num, pj_header, pj_views, pj_field, pj_name, pj_subField, pj_progress, pj_deadline, pj_totalPerson, pj_recruitPerson, pj_time from Project where pj_num in (select pj_num from Pj_inquiry where user_id = ?)";
+        String getPj_inquiryQuery = "select pj_num, pj_header, pj_views, pj_categoryNum, pj_name, pj_subCategoryNum, pj_progress, pj_deadline, pj_totalPerson, pj_recruitPerson, pj_time from Project where pj_num in (select pj_num from Pj_inquiry where user_id = ?)";
         String Pj_inquiryParams = postPj_inquiryReq.getUser_id();
         return this.jdbcTemplate.query(getPj_inquiryQuery,
                 (rs, rowNum) -> new PostPjInquiryRes(
                         rs.getInt("pj_num"),
                         rs.getString("pj_header"),
                         rs.getInt("pj_views"),
-                        rs.getString("pj_field"),
+                        rs.getString("pj_categoryNum"),
                         rs.getString("pj_name"),
-                        rs.getString("pj_subField"),
+                        rs.getString("pj_subCategoryNum"),
                         rs.getString("pj_progress"),
                         rs.getString("pj_deadline"),
                         rs.getInt("pj_totalPerson"),
@@ -203,10 +204,10 @@ public class ProjectDao {
                 postPjRegisterReq.getUser_id(),
                 postPjRegisterReq.getPj_views(),
                 postPjRegisterReq.getPj_header(),
-                postPjRegisterReq.getPj_field(),
+                postPjRegisterReq.getPj_categoryNum(),
                 postPjRegisterReq.getPj_content(),
                 postPjRegisterReq.getPj_name(),
-                postPjRegisterReq.getPj_subField(),
+                postPjRegisterReq.getPj_subCategoryNum(),
                 postPjRegisterReq.getPj_progress(),
                 postPjRegisterReq.getPj_endTerm(),
                 postPjRegisterReq.getPj_startTerm(),
@@ -216,9 +217,9 @@ public class ProjectDao {
                 postPjRegisterReq.getPj_time()};
         this.jdbcTemplate.update(registrationPjQuery, registrationParms);
 
-        for(int i=0; i<postPjRegisterReq.getKeyword().length; i++){
+        for(int i = 0; i<postPjRegisterReq.getHashtag().length; i++){
             String insertKeywordQuery = "INSERT INTO Pj_hashtag (pj_num, hashtag) VALUES(?,?)";
-            this.jdbcTemplate.update(insertKeywordQuery, postPjRegisterReq.getPj_num(), postPjRegisterReq.getKeyword()[i]);
+            this.jdbcTemplate.update(insertKeywordQuery, postPjRegisterReq.getPj_num(), postPjRegisterReq.getHashtag()[i]);
         }
 
         String lastInsertPjnameQuery = postPjRegisterReq.getPj_name();
@@ -235,10 +236,10 @@ public class ProjectDao {
         String pjModifyQuery = "update Project set pj_header = ?, pj_categoryNum = ?, pj_content = ?, pj_name = ?, pj_subCategoryNum = ?, pj_progress = ?, pj_startTerm = ?, pj_endTerm = ?, pj_deadline = ?, pj_totalPerson = ? where pj_num = ? ";
         Object[] pjModifyParms = new Object[]{
                 patchPjModifyReq.getPj_header(),
-                patchPjModifyReq.getPj_field(),
+                patchPjModifyReq.getPj_categoryNum(),
                 patchPjModifyReq.getPj_content(),
                 patchPjModifyReq.getPj_name(),
-                patchPjModifyReq.getPj_subField(),
+                patchPjModifyReq.getPj_subCategoryNum(),
                 patchPjModifyReq.getPj_progress(),
                 patchPjModifyReq.getPj_startTerm(),
                 patchPjModifyReq.getPj_endTerm(),
@@ -251,9 +252,9 @@ public class ProjectDao {
         String deleteKeywordQuery = "delete from Pj_hashtag where pj_num = ?";
         this.jdbcTemplate.update(deleteKeywordQuery, patchPjModifyReq.getPj_num());
 
-        for(int i=0; i<patchPjModifyReq.getKeyword().length; i++){
+        for(int i = 0; i<patchPjModifyReq.getHashtag().length; i++){
             String insertKeywordQuery = "INSERT into Pj_hashtag (pj_num, hashtag) VALUES (?,?)";
-            this.jdbcTemplate.update(insertKeywordQuery,patchPjModifyReq.getPj_num(), patchPjModifyReq.getKeyword()[i]);
+            this.jdbcTemplate.update(insertKeywordQuery,patchPjModifyReq.getPj_num(), patchPjModifyReq.getHashtag()[i]);
         }
 
         return patchPjModifyReq.getPj_name();
