@@ -25,12 +25,11 @@ public class ProjectDao {
      */
     public List<GetProjectRes> getProjects() {
 
-        String getProjectQuery = "select Project.pj_num, User_id, pj_views, pj_header, pj_categoryNum, pj_content, pj_name, pj_subCategoryNum, pj_progress, pj_endTerm,pj_startTerm, pj_deadline, pj_totalPerson,pj_recruitPerson, pj_time, DATEDIFF(pj_deadline,now()) " +
-                "from Project where pj_status = '등록'";
+        String getProjectQuery = "select Project.pj_num, User_id, pj_views, pj_header, pj_field, pj_content, pj_name, pj_subField, pj_progress, pj_endTerm,pj_startTerm, pj_deadline, pj_totalPerson,pj_recruitPerson, pj_time, DATEDIFF(pj_deadline,now()) from Project where pj_status = '등록'";
         return this.jdbcTemplate.query(getProjectQuery,
                 (rs, rowNum) -> new GetProjectRes(
                         rs.getString("pj_header"),
-                        rs.getString("pj_categoryNum"),
+                        rs.getString("pj_field"),
                         rs.getString("pj_name"),
                         rs.getString("pj_progress"),
                         rs.getString("pj_deadline"),
@@ -70,7 +69,6 @@ public class ProjectDao {
                         rs.getInt("pj_recruitPerson"),
                         "모집중",
                         rs.getInt("DATEDIFF(pj_deadline,now())")),
-                getProjectsBySearchParams,
                 getProjectsBySearchParams,
                 getProjectsBySearchParams,
                 getProjectsBySearchParams,
@@ -338,13 +336,14 @@ public class ProjectDao {
      * @author 윤성식
      */
     public List<GetApplyListRes> pjApplyList(String pj_num) {
-        String pjApplyListQuery = "select User.user_id, user_nickname, user_grade, user_prPhoto from User, Pj_request where User.user_id = Pj_request.user_id and pj_num = ?";
+        String pjApplyListQuery = "select User.user_id, user_nickname, user_grade, user_prPhoto, pj_inviteStatus from User, Pj_request where User.user_id = Pj_request.user_id and pj_num = ?";
         return this.jdbcTemplate.query(pjApplyListQuery,
                 (rs,rowNum) -> new GetApplyListRes(
                         rs.getString("user_id"),
                         rs.getString("user_nickname"),
                         rs.getString("user_grade"),
-                        rs.getString("user_prPhoto")),
+                        rs.getString("user_prPhoto"),
+                        rs.getString("pj_inviteStatus")),
                 pj_num);
     }
 
