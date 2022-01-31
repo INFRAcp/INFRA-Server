@@ -2,11 +2,13 @@ package com.example.demo.src.user;
 
 import com.example.demo.config.BaseException;
 import com.example.demo.config.secret.Secret;
+import com.example.demo.src.mail.MailService;
 import com.example.demo.src.user.model.PatchUserReq;
 import com.example.demo.src.user.model.PostUserReq;
 import com.example.demo.src.user.model.PostUserRes;
 import com.example.demo.utils.AES128;
 import com.example.demo.utils.JwtService;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,14 +23,14 @@ public class UserService {
     private final UserDao userDao;
     private final UserProvider userProvider;
     private final JwtService jwtService;
-
+    private final MailService mailService;
 
     @Autowired
-    public UserService(UserDao userDao, UserProvider userProvider, JwtService jwtService) {
+    public UserService(UserDao userDao, UserProvider userProvider, JwtService jwtService, MailService mailService) {
         this.userDao = userDao;
         this.userProvider = userProvider;
         this.jwtService = jwtService;
-
+        this.mailService = mailService;
     }
 
     /**
@@ -114,4 +116,21 @@ public class UserService {
         }
     }
 
+    /**
+     * 패스워드 초기화 후 메일 보내기
+     *
+     * @param email
+     * @throws BaseException
+     * @author yunhee
+     */
+    public void resetPwMail(String id, String email) throws BaseException {
+        String pw = RandomStringUtils.randomAlphanumeric(12);
+        PatchUserReq patchUserReq = new PatchUserReq(id, pw);
+        try {
+            modifyUserPw(patchUserReq); // 비밀번호 변경
+            mailService.sendResetPwMail(email, pw);
+        } catch (Exception exception) { // DB에 이상이 있는 경우
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 }

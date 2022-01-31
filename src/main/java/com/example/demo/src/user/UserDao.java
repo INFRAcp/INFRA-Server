@@ -89,7 +89,7 @@ public class UserDao {
      * @author yunhee
      */
     public int modifyUserPw(PatchUserReq patchUserReq) {
-        String modifyUserNameQuery = "update User set user_pw = ? where user_id = ? ";
+        String modifyUserNameQuery = "update User set user_pw = ?, user_modifyPwTime = now() where user_id = ? and user_status LIKE '%ACTIVE'";
         Object[] modifyUserNameParams = new Object[]{patchUserReq.getUser_pw(), patchUserReq.getUser_id()};
         return this.jdbcTemplate.update(modifyUserNameQuery, modifyUserNameParams);
     }
@@ -142,5 +142,19 @@ public class UserDao {
         String delUserQuery = "update User set user_status = 'DEL', user_leaveTime = now() where user_id = ?";
         String delUserParams = user_id;
         this.jdbcTemplate.update(delUserQuery, delUserParams);
+    }
+
+    /**
+     * phone에 해당하는 email 정보 가져오기
+     *
+     * @param phone
+     * @return String - email
+     * @author yunhee
+     */
+    public User getEmailFromPhone(String phone) {
+        String getEmailQuery = "select user_id, user_email from User where user_phone=? and user_status LIKE '%ACTIVE'";
+        return this.jdbcTemplate.queryForObject(getEmailQuery,
+                (rs, rowNum) -> User.builder().user_id(rs.getString("user_id")).
+                        user_email(rs.getString("user_email")).build(), phone);
     }
 }

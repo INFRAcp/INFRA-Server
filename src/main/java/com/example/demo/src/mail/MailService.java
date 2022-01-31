@@ -1,5 +1,6 @@
 package com.example.demo.src.mail;
 
+import com.example.demo.config.BaseException;
 import com.example.demo.src.mail.model.Mail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,6 +11,9 @@ import org.springframework.stereotype.Service;
 
 import javax.mail.internet.MimeMessage;
 
+import static com.example.demo.config.BaseResponseStatus.EMAIL_AUTH_ERROR;
+import static com.example.demo.config.BaseResponseStatus.EMAIL_ERROR;
+
 @Service
 public class MailService {
     @Autowired
@@ -18,15 +22,35 @@ public class MailService {
     @Value("${spring.mail.nickname} <${spring.mail.username}>")
     private String FROM;
 
-    public void sendResetPwMail(String email, String userPw) {
+    /**
+     * 임시 비밀번호 발송
+     *
+     * @param email
+     * @param userPw
+     * @throws BaseException
+     * @author yunhee
+     */
+    public void sendResetPwMail(String email, String userPw) throws BaseException {
         Mail mail = new Mail();
         mail.setAddress(email);
         mail.setTitle("[인프라] 임시 비밀번호");
         mail.setMessage("비밀번호 : " + userPw);
-        sendMail(mail);
+        try {
+            sendMail(mail);
+        } catch (Exception exception) {
+            throw new BaseException(EMAIL_ERROR);
+        }
     }
 
-    public void sendMail(Mail mail) {
+
+    /**
+     * 메일 발송
+     *
+     * @param mail
+     * @throws BaseException
+     * @author yunhee
+     */
+    public void sendMail(Mail mail) throws BaseException {
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "utf-8");
@@ -37,10 +61,10 @@ public class MailService {
 
             mailSender.send(message);
         } catch (MailAuthenticationException e) {
-            e.printStackTrace();
-            throw new IllegalArgumentException("계정 인증 실패");
+//            e.printStackTrace();
+            throw new BaseException(EMAIL_AUTH_ERROR);
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new BaseException(EMAIL_ERROR);
         }
     }
 }

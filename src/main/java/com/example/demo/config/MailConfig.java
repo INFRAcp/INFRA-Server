@@ -28,6 +28,8 @@ public class MailConfig {
     @Value("${spring.mail.password}")
     private String password;
 
+    @Value("${spring.mail.debug}")
+    private String debug;
 
     @Bean
     public JavaMailSender getJavaMailSender() {
@@ -43,7 +45,7 @@ public class MailConfig {
         props.put("mail.transport.protocol", "smtp");
         props.put("mail.smtp.auth", auth);
         props.put("mail.smtp.starttls.enable", starttls);
-        props.put("mail.debug", "true");
+        props.put("mail.debug", debug);
         return mailSender;
     }
 }

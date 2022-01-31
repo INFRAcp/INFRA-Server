@@ -11,6 +11,7 @@ import com.example.demo.utils.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -128,9 +129,23 @@ public class UserProvider {
         }
     }
 
+    /**
+     * phone에 해당하는 email 정보 가져오기
+     */
+    public User getEmailFromPhone(String phone) throws BaseException {
+        try {
+            return userDao.getEmailFromPhone(phone);
+        } catch (IncorrectResultSizeDataAccessException error) {
+            return null;
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
 
     /**
      * 회원정보 조회 API
+     *
      * @param user_id
      * @return List 아이디, 닉네임, 전화번호, 이메일, 이름
      * @throws BaseException

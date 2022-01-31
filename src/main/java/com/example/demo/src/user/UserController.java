@@ -103,7 +103,6 @@ public class UserController {
      * @return BaseResponse
      * @author yunhee
      */
-
     @ResponseBody
     @GetMapping("/valid-id/{user_id}")
     public BaseResponse<String> validId(@PathVariable("user_id") String user_id) {
@@ -145,6 +144,33 @@ public class UserController {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
+
+    /**
+     * 비밀번호 초기화 API
+     * [PATCH] /user/reset-pw
+     *
+     * @param user - phone 정보 들어와야 함
+     * @return BaseResponse
+     * @author yunhee
+     */
+    @ResponseBody
+    @PatchMapping("/reset-pw")
+    public BaseResponse<String> resetPw(@RequestBody User user) {
+        if (user.getUser_phone() == null) {
+            return new BaseResponse<>(POST_USERS_EMPTY_INFO);
+        }
+        try {
+            User userInfo = userProvider.getEmailFromPhone(user.getUser_phone());
+            if (userInfo == null)
+                return new BaseResponse<>(POST_USERS_NOT_EXISTS_EMAIL);
+
+            userService.resetPwMail(userInfo.getUser_id(), userInfo.getUser_email()); // 비밀번호 변경후 메일 전송
+            return new BaseResponse<>("임시 비밀번호가 성공적으로 발송되었습니다.");
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
 
     /**
      * 회원정보조회 API
