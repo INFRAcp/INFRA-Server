@@ -110,16 +110,16 @@ public class ProjectDao {
      * @author 한규범
      */
     public List<PostPjLikeRes> getPj_num(PostPjLikeReq postPj_likeReq) {
-        String getPj_numQuery = "select Project.pj_num, pj_header, pj_views, pj_field, pj_name, pj_subField, pj_progress, pj_deadline, pj_totalPerson, pj_recruitPerson, pj_time from Project where pj_num in (select pj_num from Pj_like where user_id= ?)";
+        String getPj_numQuery = "select Project.pj_num, pj_header, pj_views, pj_categoryNum, pj_name, pj_subCategoryNum, pj_progress, pj_deadline, pj_totalPerson, pj_recruitPerson, pj_time from Project where pj_num in (select pj_num from Pj_like where user_id= ?)";
         String getParams = postPj_likeReq.getUser_id();
         return this.jdbcTemplate.query(getPj_numQuery,
                 (rs, rowNum) -> new PostPjLikeRes(
                         rs.getInt("pj_num"),
                         rs.getString("pj_header"),
                         rs.getInt("pj_views"),
-                        rs.getString("pj_field"),
+                        rs.getString("pj_categoryNum"),
                         rs.getString("pj_name"),
-                        rs.getString("pj_subField"),
+                        rs.getString("pj_subCategoryNum"),
                         rs.getString("pj_progress"),
                         rs.getString("pj_deadline"),
                         rs.getInt("pj_totalPerson"),
@@ -251,7 +251,7 @@ public class ProjectDao {
      * 프로젝트 삭제
      * @param delPjDelReq
      * @return DelPjDelRes 결과 메시지
-     * @author 한규범
+     * @author 한규범 (완료)
      */
     public String pjDel(DelPjDelReq delPjDelReq) {
 
@@ -265,7 +265,7 @@ public class ProjectDao {
      * 프로젝트 지원
      * @param postPjApplyReq
      * @return PostPjApplyRes 완료 메시지
-     * @author 한규범
+     * @author 한규범 (완료)
      */
     public String pjApply(PostPjApplyReq postPjApplyReq) {
         String pjApplyCoincideCheckQuery = "Select Count(*) from Pj_request where pj_num = ? and user_id = ?";
@@ -283,7 +283,7 @@ public class ProjectDao {
      * 프로젝트신청한 유저 승인
      * @param patchPjApproveReq
      * @return PatchPjApproveRes 완료 메시지
-     * @author 윤성식
+     * @author 윤성식 (완료)
      */
     public String pjApprove(PatchPjApproveReq patchPjApproveReq) {
         String pjApproveQuery = "update Pj_request set pj_inviteStatus = '승인완료' where user_id = ? and pj_num = ? and pj_inviteStatus = '신청'";
@@ -300,7 +300,7 @@ public class ProjectDao {
      * 본인이 지원한 프로젝트 신청 현황
      * @param postUserApplyReq
      * @return List 프로젝트 번호, 참여 상태, 프로젝트 이름, 조회수, 프로젝트 제목
-     * @author 윤성식
+     * @author 윤성식 (수정완료)
      */
     public List<PostUserApplyRes> getUserApply(PostUserApplyReq postUserApplyReq) {
         String getApplyQuery = "select Pj_request.pj_num, pj_inviteStatus, pj_name, pj_views, pj_header from Pj_request, Project where Pj_request.pj_num = Project.pj_num and Pj_request.user_id = ?";
@@ -320,17 +320,18 @@ public class ProjectDao {
     /**
      * 프로젝트 신청 현황
      * @param pj_num
-     * @return List 유저ID, 유저 평점, 유저 사진, 프로젝트 번호
-     * @author 윤성식
+     * @return List 유저ID, 유저 평점, 유저 사진, 현재 신청 상태
+     * @author 윤성식 (수정완료)
      */
     public List<GetApplyListRes> pjApplyList(String pj_num) {
-        String pjApplyListQuery = "select User.user_id, user_nickname, user_grade, user_prPhoto from User, Pj_request where User.user_id = Pj_request.user_id and pj_num = ?";
+        String pjApplyListQuery = "select User.user_id, user_nickname, user_grade, user_prPhoto, pj_inviteStatus from User, Pj_request where User.user_id = Pj_request.user_id and pj_num = ?";
         return this.jdbcTemplate.query(pjApplyListQuery,
                 (rs,rowNum) -> new GetApplyListRes(
                         rs.getString("user_id"),
                         rs.getString("user_nickname"),
                         rs.getString("user_grade"),
-                        rs.getString("user_prPhoto")),
+                        rs.getString("user_prPhoto"),
+                        rs.getString("pj_inviteStatus")),
                 pj_num);
     }
 

@@ -344,14 +344,14 @@ public class ProjectController {
      */
         @ResponseBody
         @PostMapping("/apply-mylist")
-        public BaseResponse<List<PostUserApplyRes>> userApply (@RequestBody PostUserApplyReq postUserApplyReq){
+        public BaseResponse<List<PostUserApplyRes>> userApply (@RequestBody PostUserApplyReq postUserApplyReq) {
             try {
                 List<PostUserApplyRes> postUserApplyRes = projectProvider.getUserApply(postUserApplyReq);
                 return new BaseResponse<>(postUserApplyRes);
             } catch (BaseException exception) {
                 return new BaseResponse<>(exception.getStatus());
             }
-
+        }
     //프로젝트 찜 등록
     @ResponseBody
     @PostMapping("/like")
