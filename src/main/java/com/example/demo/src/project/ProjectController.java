@@ -296,7 +296,7 @@ public class ProjectController {
      * 팀원 평가 등록 API
      *
      * @param PostEvalReq
-     * @return
+     * @return String
      * @author shinhyeon
      */
 
@@ -355,6 +355,15 @@ public class ProjectController {
 
     }
 
+    /**
+     * [POST] /project/evaluate/modify
+     * 팀원 평가 수정 API
+     *
+     * @param PatchEvalReq
+     * @return String
+     * @author shinhyeon
+     */
+
     @ResponseBody
     @PatchMapping("/evaluate/modify")
 
@@ -380,6 +389,15 @@ public class ProjectController {
             return new BaseResponse<>(exception.getStatus());
         }
     }
+
+    /**
+     * [POST] /project/evaluate/del
+     * 팀원 평가 삭제 API
+     *
+     * @param PatchEvalDelReq
+     * @return String
+     * @author shinhyeon
+     */
 
     @ResponseBody
     @PatchMapping("/evaluate/del")

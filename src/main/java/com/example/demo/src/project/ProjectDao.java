@@ -344,6 +344,13 @@ public class ProjectDao {
         return this.jdbcTemplate.queryForObject(getPjInviteStatusQuery, getPjInviteStatusParms, String.class);
     }
 
+    /**
+     * 팀원 평가 수정
+     *
+     * @param PatchEvalReq
+     * @return x
+     * @author shinhyeon
+     */
     public void modifyEval(PatchEvalReq patchEvalReq) {
         String modifyEvalQuery = "update Pj_evaluate set opinion = ?, responsibility = ?, ability = ?, teamwork = ?, leadership = ? where user_id = ? and passiveUser_id = ? and pj_num = ?";
         Object[] modifyEvalParms = new Object[]{
@@ -360,6 +367,13 @@ public class ProjectDao {
         this.jdbcTemplate.update(modifyEvalQuery, modifyEvalParms);
     }
 
+    /**
+     * 팀원 평가 삭제
+     *
+     * @param PatchEvalReq
+     * @return x
+     * @author shinhyeon
+     */
     public void delEval(PatchEvalDelReq patchEvalDelReq) {
         String delEvalQuery = "update Pj_evaluate set status = ? where user_id = ? and passiveUser_id = ? and pj_num = ?";
         Object[] delEvalParms = new Object[]{

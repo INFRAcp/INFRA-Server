@@ -96,6 +96,14 @@ public class ProjectService {
         }
     }
 
+    /**
+     * 팀원 평가 수정
+     *
+     * @param  PatchEvalReq
+     * @return x
+     * @throws BaseException
+     * @author shinhyeon
+     */
     public void modifyEval(PatchEvalReq patchEvalReq) throws BaseException{
         try {
             projectDao.modifyEval(patchEvalReq);
@@ -105,6 +113,14 @@ public class ProjectService {
         }
     }
 
+    /**
+     * 팀원 평가 삭제
+     *
+     * @param  PatchEvalDelReq
+     * @return x
+     * @throws BaseException
+     * @author shinhyeon
+     */
     public void delEval(PatchEvalDelReq patchEvalDelReq) throws BaseException{
         try {
             projectDao.delEval(patchEvalDelReq);
