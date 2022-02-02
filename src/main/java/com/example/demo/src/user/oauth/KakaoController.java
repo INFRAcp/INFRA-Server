@@ -30,7 +30,7 @@ public class KakaoController {
      * @author yewon
      */
 
-    @GetMapping("/log-in")
+    @GetMapping("")
     public String kakaoLogin(@RequestParam("code") String code) throws UnsupportedEncodingException {
         System.out.println("kakao code : " + code);    // 인가코드 리턴
         String access_Token = kakaoService.getAccessToken(code);     // access_token 가져오기
@@ -47,7 +47,7 @@ public class KakaoController {
      * @return
      * @author yewon
      */
-    @GetMapping("/log-out")
+    @GetMapping("/logout")
     public String logOut(HttpSession session) {
         String access_Token = (String)session.getAttribute("access_Token");
         session.invalidate();
