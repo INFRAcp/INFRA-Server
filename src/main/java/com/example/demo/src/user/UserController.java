@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 import static com.example.demo.config.BaseResponseStatus.*;
-import static com.example.demo.utils.ValidationRegex.*;
+import static com.example.demo.utils.ValidationRegex.isRegexId;
 
 @RestController
 @RequestMapping("/user")
@@ -50,21 +50,6 @@ public class UserController {
             return new BaseResponse<>(POST_USERS_EMPTY_INFO);
         }
 
-        if (!isRegexId(postUserReq.getUser_id())) {   // id 형식 체크
-            return new BaseResponse<>(POST_USERS_INVALID_ID);
-        }
-        if (!isRegexPw(postUserReq.getUser_pw())) {    // 비밀번호 형식 체크
-            return new BaseResponse<>(POST_USERS_INVALID_PW);
-        }
-        if (!isRegexName(postUserReq.getUser_name())) {   // 이름 형식 체크
-            return new BaseResponse<>(POST_USERS_INVALID_NAME);
-        }
-        if (!isRegexPhone(postUserReq.getUser_phone())) {    // 핸드폰 번호 형식 체크
-            return new BaseResponse<>(POST_USERS_INVALID_PHONE);
-        }
-        if (!isRegexEmail(postUserReq.getUser_email())) {    // 이메일 형식 체크
-            return new BaseResponse<>(POST_USERS_INVALID_EMAIL);
-        }
         try {
             PostUserRes postUserRes = userService.createUser(postUserReq);
             return new BaseResponse<>(postUserRes);
@@ -162,7 +147,7 @@ public class UserController {
         try {
             User userInfo = userProvider.getEmailFromPhone(user.getUser_phone());
             if (userInfo == null)
-                return new BaseResponse<>(POST_USERS_NOT_EXISTS_EMAIL);
+                return new BaseResponse<>(NOT_EXISTS_EMAIL);
 
             userService.resetPwMail(userInfo.getUser_id(), userInfo.getUser_email()); // 비밀번호 변경후 메일 전송
             return new BaseResponse<>("임시 비밀번호가 성공적으로 발송되었습니다.");

@@ -42,7 +42,6 @@ public enum BaseResponseStatus {
     POST_USERS_EXISTS_ID(false, 2020, "중복된 아이디입니다."),
     POST_USERS_EXISTS_PHONE(false, 2021, "중복된 핸드폰 번호입니다."),
     POST_USERS_EXISTS_NICKNAME(false, 2022, "중복된 닉네임 입니다."),
-    POST_USERS_NOT_EXISTS_EMAIL(false, 2025, "해당하는 이메일 정보가 없습니다."),
 
 
     // Project 프로젝트 등록시 빈값 에러
@@ -85,7 +84,12 @@ public enum BaseResponseStatus {
     // [POST] /users
     DUPLICATED_EMAIL(false, 3013, "중복된 이메일입니다."),
     FAILED_TO_LOGIN(false, 3014, "없는 아이디거나 비밀번호가 틀렸습니다."),
+    NOT_EXISTS_EMAIL(false, 3115, "해당하는 이메일 정보가 없습니다."),
 
+    // 회원가입 관련
+    FAILED_TO_SIGNUP_DEL_USER(false, 3116, "탈퇴한 후 일주일 후에 가입 가능합니다."),
+    FAILED_TO_SIGNUP_OUT_USER(false, 3117, "강제 탈퇴된 사용자로 3개월 후에 가입 가능합니다."),
+    FAILED_TO_SIGNUP_ALREADY_USER(false, 3118, "이미 인프라의 회원입니다."),
 
     /**
      * 4000 : Database, Server 오류

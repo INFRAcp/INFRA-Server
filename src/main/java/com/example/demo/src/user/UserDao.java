@@ -26,8 +26,7 @@ public class UserDao {
      */
     public void createUser(PostUserReq postUserReq) {
         String createUserQuery = "insert into User (user_id, user_pw, user_nickname, user_grade, user_phone, " +
-                "user_email, user_name)" +
-                " VALUES (?,?,?,0,?,?,?)"; // 실행될 동적 쿼리문
+                "user_email, user_name) VALUES (?,?,?,0,?,?,?)"; // 실행될 동적 쿼리문
         Object[] createUserParams = new Object[]{postUserReq.getUser_id(), postUserReq.getUser_pw(), postUserReq.getUser_nickname(), postUserReq.getUser_phone(),
                 postUserReq.getUser_email(), postUserReq.getUser_name()};
         this.jdbcTemplate.update(createUserQuery, createUserParams);
@@ -41,7 +40,7 @@ public class UserDao {
      * @author yunhee
      */
     public int checkId(String id) {
-        String checkIdQuery = "select exists(select user_id from User where user_id = ?)";
+        String checkIdQuery = "select exists(select user_id from User where user_id = ? and user_status REGEXP 'ACTIVE|STOP')";
         return this.jdbcTemplate.queryForObject(checkIdQuery, int.class, id);
     }
 
@@ -53,7 +52,7 @@ public class UserDao {
      * @author yunhee
      */
     public int checkNickname(String nickname) {
-        String checkNicknameQuery = "select exists(select user_nickname from User where user_nickname = ?)";
+        String checkNicknameQuery = "select exists(select user_nickname from User where user_nickname = ? and user_status REGEXP 'ACTIVE|STOP')";
         return this.jdbcTemplate.queryForObject(checkNicknameQuery, int.class, nickname);
     }
 
@@ -65,7 +64,7 @@ public class UserDao {
      * @author yunhee
      */
     public int checkEmail(String email) {
-        String checkEmailQuery = "select exists(select user_email from User where user_email = ?)";
+        String checkEmailQuery = "select exists(select user_email from User where user_email = ? and user_status REGEXP 'ACTIVE|STOP')";
         return this.jdbcTemplate.queryForObject(checkEmailQuery, int.class, email);
     }
 
@@ -77,8 +76,25 @@ public class UserDao {
      * @author yunhee
      */
     public int checkPhone(String phone) {
-        String checkPhoneQuery = "select exists(select User_Phone from User where User_phone = ?)";
+        String checkPhoneQuery = "select exists(select user_phone from User where user_phone = ? and user_status REGEXP 'ACTIVE|STOP')";
         return this.jdbcTemplate.queryForObject(checkPhoneQuery, int.class, phone);
+    }
+
+    /**
+     * 가입 가능여부 체크
+     *
+     * @param phone
+     * @return String - 가입 가능시 : POSSIBLE, 이미 회원 : ALREADY_USER, 강제 탈퇴된 회원 : OUT, 탈퇴한 회원 : OUT
+     * @author yunhee
+     */
+    public String checkPossibleSignUp(String phone) {
+        String checkPossibleQuery = "SELECT CASE WHEN (count(*) = 0) THEN 'POSSIBLE' " +
+                "WHEN ((u.user_status = 'OUT' and TIMESTAMPDIFF(MONTH, u.user_leaveTime, now()) < 3) " +
+                "or (u.user_status = 'DEL' and TIMESTAMPDIFF(WEEK, u.user_leaveTime, now()) < 1)) THEN u.user_status " +
+                "WHEN (u.user_status REGEXP 'ACTIVE|STOP') then 'ALREADY_USER' ELSE 'POSSIBLE' END as result " +
+                "FROM (SELECT user_status, user_leaveTime FROM User WHERE user_phone = ?" +
+                "ORDER BY user_registerTime DESC limit 1) u";
+        return this.jdbcTemplate.queryForObject(checkPossibleQuery, String.class, phone);
     }
 
     /**
@@ -89,7 +105,7 @@ public class UserDao {
      * @author yunhee
      */
     public int modifyUserPw(PatchUserReq patchUserReq) {
-        String modifyUserNameQuery = "update User set user_pw = ?, user_modifyPwTime = now() where user_id = ? and user_status LIKE '%ACTIVE'";
+        String modifyUserNameQuery = "update User set user_pw = ?, user_modifyPwTime = now() where user_id = ? and user_status REGEXP 'ACTIVE|STOP'";
         Object[] modifyUserNameParams = new Object[]{patchUserReq.getUser_pw(), patchUserReq.getUser_id()};
         return this.jdbcTemplate.update(modifyUserNameQuery, modifyUserNameParams);
     }
@@ -152,7 +168,7 @@ public class UserDao {
      * @author yunhee
      */
     public User getEmailFromPhone(String phone) {
-        String getEmailQuery = "select user_id, user_email from User where user_phone=? and user_status LIKE '%ACTIVE'";
+        String getEmailQuery = "select user_id, user_email from User where user_phone=? and user_status REGEXP 'ACTIVE|STOP'";
         return this.jdbcTemplate.queryForObject(getEmailQuery,
                 (rs, rowNum) -> User.builder().user_id(rs.getString("user_id")).
                         user_email(rs.getString("user_email")).build(), phone);

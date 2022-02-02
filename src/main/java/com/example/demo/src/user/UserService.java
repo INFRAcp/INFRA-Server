@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import static com.example.demo.config.BaseResponseStatus.*;
+import static com.example.demo.utils.ValidationRegex.*;
 
 @Service
 public class UserService {
@@ -42,18 +43,33 @@ public class UserService {
      * @author yunhee
      */
     public PostUserRes createUser(PostUserReq postUserReq) throws BaseException {
-        if (userProvider.checkId(postUserReq.getUser_id()) == 1) {  // id 중복 확인
+        checkCreateUserRegex(postUserReq);  // 데이터 형식 체크
+
+        if (userProvider.checkId(postUserReq.getUser_id()) == 1)  // id 중복 확인
             throw new BaseException(POST_USERS_EXISTS_ID);
-        }
-        if (userProvider.checkNickname(postUserReq.getUser_nickname()) == 1) {  // nickname 중복 확인
+
+        if (userProvider.checkNickname(postUserReq.getUser_nickname()) == 1)  // nickname 중복 확인
             throw new BaseException(POST_USERS_EXISTS_NICKNAME);
-        }
-        if (userProvider.checkEmail(postUserReq.getUser_email()) == 1) { // 이메일 중복 확인
+
+        if (userProvider.checkEmail(postUserReq.getUser_email()) == 1) // 이메일 중복 확인
             throw new BaseException(POST_USERS_EXISTS_EMAIL);
-        }
-        if (userProvider.checkPhone(postUserReq.getUser_phone()) == 1) { // 전화번호 중복 확인
+
+        if (userProvider.checkPhone(postUserReq.getUser_phone()) == 1) // 전화번호 중복 확인
             throw new BaseException(POST_USERS_EXISTS_PHONE);
+
+        String checkPossible;
+        try {   // 가입 가능 여부 체크
+            checkPossible = userDao.checkPossibleSignUp(postUserReq.getUser_phone());
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
         }
+
+        if (checkPossible.equals("DEL"))
+            throw new BaseException(FAILED_TO_SIGNUP_DEL_USER);
+        else if (checkPossible.equals("OUT"))
+            throw new BaseException(FAILED_TO_SIGNUP_OUT_USER);
+        else if (checkPossible.equals("ALREADY_USER"))
+            throw new BaseException(FAILED_TO_SIGNUP_ALREADY_USER);
 
         String pwd;
         try {   // 비밀번호 암호화
@@ -133,4 +149,30 @@ public class UserService {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
+    /**
+     * 회원 가입 정보 regex 체크
+     *
+     * @param postUserReq
+     * @throws BaseException
+     * @author yunhee
+     */
+    public void checkCreateUserRegex(PostUserReq postUserReq) throws BaseException {
+        if (!isRegexId(postUserReq.getUser_id())) {   // id 형식 체크
+            throw new BaseException(POST_USERS_INVALID_ID);
+        }
+        if (!isRegexPw(postUserReq.getUser_pw())) {    // 비밀번호 형식 체크
+            throw new BaseException(POST_USERS_INVALID_PW);
+        }
+        if (!isRegexName(postUserReq.getUser_name())) {   // 이름 형식 체크
+            throw new BaseException(POST_USERS_INVALID_NAME);
+        }
+        if (!isRegexPhone(postUserReq.getUser_phone())) {    // 핸드폰 번호 형식 체크
+            throw new BaseException(POST_USERS_INVALID_PHONE);
+        }
+        if (!isRegexEmail(postUserReq.getUser_email())) {    // 이메일 형식 체크
+            throw new BaseException(POST_USERS_INVALID_EMAIL);
+        }
+    }
+
 }
