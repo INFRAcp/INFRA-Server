@@ -85,6 +85,7 @@ public enum BaseResponseStatus {
     DUPLICATED_EMAIL(false, 3013, "중복된 이메일입니다."),
     FAILED_TO_LOGIN(false, 3014, "없는 아이디거나 비밀번호가 틀렸습니다."),
     NOT_EXISTS_EMAIL(false, 3115, "해당하는 이메일 정보가 없습니다."),
+    NOT_EXISTS_USER_ID(false, 3116, "해당하는 아이디가 없습니다."),
 
     // 회원가입 관련
     FAILED_TO_SIGNUP_DEL_USER(false, 3116, "탈퇴한 후 일주일 후에 가입 가능합니다."),

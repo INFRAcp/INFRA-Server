@@ -2,10 +2,7 @@ package com.example.demo.src.user;
 
 import com.example.demo.config.BaseException;
 import com.example.demo.config.secret.Secret;
-import com.example.demo.src.user.model.GetUserRes;
-import com.example.demo.src.user.model.PostLoginReq;
-import com.example.demo.src.user.model.PostLoginRes;
-import com.example.demo.src.user.model.User;
+import com.example.demo.src.user.model.*;
 import com.example.demo.utils.AES128;
 import com.example.demo.utils.JwtService;
 import org.slf4j.Logger;
@@ -155,6 +152,44 @@ public class UserProvider {
         try {
             List<GetUserRes> getUserRes = userDao.getUser(user_id);
             return getUserRes;
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    /**
+     * 소개 페이지 내용 조회
+     *
+     * @param userId
+     * @return
+     * @throws BaseException
+     * @author yunhee
+     */
+    public GetProfileRes getProfile(String userId) throws BaseException {
+        try {
+            GetProfileRes getProfileRes = new GetProfileRes();
+
+            User user = userDao.getUserProfileInfo(userId); // 닉네임, 프로필, 사진
+            getProfileRes.setUser_nickname(user.getUser_nickname());
+            getProfileRes.setUser_prProfile(user.getUser_prProfile());
+            getProfileRes.setUser_prPhoto(user.getUser_prPhoto());
+
+            List<String> ability = userDao.getUserPrAbility(userId);    // 능력
+            List<String> keyword = userDao.getUserPrKeyword(userId);    // 키워드
+            List<String> link = userDao.getUserLink(userId);    // 프로필 링크
+
+            if (!ability.isEmpty())
+                getProfileRes.setUser_prAbility(ability);
+            if (!keyword.isEmpty())
+                getProfileRes.setUser_prKeyword(keyword);
+            if (!link.isEmpty())
+                getProfileRes.setUser_prLink(link);
+
+            // TODO : 프로젝트 리스트
+
+            return getProfileRes;
+        } catch (IncorrectResultSizeDataAccessException error) {
+            throw new BaseException(NOT_EXISTS_USER_ID);
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }

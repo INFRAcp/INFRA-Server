@@ -173,4 +173,55 @@ public class UserDao {
                 (rs, rowNum) -> User.builder().user_id(rs.getString("user_id")).
                         user_email(rs.getString("user_email")).build(), phone);
     }
+
+    /**
+     * 프로필 링크 가져오기
+     *
+     * @param userId
+     * @return List - 프로필 링크
+     * @author yunhee
+     */
+    public List<String> getUserLink(String userId) {
+        String getUserLinkQuery = "select user_prLink from User_link where user_id = ?";
+        return this.jdbcTemplate.queryForList(getUserLinkQuery, String.class, userId);
+    }
+
+    /**
+     * 능력(user_prAbility) 가져오기
+     *
+     * @param userId
+     * @return List - 능력
+     * @author yunhee
+     */
+    public List<String> getUserPrAbility(String userId) {
+        String getUserPrAbilityQuery = "select user_prAbility from User_ability where user_id = ?";
+        return this.jdbcTemplate.queryForList(getUserPrAbilityQuery, String.class, userId);
+    }
+
+    /**
+     * 키워드(user_prKeyword) 가져오기
+     *
+     * @param userId
+     * @return List
+     * @author yunhee
+     */
+    public List<String> getUserPrKeyword(String userId) {
+        String getUserPrKeywordQuery = "select user_prKeyword from User_keyword where user_id = ?";
+        return this.jdbcTemplate.queryForList(getUserPrKeywordQuery, String.class, userId);
+    }
+
+    /**
+     * 소개 페이지 관련 user 테이블에서 정보 가져오기
+     *
+     * @param userId
+     * @return User - user_nickname, user_prPhoto, user_prProfile
+     * @author yunhee
+     */
+    public User getUserProfileInfo(String userId) {
+        String getUserProfileInfoQuery = "select user_nickname, user_prPhoto, user_prProfile from User where user_id = ?";
+        return this.jdbcTemplate.queryForObject(getUserProfileInfoQuery,
+                (rs, rowNum) -> User.builder().user_nickname(rs.getString("user_nickname")).
+                        user_prPhoto(rs.getString("user_prPhoto")).
+                        user_prProfile(rs.getString("user_prProfile")).build(), userId);
+    }
 }

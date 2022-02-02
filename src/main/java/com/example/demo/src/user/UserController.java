@@ -204,6 +204,24 @@ public class UserController {
         }
     }
 
+    /**
+     * 소개 페이지 내용 조회 API
+     * [GET] /user/profile/:userId
+     *
+     * @param userId
+     * @return BaseResponse
+     * @author yunhee
+     */
+    @ResponseBody
+    @GetMapping("/profile/{userId}")
+    public BaseResponse<GetProfileRes> getProfile(@PathVariable("userId") String userId) {
+        try {
+            GetProfileRes getProfileRes = userProvider.getProfile(userId);
+            return new BaseResponse<>(getProfileRes);
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
 }
 
 
