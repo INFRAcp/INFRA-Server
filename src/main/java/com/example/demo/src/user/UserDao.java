@@ -161,6 +161,20 @@ public class UserDao {
     }
 
     /**
+     *  소개 페이지 작성 API
+     * @param postProfileReq - photo, profile, ability, link, keyword, request(project)
+     * @author yewon
+     */
+    public int createProfile(String user_id, PostProfileReq postProfileReq) {
+        String createProfileQuery = "";
+        String createProfileParam1 = user_id;
+//        String createProfileParam2 = user_nickname;
+        Object[] createProfileParams = new Object[]{postProfileReq.getUser_prPhoto(), postProfileReq.getUser_prProfile(), postProfileReq.getUser_prAbility(),
+                postProfileReq.getUser_prLink(), postProfileReq.getUser_prKeyword(), postProfileReq.getPj_request() };
+        return this.jdbcTemplate.update(createProfileQuery, createProfileParam1, createProfileParams);
+    }
+
+    /**
      * phone에 해당하는 email 정보 가져오기
      *
      * @param phone

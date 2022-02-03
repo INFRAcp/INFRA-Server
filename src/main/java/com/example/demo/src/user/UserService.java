@@ -3,9 +3,7 @@ package com.example.demo.src.user;
 import com.example.demo.config.BaseException;
 import com.example.demo.config.secret.Secret;
 import com.example.demo.src.mail.MailService;
-import com.example.demo.src.user.model.PatchUserReq;
-import com.example.demo.src.user.model.PostUserReq;
-import com.example.demo.src.user.model.PostUserRes;
+import com.example.demo.src.user.model.*;
 import com.example.demo.utils.AES128;
 import com.example.demo.utils.JwtService;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -175,4 +173,19 @@ public class UserService {
         }
     }
 
+    /**
+     * 소개 페이지 작성 API
+     * @param postProfileReq
+     * @return
+     * @throws BaseException
+     * @author yewon
+     */
+    public PostProfileRes createProfile(String user_id, PostProfileReq postProfileReq) throws BaseException {
+        try {
+            userDao.createProfile(user_id, postProfileReq);
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+        return null;
+    }
 }

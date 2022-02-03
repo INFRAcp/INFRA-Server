@@ -42,6 +42,10 @@ public enum BaseResponseStatus {
     POST_USERS_EXISTS_ID(false, 2020, "중복된 아이디입니다."),
     POST_USERS_EXISTS_PHONE(false, 2021, "중복된 핸드폰 번호입니다."),
     POST_USERS_EXISTS_NICKNAME(false, 2022, "중복된 닉네임 입니다."),
+    // 소개페이지
+    POST_USERS_PROFILE_EMPTY_INFO(false,2031, "소개 페이지의 필수 정보가 비어있습니다."),
+    POST_USERS_PROFILE_KEYWORD_COUNT(false,2032, "키워드는 총 6개를 입력해주세요."),
+    POST_USERS_PROFILE_KEYWORD_WORD_COUNT(false,2033,"키워드의 글자수는 5글자를 넘을 수 없습니다."),
 
 
     // Project 프로젝트 등록시 빈값 에러
