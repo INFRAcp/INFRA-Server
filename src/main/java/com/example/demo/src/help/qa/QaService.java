@@ -1,6 +1,7 @@
 package com.example.demo.src.help.qa;
 
 import com.example.demo.config.BaseException;
+import com.example.demo.src.help.qa.model.PatchAnswerReq;
 import com.example.demo.src.help.qa.model.PatchQaReq;
 import com.example.demo.src.help.qa.model.PostQaReq;
 import org.slf4j.Logger;
@@ -75,6 +76,25 @@ public class QaService {
             int result = qaDao.modifyQa2(qa_num);
             if (result == 0) {
                 throw new BaseException(DELETE_FAIL_QA);
+            }
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    /**
+     * 해당 qa_num을 갖는 질문 답변
+     *
+     * @param  patchAnswerReq
+     * @return
+     * @throws BaseException
+     * @author shinhyeon
+     */
+    public void answerQa(int qa_num, PatchAnswerReq patchAnswerReq) throws BaseException{
+        try {
+            int result = qaDao.answerQa(qa_num, patchAnswerReq);
+            if (result == 0) {
+                throw new BaseException(MODIFY_FAIL_ANSWER);
             }
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);

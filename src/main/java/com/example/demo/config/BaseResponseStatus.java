@@ -82,6 +82,8 @@ public enum BaseResponseStatus {
 
     DELETE_FAIL_QA(false, 2511, "질문 삭제 실패"),
     MODIFY_FAIL_QA(false, 2512, "질문 수정 실패"),
+    MODIFY_FAIL_ANSWER(false, 2513, "질문 답변 실패"),
+    INVALID_AUTHORITY_ANSWER(false, 2514, "질문 답변 권한이 없습니다. (관리자만 답변이 가능합니다.)"),
     /**
      * 3000 : Response 오류
      */

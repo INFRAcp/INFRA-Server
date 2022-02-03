@@ -1,6 +1,7 @@
 package com.example.demo.src.help.qa;
 
 import com.example.demo.src.help.qa.model.GetQaRes;
+import com.example.demo.src.help.qa.model.PatchAnswerReq;
 import com.example.demo.src.help.qa.model.PatchQaReq;
 import com.example.demo.src.help.qa.model.PostQaReq;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -132,5 +133,20 @@ public class QaDao {
         Object[] modifyQaParam = new Object[]{"삭제", qa_num};
 
         return this.jdbcTemplate.update(modifyQaQuary, modifyQaParam);
+    }
+
+    /**
+     * 해당 qa_num을 갖는 질문 수정
+     *
+     * @param qa_num, patchAnswerReq
+     * @return int
+     * @author shinhyeon
+     */
+
+    public int answerQa(int qa_num, PatchAnswerReq patchAnswerReq) {
+        String answerQaQuary = "update QA set qa_a = ? where qa_num = ?";
+        Object[] answerQaParam = new Object[]{patchAnswerReq.getQa_a(), qa_num};
+
+        return this.jdbcTemplate.update(answerQaQuary, answerQaParam);
     }
 }
