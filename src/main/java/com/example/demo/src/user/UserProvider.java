@@ -2,15 +2,13 @@ package com.example.demo.src.user;
 
 import com.example.demo.config.BaseException;
 import com.example.demo.config.secret.Secret;
-import com.example.demo.src.user.model.GetUserRes;
-import com.example.demo.src.user.model.PostLoginReq;
-import com.example.demo.src.user.model.PostLoginRes;
-import com.example.demo.src.user.model.User;
+import com.example.demo.src.user.model.*;
 import com.example.demo.utils.AES128;
 import com.example.demo.utils.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -31,7 +29,14 @@ public class UserProvider {
     }
 
 
-    // 로그인(password 검사)
+    /**
+     * 로그인 - password 검사
+     *
+     * @param postLoginReq - user_id, user_pw
+     * @return PostLoginRes - user_id, jwt
+     * @throws BaseException
+     * @author yunhee
+     */
     public PostLoginRes logIn(PostLoginReq postLoginReq) throws BaseException {
         if (checkId(postLoginReq.getUser_id()) == 0) {
             throw new BaseException(FAILED_TO_LOGIN);
@@ -55,7 +60,14 @@ public class UserProvider {
         }
     }
 
-    // id 중복 체크
+    /**
+     * id 중복 체크
+     *
+     * @param id
+     * @return int - 이미 존재하면 1, 없으면 0
+     * @throws BaseException
+     * @author yunhee
+     */
     public int checkId(String id) throws BaseException {
         try {
             return userDao.checkId(id);
@@ -64,7 +76,15 @@ public class UserProvider {
         }
     }
 
-    // 이메일 중복 체크
+
+    /**
+     * 이메일 중복 체크
+     *
+     * @param email
+     * @return int - 이미 존재하면 1, 없으면 0
+     * @throws BaseException
+     * @author yunhee
+     */
     public int checkEmail(String email) throws BaseException {
         try {
             return userDao.checkEmail(email);
@@ -73,7 +93,15 @@ public class UserProvider {
         }
     }
 
-    // 핸드폰 번호 체크
+
+    /**
+     * 핸드폰 번호 중복 체크
+     *
+     * @param phone
+     * @return int - 이미 존재하면 1, 없으면 0
+     * @throws BaseException
+     * @author yunhee
+     */
     public int checkPhone(String phone) throws BaseException {
         try {
             return userDao.checkPhone(phone);
@@ -82,7 +110,14 @@ public class UserProvider {
         }
     }
 
-    // nickname 중복 체크
+    /**
+     * nickname 중복 체크
+     *
+     * @param nickname
+     * @return int - 이미 존재하면 1, 없으면 0
+     * @throws BaseException
+     * @author yunhee
+     */
     public int checkNickname(String nickname) throws BaseException {
         try {
             return userDao.checkNickname(nickname);
@@ -90,12 +125,71 @@ public class UserProvider {
             throw new BaseException(DATABASE_ERROR);
         }
     }
-    
-    // 회원 정보 조회
+
+    /**
+     * phone에 해당하는 email 정보 가져오기
+     */
+    public User getEmailFromPhone(String phone) throws BaseException {
+        try {
+            return userDao.getEmailFromPhone(phone);
+        } catch (IncorrectResultSizeDataAccessException error) {
+            return null;
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+
+    /**
+     * 회원정보 조회 API
+     *
+     * @param user_id
+     * @return List 아이디, 닉네임, 전화번호, 이메일, 이름
+     * @throws BaseException
+     * @author yewon
+     */
     public List<GetUserRes> getUser(String user_id) throws BaseException {
         try {
             List<GetUserRes> getUserRes = userDao.getUser(user_id);
             return getUserRes;
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    /**
+     * 소개 페이지 내용 조회
+     *
+     * @param userId
+     * @return
+     * @throws BaseException
+     * @author yunhee
+     */
+    public GetProfileRes getProfile(String userId) throws BaseException {
+        try {
+            GetProfileRes getProfileRes = new GetProfileRes();
+
+            User user = userDao.getUserProfileInfo(userId); // 닉네임, 프로필, 사진
+            getProfileRes.setUser_nickname(user.getUser_nickname());
+            getProfileRes.setUser_prProfile(user.getUser_prProfile());
+            getProfileRes.setUser_prPhoto(user.getUser_prPhoto());
+
+            List<String> ability = userDao.getUserPrAbility(userId);    // 능력
+            List<String> keyword = userDao.getUserPrKeyword(userId);    // 키워드
+            List<String> link = userDao.getUserLink(userId);    // 프로필 링크
+
+            if (!ability.isEmpty())
+                getProfileRes.setUser_prAbility(ability);
+            if (!keyword.isEmpty())
+                getProfileRes.setUser_prKeyword(keyword);
+            if (!link.isEmpty())
+                getProfileRes.setUser_prLink(link);
+
+            // TODO : 프로젝트 리스트
+
+            return getProfileRes;
+        } catch (IncorrectResultSizeDataAccessException error) {
+            throw new BaseException(NOT_EXISTS_USER_ID);
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }

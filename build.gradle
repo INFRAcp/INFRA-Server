@@ -27,27 +27,30 @@ repositories {
 
 //스프링 부트 디펜던시 추가 하는곳
 dependencies {
+
+    // 카카오 로그인 API에 대한 의존성 추가
+    implementation 'com.google.code.gson:gson:2.8.9'
+
     implementation 'org.jetbrains:annotations:19.0.0'
 
 
     // Spring Boot Starter
-    testImplementation ('org.springframework.boot:spring-boot-starter-test')
+    testImplementation('org.springframework.boot:spring-boot-starter-test')
 
     // Lombok
-    implementation ('org.projectlombok:lombok')
-    compileOnly ('org.projectlombok:lombok:1.18.16')
-    annotationProcessor ('org.projectlombok:lombok:1.18.16')
+    implementation('org.projectlombok:lombok')
+    compileOnly('org.projectlombok:lombok:1.18.16')
+    annotationProcessor('org.projectlombok:lombok:1.18.16')
 
     // DB
-    runtimeOnly ('mysql:mysql-connector-java') //mysql8
+    runtimeOnly('mysql:mysql-connector-java') //mysql8
     //runtimeOnly 'mysql:mysql-connector-java:5.1.47' //mysql5
-    implementation ('org.springframework.boot:spring-boot-starter-jdbc')
+    implementation('org.springframework.boot:spring-boot-starter-jdbc')
     compile('org.springframework.boot:spring-boot-starter-data-jpa') //mysql 5버전의 경우 삭제.
 
 
-
     // Web
-    implementation ('org.springframework.boot:spring-boot-starter-web')
+    implementation('org.springframework.boot:spring-boot-starter-web')
 
     // Security, Authentication
     implementation('org.springframework.boot:spring-boot-starter-security')
@@ -57,13 +60,15 @@ dependencies {
     implementation('org.springframework.boot:spring-boot-starter')
     compile('org.springframework.boot:spring-boot-starter-web')
 
+    // Email
+    implementation 'com.sun.mail:javax.mail:1.6.2'
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
     // 스웨거
     compile 'io.springfox:springfox-swagger2:2.6.1'
     compile 'io.springfox:springfox-swagger-ui:2.6.1'
 
 
-
-
+    implementation 'org.apache.commons:commons-lang3:3.12.0'
 }
 
 test {

@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 
-public class PostReportUserRes {
+public class GetReportRes {
     private String reportedUser_id;
     private String rp_category;
     private String rp_field;

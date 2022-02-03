@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 
-public class PostReportDelRes {
+public class PatchReportRes {
     private String user_id;
     private String reportedUser_id;
 }
