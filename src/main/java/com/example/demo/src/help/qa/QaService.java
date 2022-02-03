@@ -30,12 +30,12 @@ public class QaService {
     /**
      * 해당 qa_num을 갖는 질문 수정
      *
-     * @param  PatchQaReq (qa_num, qa_q)
+     * @param PatchQaReq (qa_num, qa_q)
      * @return
      * @throws BaseException
      * @author shinhyeon
      */
-    public void modifyQa(int qa_num, PatchQaReq patchQaReq) throws BaseException{
+    public void modifyQa(int qa_num, PatchQaReq patchQaReq) throws BaseException {
         try {
             int result = qaDao.modifyQa(qa_num, patchQaReq);
             if (result == 0) {
@@ -49,13 +49,13 @@ public class QaService {
     /**
      * qa 등록
      *
-     * @param  PostQaReq(user_id, qa_q)
+     * @param PostQaReq(user_id,qa_q)
      * @return
      * @throws BaseException
      * @author shinhyeon
      */
     @Transactional
-    public void uploadQa(PostQaReq postQaReq) throws BaseException{
+    public void uploadQa(PostQaReq postQaReq) throws BaseException {
         try {
             qaDao.uploadQa(postQaReq);
         } catch (Exception exception) {
@@ -66,12 +66,12 @@ public class QaService {
     /**
      * 질문 삭제
      *
-     * @param  qa_num
+     * @param qa_num
      * @return
      * @throws BaseException
      * @author shinhyeon
      */
-    public void modifyQa2(int qa_num) throws BaseException{
+    public void modifyQa2(int qa_num) throws BaseException {
         try {
             int result = qaDao.modifyQa2(qa_num);
             if (result == 0) {
@@ -85,12 +85,12 @@ public class QaService {
     /**
      * 해당 qa_num을 갖는 질문 답변
      *
-     * @param  patchAnswerReq
+     * @param patchAnswerReq
      * @return
      * @throws BaseException
      * @author shinhyeon
      */
-    public void answerQa(int qa_num, PatchAnswerReq patchAnswerReq) throws BaseException{
+    public void answerQa(int qa_num, PatchAnswerReq patchAnswerReq) throws BaseException {
         try {
             int result = qaDao.answerQa(qa_num, patchAnswerReq);
             if (result == 0) {

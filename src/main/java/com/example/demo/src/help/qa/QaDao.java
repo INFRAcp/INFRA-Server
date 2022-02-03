@@ -19,7 +19,7 @@ public class QaDao {
     private JdbcTemplate jdbcTemplate;
 
     @Autowired
-    public void setDataSource(DataSource dataSource){
+    public void setDataSource(DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
@@ -30,11 +30,11 @@ public class QaDao {
      * @return List<질문 번호, 아이디, 질문, 답변, 질문한 시간, 답변한 시간, status></질문>
      * @author shinhyeon
      */
-    public List<GetQaRes> getQaRes(){
+    public List<GetQaRes> getQaRes() {
         String getQaQuery = "select * from QA";
 
         return this.jdbcTemplate.query(getQaQuery,
-                (rs, rowNum)-> new GetQaRes(
+                (rs, rowNum) -> new GetQaRes(
                         rs.getInt("qa_num"),
                         rs.getString("user_id"),
                         rs.getString("qa_q"),
@@ -77,12 +77,12 @@ public class QaDao {
      * @return int
      * @author shinhyeon
      */
-    public int modifyQa(int qa_num, PatchQaReq patchQaReq){
+    public int modifyQa(int qa_num, PatchQaReq patchQaReq) {
         String qa_qtimeQuery = "SELECT now()";
         patchQaReq.setQa_qTime(this.jdbcTemplate.queryForObject(qa_qtimeQuery, Timestamp.class));
 
         String modifyQaQuary = "update QA set qa_q = ?, qa_qTime = ? where qa_num = ?";
-        Object[] modifyQaParam = new Object[]{patchQaReq.getQa_q(), patchQaReq.getQa_qTime() , qa_num};
+        Object[] modifyQaParam = new Object[]{patchQaReq.getQa_q(), patchQaReq.getQa_qTime(), qa_num};
 
         return this.jdbcTemplate.update(modifyQaQuary, modifyQaParam);
     }
@@ -132,7 +132,7 @@ public class QaDao {
      * @return int
      * @author shinhyeon
      */
-    public int modifyQa2(int qa_num){
+    public int modifyQa2(int qa_num) {
         String modifyQaQuary = "update QA set qa_status = ? where qa_num = ?";
         Object[] modifyQaParam = new Object[]{"삭제", qa_num};
 
