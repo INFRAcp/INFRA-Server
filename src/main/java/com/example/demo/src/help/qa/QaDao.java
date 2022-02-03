@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
+import java.sql.Timestamp;
 import java.util.List;
 
 @Repository
@@ -144,8 +145,11 @@ public class QaDao {
      */
 
     public int answerQa(int qa_num, PatchAnswerReq patchAnswerReq) {
-        String answerQaQuary = "update QA set qa_a = ? where qa_num = ?";
-        Object[] answerQaParam = new Object[]{patchAnswerReq.getQa_a(), qa_num};
+        String qa_qtimeQuery = "SELECT now()";
+        patchAnswerReq.setQa_aTime(this.jdbcTemplate.queryForObject(qa_qtimeQuery, Timestamp.class));
+
+        String answerQaQuary = "update QA set qa_a = ?, qa_aTime = ? where qa_num = ?";
+        Object[] answerQaParam = new Object[]{patchAnswerReq.getQa_a(), patchAnswerReq.getQa_aTime(), qa_num};
 
         return this.jdbcTemplate.update(answerQaQuary, answerQaParam);
     }
