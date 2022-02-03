@@ -63,6 +63,10 @@ dependencies {
     // Email
     implementation 'com.sun.mail:javax.mail:1.6.2'
     implementation 'org.springframework.boot:spring-boot-starter-mail'
+    // 스웨거
+    compile 'io.springfox:springfox-swagger2:2.6.1'
+    compile 'io.springfox:springfox-swagger-ui:2.6.1'
+
 
     implementation 'org.apache.commons:commons-lang3:3.12.0'
 }

@@ -14,11 +14,11 @@ public class PostPjRegisterReq {
     private String user_id;
     private int pj_views=0;
     private String pj_header=null;
-    private String pj_field=null;
+    private String pj_categoryNum =null;
 
     private String pj_content=null;
     private String pj_name=null;
-    private String pj_subField=null;
+    private String pj_subCategoryNum =null;
     private String pj_progress=null;
     private LocalDate pj_endTerm =null;
 
@@ -29,5 +29,5 @@ public class PostPjRegisterReq {
     private Timestamp pj_time;
     private String pj_status;
 
-    private String [] keyword;
+    private String [] hashtag =null;
 }

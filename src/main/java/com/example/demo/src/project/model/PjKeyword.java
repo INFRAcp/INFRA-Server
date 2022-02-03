@@ -9,6 +9,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class PjKeyword {
     private int pj_num;
-    private String keyword;
+    private String hashtag;
 }
 

@@ -12,4 +12,6 @@ public class GetApplyListRes {
     private String pj_num;
     private String user_grade;
     private String user_prphoto;
+
+    private String pj_inviteStatus;
 }

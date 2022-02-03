@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class GetPjKeywordRes {
-    private int pj_num;
-    private String hashtag;
+//프로젝트 찜 등록 및 삭제
+public class PostLikeRegisterRes {
+    private String comment;
 }
