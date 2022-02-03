@@ -35,9 +35,9 @@ public class QaService {
      * @throws BaseException
      * @author shinhyeon
      */
-    public void modifyQa(PatchQaReq patchQaReq) throws BaseException{
+    public void modifyQa(int qa_num, PatchQaReq patchQaReq) throws BaseException{
         try {
-            int result = qaDao.modifyQa(patchQaReq);
+            int result = qaDao.modifyQa(qa_num, patchQaReq);
             if (result == 0) {
                 throw new BaseException(MODIFY_FAIL_QA);
             }

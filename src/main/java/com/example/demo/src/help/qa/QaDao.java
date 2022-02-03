@@ -77,9 +77,12 @@ public class QaDao {
      * @return int
      * @author shinhyeon
      */
-    public int modifyQa(PatchQaReq patchQaReq){
-        String modifyQaQuary = "update QA set qa_q = ? where qa_num = ?";
-        Object[] modifyQaParam = new Object[]{patchQaReq.getQa_q(), patchQaReq.getQa_num()};
+    public int modifyQa(int qa_num, PatchQaReq patchQaReq){
+        String qa_qtimeQuery = "SELECT now()";
+        patchQaReq.setQa_qTime(this.jdbcTemplate.queryForObject(qa_qtimeQuery, Timestamp.class));
+
+        String modifyQaQuary = "update QA set qa_q = ?, qa_qTime = ? where qa_num = ?";
+        Object[] modifyQaParam = new Object[]{patchQaReq.getQa_q(), patchQaReq.getQa_qTime() , qa_num};
 
         return this.jdbcTemplate.update(modifyQaQuary, modifyQaParam);
     }

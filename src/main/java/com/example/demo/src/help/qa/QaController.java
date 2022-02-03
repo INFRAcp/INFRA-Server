@@ -78,7 +78,7 @@ public class QaController {
     @ResponseBody
     @PatchMapping("/modify/{qa_num}")
 
-    public BaseResponse<GetQaRes> modifyQa(@PathVariable("qa_num") int qa_num, @RequestBody Qa qa){
+    public BaseResponse<GetQaRes> modifyQa(@PathVariable("qa_num") int qa_num, @RequestBody PatchQaReq patchQaReq){
         try {
             // jwt
             String userIdByJwt = jwtService.getUserId();
@@ -88,8 +88,7 @@ public class QaController {
                 return new BaseResponse<>(INVALID_USER_JWT);
             }
 
-            PatchQaReq patchQaReq = new PatchQaReq(qa_num, qa.getQa_q());
-            qaService.modifyQa(patchQaReq);
+            qaService.modifyQa(qa_num, patchQaReq);
 
             // 반영된 이후 getQaRes를 받아옴
             GetQaRes getQaRes2 = qaProvider.getQaByQaNum(qa_num);
