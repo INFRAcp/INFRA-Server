@@ -17,6 +17,7 @@ public enum BaseResponseStatus {
     SEARCH_LENGTH_ERROR(false, 1300, "검색어 2글자 이상 입력해주세요."),
 
 
+
     /**
      * 2000 : Request 오류
      */
@@ -25,6 +26,7 @@ public enum BaseResponseStatus {
     EMPTY_JWT(false, 2001, "JWT를 입력해주세요."),
     INVALID_JWT(false, 2002, "유효하지 않은 JWT입니다."),
     INVALID_USER_JWT(false, 2003, "권한이 없는 유저의 접근입니다."),
+
 
 
     // users
@@ -74,6 +76,10 @@ public enum BaseResponseStatus {
 
     DELETE_FAIL_QA(false, 2511, "질문 삭제 실패"),
     MODIFY_FAIL_QA(false, 2512, "질문 수정 실패"),
+
+
+
+    POST_SMS_PHONECHECK_ERROE(false, 2601, "해당번호로 이미 가입하였습니다."),
 
     /**
      * 3000 : Response 오류
