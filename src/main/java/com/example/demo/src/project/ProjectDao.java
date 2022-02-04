@@ -48,7 +48,7 @@ public class ProjectDao {
      * 프로젝트 전체, 검색 조회
      *
      * @param search
-     * @return List 제목, 분야, 이름, 진행, 모집마감일, 전체인원, 모집인원, (모집, 마감임박), 마감 남은 일수
+     * @return List 제목, 분야,ㅂ 이름, 진행, 모집마감일, 전체인원, 모집인원, (모집, 마감임박), 마감 남은 일수
      * @author 한규범, 윤성식
      */
     public List<GetProjectRes> getProjectsBySearch(String search) {
