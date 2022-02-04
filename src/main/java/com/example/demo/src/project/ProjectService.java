@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
 
+import java.time.LocalDate;
+
 import static com.example.demo.config.BaseResponseStatus.*;
 
 @Service
@@ -117,6 +119,88 @@ public class ProjectService {
             return new PostLikeRegisterRes(postLikeDelRes);
         }catch (Exception exception){
             throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    /**
+     * 프로젝트 게시 날짜 관련 오류
+     * @param pj_deadline
+     * @param pj_startTerm
+     * @param pj_endTerm
+     * @throws BaseException
+     * @author 한규범
+     */
+    public void PjDateCheck(LocalDate pj_deadline, LocalDate pj_startTerm, LocalDate pj_endTerm) throws BaseException{
+        if (pj_deadline.isBefore(pj_startTerm)){
+            throw new BaseException(POST_PROJECT_DEADLINE_BEFORE_START);
+        }
+        if (pj_endTerm.isBefore(pj_startTerm)){
+            throw new BaseException(POST_PROJECT_END_BEFORE_START);
+        }
+    }
+
+    /**
+     * 프로젝트 null 값 확인
+     * @param pj_header
+     * @param pj_field
+     * @param pj_content
+     * @param pj_name
+     * @param pj_subField
+     * @param pj_progress
+     * @param pj_endTerm
+     * @param pj_startTerm
+     * @param pj_deadline
+     * @param pj_totalPerson
+     * @throws BaseException
+     * @author 한규범
+     */
+    public void PjNullCheck(String pj_header, String pj_field, String pj_content, String pj_name, String pj_subField, String pj_progress, LocalDate pj_endTerm, LocalDate pj_startTerm, LocalDate pj_deadline, int pj_totalPerson) throws BaseException{
+        if(pj_header==null){
+            throw new BaseException(POST_PROJECT_EMPTY_HEADER);
+        }
+        if(pj_field==null){
+            throw new BaseException(POST_PROJECT_EMPTY_FIELD);
+        }
+        if(pj_content==null){
+            throw new BaseException(POST_PROJECT_EMPTY_CONTENT);
+        }
+        if(pj_name==null){
+            throw new BaseException(POST_PROJECT_EMPTY_NAME);
+        }
+        if(pj_subField==null){
+            throw new BaseException(POST_PROJECT_EMPTY_SUBFIELD);
+        }
+        if(pj_progress==null){
+            throw new BaseException(POST_PROJECT_EMPTY_PROGRESS);
+        }
+        if(pj_endTerm==null){
+            throw new BaseException(POST_PROJECT_EMPTY_END_TERM);
+        }
+        if(pj_startTerm==null){
+            throw new BaseException(POST_PROJECT_EMPTY_START_TERM);
+        }
+        if(pj_deadline==null){
+            throw new BaseException(POST_PROJECT_EMPTY_DEADLINE);
+        }
+        if(pj_totalPerson==0){
+            throw new BaseException(POST_PROJECT_EMPTY_TOTAL_PERSON);
+        }
+    }
+
+    /**
+     * 키워드 값 확인 프로젝트 5글자, 4개 제한
+     * @param hashtag
+     * @throws BaseException
+     * @author 한규범
+     */
+    public void PjKeywordCheck(String [] hashtag) throws BaseException{
+        if(hashtag.length > 4){
+            throw new BaseException(POST_PROJECT_KEYWORD_CNT_EXCEED);
+        }
+        for(int j=0; j<hashtag.length; j++){
+            if(hashtag[j].length() > 5){
+                throw new BaseException(POST_PROJECT_KEYWORD_EXCEED);
+            }
         }
     }
 }

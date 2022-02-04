@@ -78,8 +78,8 @@ public enum BaseResponseStatus {
     MODIFY_FAIL_QA(false, 2512, "질문 수정 실패"),
 
 
-
-    POST_SMS_PHONECHECK_ERROE(false, 2601, "해당번호로 이미 가입하였습니다."),
+    //SMS 관련
+    POST_SMS_PHONEFORM_ERROE(false, 2601, "전화번호 형식이 알맞지 않습니다."),
 
     /**
      * 3000 : Response 오류
@@ -97,6 +97,9 @@ public enum BaseResponseStatus {
     FAILED_TO_SIGNUP_DEL_USER(false, 3116, "탈퇴한 후 일주일 후에 가입 가능합니다."),
     FAILED_TO_SIGNUP_OUT_USER(false, 3117, "강제 탈퇴된 사용자로 3개월 후에 가입 가능합니다."),
     FAILED_TO_SIGNUP_ALREADY_USER(false, 3118, "이미 인프라의 회원입니다."),
+
+    //SMS 관련
+    DUPLICATED_PHONE(false, 3601, "해당번호로 이미 가입하였습니다."),
 
     /**
      * 4000 : Database, Server 오류

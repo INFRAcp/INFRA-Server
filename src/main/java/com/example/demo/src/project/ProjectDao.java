@@ -192,16 +192,11 @@ public class ProjectDao {
      * @author 한규범
      */
     public String pjRegistration(PostPjRegisterReq postPjRegisterReq) {
-        String Pj_numQuery = "SELECT pj_num FROM Project ORDER BY pj_num DESC LIMIT 1";
-        postPjRegisterReq.setPj_num(this.jdbcTemplate.queryForObject(Pj_numQuery, int.class)+1);
 
-        String Pj_timeQuery = "SELECT now()";
-        postPjRegisterReq.setPj_time(this.jdbcTemplate.queryForObject(Pj_timeQuery, Timestamp.class));
 
-        String registrationPjQuery = "insert into Project(pj_num, user_id, pj_views, pj_header, pj_categoryNum,    pj_content, pj_name, pj_subCategoryNum, pj_progress, pj_endTerm,      pj_startTerm, pj_deadline, pj_totalPerson, pj_recruitPerson, pj_time) VALUES (?,?,?,?,?  ,?,?,?,?,?   ,?,?,?,?,?)";
+        String registrationPjQuery = "insert into Project(user_id, pj_views, pj_header, pj_categoryNum,    pj_content, pj_name, pj_subCategoryNum, pj_progress, pj_endTerm,      pj_startTerm, pj_deadline, pj_totalPerson, pj_recruitPerson) VALUES (?,?,?,?  ,?,?,?,?,?   ,?,?,?,?)";
         Object[] registrationParms = new Object[]
-                {postPjRegisterReq.getPj_num(),
-                postPjRegisterReq.getUser_id(),
+                {postPjRegisterReq.getUser_id(),
                 postPjRegisterReq.getPj_views(),
                 postPjRegisterReq.getPj_header(),
                 postPjRegisterReq.getPj_categoryNum(),
@@ -213,8 +208,7 @@ public class ProjectDao {
                 postPjRegisterReq.getPj_startTerm(),
                 postPjRegisterReq.getPj_deadline(),
                 postPjRegisterReq.getPj_totalPerson(),
-                postPjRegisterReq.getPj_recruitPerson(),
-                postPjRegisterReq.getPj_time()};
+                postPjRegisterReq.getPj_recruitPerson()};
         this.jdbcTemplate.update(registrationPjQuery, registrationParms);
 
         for(int i = 0; i<postPjRegisterReq.getHashtag().length; i++){
