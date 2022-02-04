@@ -128,16 +128,16 @@ public class ProjectDao {
      * @author 한규범
      */
     public List<PostPjLikeRes> getPj_num(PostPjLikeReq postPj_likeReq) {
-        String getPj_numQuery = "select Project.pj_num, pj_header, pj_views, pj_categoryNum, pj_name, pj_subCategoryNum, pj_progress, pj_deadline, pj_totalPerson, pj_recruitPerson, pj_time " +
-                "from Project " +
-                "where pj_num in (select pj_num from Pj_like where user_id= ?)";
+        String getPj_numQuery = "select Project.pj_num, pj_header, pj_views, pj_categoryName, pj_name, pj_subCategoryNum, pj_progress, pj_deadline, pj_totalPerson, pj_recruitPerson, pj_time " +
+                "from Project, Pj_category " +
+                "where Project.pj_categoryNum = Pj_category.pj_categoryNum and pj_num in (select pj_num from Pj_like where user_id= ?)";
         String getParams = postPj_likeReq.getUser_id();
         return this.jdbcTemplate.query(getPj_numQuery,
                 (rs, rowNum) -> new PostPjLikeRes(
                         rs.getInt("pj_num"),
                         rs.getString("pj_header"),
                         rs.getInt("pj_views"),
-                        rs.getString("pj_categoryNum"),
+                        rs.getString("pj_categoryName"),
                         rs.getString("pj_name"),
                         rs.getString("pj_subCategoryNum"),
                         rs.getString("pj_progress"),
@@ -177,14 +177,14 @@ public class ProjectDao {
      * @author 한규범
      */
     public List<PostPjInquiryRes> proInquiry(PostPjInquiryReq postPj_inquiryReq) {
-        String getPj_inquiryQuery = "select pj_num, pj_header, pj_views, pj_categoryNum, pj_name, pj_subCategoryNum, pj_progress, pj_deadline, pj_totalPerson, pj_recruitPerson, pj_time from Project where pj_num in (select pj_num from Pj_inquiry where user_id = ?)";
+        String getPj_inquiryQuery = "select pj_num, pj_header, pj_views, pj_categoryName, pj_name, pj_subCategoryNum, pj_progress, pj_deadline, pj_totalPerson, pj_recruitPerson, pj_time from Project, Pj_category where Project.pj_categoryNum = Pj_category.pj_categoryNum and pj_num in (select pj_num from Pj_inquiry where user_id = ?)";
         String Pj_inquiryParams = postPj_inquiryReq.getUser_id();
         return this.jdbcTemplate.query(getPj_inquiryQuery,
                 (rs, rowNum) -> new PostPjInquiryRes(
                         rs.getInt("pj_num"),
                         rs.getString("pj_header"),
                         rs.getInt("pj_views"),
-                        rs.getString("pj_categoryNum"),
+                        rs.getString("pj_categoryName"),
                         rs.getString("pj_name"),
                         rs.getString("pj_subCategoryNum"),
                         rs.getString("pj_progress"),
