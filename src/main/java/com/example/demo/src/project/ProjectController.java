@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static com.example.demo.config.BaseResponseStatus.INVALID_USER_JWT;
 import static com.example.demo.config.BaseResponseStatus.POST_PROJECT_COINCIDE_CHECK;
 
 @RestController
@@ -86,7 +87,7 @@ public class ProjectController {
     }
 
     /**
-     * 유저가 찜한 프로젝트 조회
+     * 유저가 한 프로젝트 조회
      * @param postPj_likeReq
      * @return List 프로젝트 번호, 제목, 조회수, 분야, 이름, 세부분야, 진행상황, 모집마감일, 총 모집인원, 현재 모집인원, 게시일
      * @author 한규범
@@ -95,6 +96,10 @@ public class ProjectController {
     @PostMapping("/likePj")
     public BaseResponse<List<PostPjLikeRes>> like(@RequestBody PostPjLikeReq postPj_likeReq){
         try{
+            String userIdByJwt = jwtService.getUserId();
+            if (!postPj_likeReq.getUser_id().equals(userIdByJwt)) {
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
             List<PostPjLikeRes> postPj_likeRes = projectProvider.like(postPj_likeReq);
             return new BaseResponse<>(postPj_likeRes);
         }catch(BaseException exception){
