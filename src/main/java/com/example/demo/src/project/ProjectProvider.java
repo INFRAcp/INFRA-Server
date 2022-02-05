@@ -10,8 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.example.demo.config.BaseResponseStatus.DATABASE_ERROR;
-import static com.example.demo.config.BaseResponseStatus.SEARCH_LENGTH_ERROR;
+import static com.example.demo.config.BaseResponseStatus.*;
 
 @Service
 public class ProjectProvider {

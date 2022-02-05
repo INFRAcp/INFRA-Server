@@ -13,8 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static com.example.demo.config.BaseResponseStatus.INVALID_USER_JWT;
-import static com.example.demo.config.BaseResponseStatus.POST_PROJECT_COINCIDE_CHECK;
+import static com.example.demo.config.BaseResponseStatus.*;
 
 @RestController
 @RequestMapping("/project")
@@ -68,9 +67,6 @@ public class ProjectController {
             if (getProjectRes.get(i).getPj_daysub() <= 2 && getProjectRes.get(i).getPj_daysub() >= 0) {
                 getProjectRes.get(i).setPj_recruit("마감임박");
             }
-            return new BaseResponse<>(getProjectRes);
-        } catch (BaseException exception) {
-            return new BaseResponse<>((exception.getStatus()));
         }
     }
 
