@@ -392,6 +392,7 @@ public class ProjectDao {
 
     /**
      * 평가 존재 유무
+     *
      * @param user_id
      * @param passiveUser_id
      * @param pj_num
@@ -406,6 +407,6 @@ public class ProjectDao {
                 pj_num
         };
 
-        return this.jdbcTemplate.queryForObject(getEvalCheckQuery, (Object[]) getEvalCheckParms,Integer.class);
+        return this.jdbcTemplate.queryForObject(getEvalCheckQuery, (Object[]) getEvalCheckParms, Integer.class);
     }
 }

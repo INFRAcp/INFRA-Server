@@ -303,9 +303,9 @@ public class ProjectController {
     @PostMapping("/evaluate")
 
     public BaseResponse<String> uploadEval(@RequestBody PostEvalReq postEvalReq) {
-        if(postEvalReq.getUser_id() == null || postEvalReq.getPassiveUser_id() == null || postEvalReq.getPj_num() == null ||
+        if (postEvalReq.getUser_id() == null || postEvalReq.getPassiveUser_id() == null || postEvalReq.getPj_num() == null ||
                 postEvalReq.getOpinion() == null || postEvalReq.getResponsibility() == null || postEvalReq.getAbility() == null ||
-                postEvalReq.getTeamwork() == null || postEvalReq.getLeadership() == null){
+                postEvalReq.getTeamwork() == null || postEvalReq.getLeadership() == null) {
             return new BaseResponse<>(POST_PROJECT_EVALUATE_EMPTY);
         }
 
@@ -338,9 +338,9 @@ public class ProjectController {
     @PatchMapping("/evaluate/modify")
 
     public BaseResponse<String> modifyEval(@RequestBody PatchEvalReq patchEvalReq) {
-        if(patchEvalReq.getUser_id() == null || patchEvalReq.getPassiveUser_id() == null || patchEvalReq.getPj_num() == null ||
+        if (patchEvalReq.getUser_id() == null || patchEvalReq.getPassiveUser_id() == null || patchEvalReq.getPj_num() == null ||
                 patchEvalReq.getOpinion() == null || patchEvalReq.getResponsibility() == null || patchEvalReq.getAbility() == null ||
-                patchEvalReq.getTeamwork() == null || patchEvalReq.getLeadership() == null){
+                patchEvalReq.getTeamwork() == null || patchEvalReq.getLeadership() == null) {
             return new BaseResponse<>(POST_PROJECT_EVALUATE_EMPTY);
         }
 

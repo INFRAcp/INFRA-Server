@@ -103,6 +103,7 @@ public class ProjectService {
 
     /**
      * 평가 점수 범위 validation 함수
+     *
      * @param responsibility
      * @param ability
      * @param teamwork
@@ -127,6 +128,7 @@ public class ProjectService {
 
     /**
      * 프로젝트 참여 인원 validation 함수
+     *
      * @param user_id
      * @param passiveUser_id
      * @param pj_num
@@ -193,15 +195,16 @@ public class ProjectService {
 
     /**
      * 팀원평가 존재 유무 validation 함수
+     *
      * @param user_id
      * @param passiveUser_id
      * @param pj_num
      * @throws BaseException
      * @author shinhyeon
      */
-    private void EvalCheck (String user_id, String passiveUser_id, Integer pj_num) throws BaseException{
+    private void EvalCheck(String user_id, String passiveUser_id, Integer pj_num) throws BaseException {
         Integer evalCheck = projectProvider.getEvalCheck(user_id, passiveUser_id, pj_num);
 
-        if(evalCheck != 1) throw new BaseException(PROJECT_EVALUATE);
+        if (evalCheck != 1) throw new BaseException(PROJECT_EVALUATE);
     }
 }

@@ -140,6 +140,7 @@ public class ProjectProvider {
 
     /**
      * 평가하는 인원의 승인 상태 조회
+     *
      * @param user_id
      * @param pj_num
      * @return String
@@ -157,6 +158,7 @@ public class ProjectProvider {
 
     /**
      * 평가받는 인원의 승인 상태 조회
+     *
      * @param passiveUser_id
      * @param pj_num
      * @return String
@@ -174,6 +176,7 @@ public class ProjectProvider {
 
     /**
      * 팀원 평가 존재 유무
+     *
      * @param user_id
      * @param passiveUser_id
      * @param pj_num
@@ -181,7 +184,7 @@ public class ProjectProvider {
      * @throws BaseException
      * @author shinhyeon
      */
-    public Integer getEvalCheck (String user_id, String passiveUser_id, Integer pj_num) throws BaseException{
+    public Integer getEvalCheck(String user_id, String passiveUser_id, Integer pj_num) throws BaseException {
         try {
             Integer evalCheck = projectDao.getEvalCheck(user_id, passiveUser_id, pj_num);
             return evalCheck;
