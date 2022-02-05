@@ -17,8 +17,7 @@ public class SmsDao {
 
     public boolean phoneCheck(String recipientPhoneNumber) {
         String phoneCheckQuery = "Select count(*) from User where user_phone = ?";
-        String recipientPhoneNumberHypen = recipientPhoneNumber.substring(0, 3) + "-" + recipientPhoneNumber.substring(3, 7) + "-" + recipientPhoneNumber.substring(7);
-        if (this.jdbcTemplate.queryForObject(phoneCheckQuery,int.class,recipientPhoneNumberHypen) == 0){
+        if (this.jdbcTemplate.queryForObject(phoneCheckQuery,int.class, recipientPhoneNumber) == 0){
             return true;
         }else{
             return false;

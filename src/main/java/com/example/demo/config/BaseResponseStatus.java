@@ -83,8 +83,8 @@ public enum BaseResponseStatus {
     MODIFY_FAIL_ANSWER(false, 2513, "질문 답변 실패"),
     INVALID_AUTHORITY_ANSWER(false, 2514, "질문 답변 권한이 없습니다. (관리자만 답변이 가능합니다.)"),
 
-
-    POST_SMS_PHONECHECK_ERROE(false, 2601, "해당번호로 이미 가입하였습니다."),
+    //SMS 관련
+    POST_SMS_PHONEFORM_ERROE(false, 2601, "전화번호 형식이 알맞지 않습니다."),
 
     /**
      * 3000 : Response 오류
@@ -102,6 +102,9 @@ public enum BaseResponseStatus {
     FAILED_TO_SIGNUP_DEL_USER(false, 3116, "탈퇴한 후 일주일 후에 가입 가능합니다."),
     FAILED_TO_SIGNUP_OUT_USER(false, 3117, "강제 탈퇴된 사용자로 3개월 후에 가입 가능합니다."),
     FAILED_TO_SIGNUP_ALREADY_USER(false, 3118, "이미 인프라의 회원입니다."),
+
+    //SMS 관련
+    DUPLICATED_PHONE(false, 3601, "해당번호로 이미 가입하였습니다."),
 
     // 팀원 평가
     PROJECT_EVALUATE_AUTHORITY(false, 3351,"평가 권한이 없습니다. (프로젝트에 참여해야 평가 권한이 주어집니다.)"),
