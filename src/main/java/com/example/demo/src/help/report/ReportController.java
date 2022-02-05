@@ -34,7 +34,13 @@ public class ReportController {
     }
 
 
-    // [POST] 새로운 신고 등록하기
+    /**
+     * 새로운 신고 등록 API
+     * [POST] /report
+     *
+     * @param postReportReq
+     * @return
+     */
     @ResponseBody
     @PostMapping("")
     public BaseResponse<PostReportRes> createReport(@RequestBody PostReportReq postReportReq) {
@@ -54,35 +60,49 @@ public class ReportController {
         }
     }
 
-    // [GET] 특정 사용자가 신고했던 목록 조회
+
+    /**
+     * 특정 사용자가 신고했던 목록 조회 API
+     * [GET] /report
+     *
+     * @param getReportReq
+     * @return
+     */
     @ResponseBody
     @GetMapping("")
-    public BaseResponse<List<PostReportUserRes>> getReports(@RequestBody PostReportUserReq postReportUserReq) {
+    public BaseResponse<List<GetReportRes>> getReports(@RequestBody GetReportReq getReportReq) {
         try {
             String userIdByJwt = jwtService.getUserId();
-            if(!postReportUserReq.getUser_id().equals(userIdByJwt)) {
+            if(!getReportReq.getUser_id().equals(userIdByJwt)) {
                 return new BaseResponse<>(INVALID_USER_JWT);
             }
-            List<PostReportUserRes> postReportUserRes = reportProvider.getReports(postReportUserReq);
-            return new BaseResponse<>(postReportUserRes);
+            List<GetReportRes> getReportRes = reportProvider.getReports(getReportReq);
+            return new BaseResponse<>(getReportRes);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
 
-    // [Delete] 특정 사용자의 특정 신고글 삭제
+
+    /**
+     * 특정 사용자의 특정 신고글 삭제 API
+     * [GET] /report
+     *
+     * @param patchReportReq
+     * @return
+     */
     @ResponseBody
     @PatchMapping("")
-    public BaseResponse<String> deleteReport(@RequestBody PostReportDelReq postReportDelReq) {
-        if (postReportDelReq.getUser_id() == null || postReportDelReq.getReportedUser_id() == null){
+    public BaseResponse<String> deleteReport(@RequestBody PatchReportReq patchReportReq) {
+        if (patchReportReq.getUser_id() == null || patchReportReq.getReportedUser_id() == null){
             return new BaseResponse<>(POST_REPORTS_DELETE_ERROR);
         }
         try {
             String userIdByJwt = jwtService.getUserId();
-            if(!postReportDelReq.getUser_id().equals(userIdByJwt)) {
+            if(!patchReportReq.getUser_id().equals(userIdByJwt)) {
                 return new BaseResponse<>(INVALID_USER_JWT);
             }
-            reportService.deleteReport(postReportDelReq);
+            reportService.deleteReport(patchReportReq);
             String result = "신고가 철회되었습니다.";
             return new BaseResponse<>(result);
         } catch (BaseException exception) {

@@ -29,9 +29,14 @@ public class ProjectService {
         this.jwtService = jwtService;
     }
 
-    //프로젝트 등록
-    public PostPjRegisterRes registrationPj(PostPjRegisterReq postPjRegisterReq) throws BaseException {
-        try {
+    /**
+     * 프로젝트 등록
+     * @param postPjRegisterReq
+     * @return PostPjRegisterRes 프로젝트 이름
+     * @author 한규범
+     */
+    public PostPjRegisterRes registrationPj(PostPjRegisterReq postPjRegisterReq) throws BaseException{
+        try{
             String pjRegisterSucese = projectDao.pjRegistration(postPjRegisterReq);
             return new PostPjRegisterRes(pjRegisterSucese);
         } catch (Exception exception) {
@@ -39,8 +44,13 @@ public class ProjectService {
         }
     }
 
-    //프로젝트 수정
-    public PatchPjModifyRes pjModify(PatchPjModifyReq patchPjModifyReq) throws BaseException {
+    /**
+     *프로젝트 수정
+     * @param patchPjModifyReq
+     * @return PatchPjModifyRes 프로젝트 이름
+     * @author 한규범
+     */
+    public PatchPjModifyRes pjModify(PatchPjModifyReq patchPjModifyReq)throws BaseException{
         try {
             String PjModify = projectDao.pjModify(patchPjModifyReq);
             return new PatchPjModifyRes(PjModify);
@@ -49,18 +59,28 @@ public class ProjectService {
         }
     }
 
-    //프로젝트 삭제
-    public DelPjDelRes pjDel(DelPjDelReq getPjDelReq) throws BaseException {
+    /**
+     * 프로젝트 삭제
+     * @param delPjDelReq
+     * @return DelPjDelRes 결과 메시지
+     * @author 한규범
+     */
+    public DelPjDelRes pjDel(DelPjDelReq delPjDelReq) throws BaseException{
         try {
-            String pjDel = projectDao.pjDel(getPjDelReq);
+            String pjDel = projectDao.pjDel(delPjDelReq);
             return new DelPjDelRes(pjDel);
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }
     }
 
-    //프로젝트 지원
-    public PostPjApplyRes pjApply(PostPjApplyReq postPjApplyReq) throws BaseException {
+    /**
+     * 프로젝트 지원
+     * @param postPjApplyReq
+     * @return PostPjApplyRes 완료 메시지
+     * @author 한규범
+     */
+    public PostPjApplyRes pjApply(PostPjApplyReq postPjApplyReq) throws BaseException{
         try {
             String pjApplyName = projectDao.pjApply(postPjApplyReq);
             return new PostPjApplyRes(pjApplyName);
@@ -69,9 +89,14 @@ public class ProjectService {
         }
     }
 
-    //프로젝트 신청한 유저 승인
-    public PatchPjApproveRes pjApprove(PatchPjApproveReq patchPjApproveReq) throws BaseException {
-        try {
+    /**
+     * 프로젝트신청한 유저 승인
+     * @param patchPjApproveReq
+     * @return PatchPjApproveRes 완료 메시지
+     * @author 윤성식
+     */
+    public PatchPjApproveRes pjApprove(PatchPjApproveReq patchPjApproveReq) throws BaseException{
+        try{
             String PjApprove = projectDao.pjApprove(patchPjApproveReq);
             return new PatchPjApproveRes(PjApprove);
         } catch (Exception exception) {
@@ -79,6 +104,25 @@ public class ProjectService {
         }
     }
 
+    //프로젝트 찜 등록
+    public PostLikeRegisterRes likeRegister(PostLikeRegisterReq postLikeRegisterReq) throws BaseException{
+        try{
+            String postLikeRegisterRes = projectDao.likeRegister(postLikeRegisterReq);
+            return new PostLikeRegisterRes(postLikeRegisterRes);
+        }catch (Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    //프로젝트 찜 삭제
+    public PostLikeRegisterRes likeDel(PostLikeRegisterReq postLikeRegisterReq) throws BaseException{
+        try{
+            String postLikeDelRes = projectDao.likeDel(postLikeRegisterReq);
+            return new PostLikeRegisterRes(postLikeDelRes);
+        }catch (Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
     /**
      * 팀원 평가 등록
      *

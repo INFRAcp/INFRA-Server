@@ -1,19 +1,21 @@
 package com.example.demo.src.user;
 
-
 import com.example.demo.config.BaseException;
 import com.example.demo.config.secret.Secret;
+import com.example.demo.src.mail.MailService;
 import com.example.demo.src.user.model.PatchUserReq;
 import com.example.demo.src.user.model.PostUserReq;
 import com.example.demo.src.user.model.PostUserRes;
 import com.example.demo.utils.AES128;
 import com.example.demo.utils.JwtService;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import static com.example.demo.config.BaseResponseStatus.*;
+import static com.example.demo.utils.ValidationRegex.*;
 
 @Service
 public class UserService {
@@ -22,30 +24,52 @@ public class UserService {
     private final UserDao userDao;
     private final UserProvider userProvider;
     private final JwtService jwtService;
-
+    private final MailService mailService;
 
     @Autowired
-    public UserService(UserDao userDao, UserProvider userProvider, JwtService jwtService) {
+    public UserService(UserDao userDao, UserProvider userProvider, JwtService jwtService, MailService mailService) {
         this.userDao = userDao;
         this.userProvider = userProvider;
         this.jwtService = jwtService;
-
+        this.mailService = mailService;
     }
 
-    // 회원가입(POST)
+    /**
+     * 회원가입
+     *
+     * @param postUserReq
+     * @return PostUserRes - user_id, jwt
+     * @throws BaseException
+     * @author yunhee
+     */
     public PostUserRes createUser(PostUserReq postUserReq) throws BaseException {
-        if (userProvider.checkId(postUserReq.getUser_id()) == 1) {  // id 중복 확인
+        checkCreateUserRegex(postUserReq);  // 데이터 형식 체크
+
+        if (userProvider.checkId(postUserReq.getUser_id()) == 1)  // id 중복 확인
             throw new BaseException(POST_USERS_EXISTS_ID);
-        }
-        if (userProvider.checkNickname(postUserReq.getUser_nickname()) == 1) {  // nickname 중복 확인
+
+        if (userProvider.checkNickname(postUserReq.getUser_nickname()) == 1)  // nickname 중복 확인
             throw new BaseException(POST_USERS_EXISTS_NICKNAME);
-        }
-        if (userProvider.checkEmail(postUserReq.getUser_email()) == 1) { // 이메일 중복 확인
+
+        if (userProvider.checkEmail(postUserReq.getUser_email()) == 1) // 이메일 중복 확인
             throw new BaseException(POST_USERS_EXISTS_EMAIL);
-        }
-        if (userProvider.checkPhone(postUserReq.getUser_phone()) == 1) { // 전화번호 중복 확인
+
+        if (userProvider.checkPhone(postUserReq.getUser_phone()) == 1) // 전화번호 중복 확인
             throw new BaseException(POST_USERS_EXISTS_PHONE);
+
+        String checkPossible;
+        try {   // 가입 가능 여부 체크
+            checkPossible = userDao.checkPossibleSignUp(postUserReq.getUser_phone());
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
         }
+
+        if (checkPossible.equals("DEL"))
+            throw new BaseException(FAILED_TO_SIGNUP_DEL_USER);
+        else if (checkPossible.equals("OUT"))
+            throw new BaseException(FAILED_TO_SIGNUP_OUT_USER);
+        else if (checkPossible.equals("ALREADY_USER"))
+            throw new BaseException(FAILED_TO_SIGNUP_ALREADY_USER);
 
         String pwd;
         try {   // 비밀번호 암호화
@@ -65,7 +89,14 @@ public class UserService {
         }
     }
 
-    // 비밀번호 변경(Patch)
+    /**
+     * 비밀번호 변경
+     *
+     * @param patchUserReq
+     * @return
+     * @throws BaseException
+     * @author yunhee
+     */
     public void modifyUserPw(PatchUserReq patchUserReq) throws BaseException {
         String pwd;
         try {   // 비밀번호 암호화
@@ -82,6 +113,65 @@ public class UserService {
             }
         } catch (Exception exception) { // DB에 이상이 있는 경우
             throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    /**
+     * 회원탈퇴 API
+     *
+     * @param user_id
+     * @return
+     * @throws BaseException
+     * @author yewon
+     */
+    public void delUser(String user_id) throws BaseException {
+        try {
+            userDao.delUser(user_id);
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    /**
+     * 패스워드 초기화 후 메일 보내기
+     *
+     * @param email
+     * @throws BaseException
+     * @author yunhee
+     */
+    public void resetPwMail(String id, String email) throws BaseException {
+        String pw = RandomStringUtils.randomAlphanumeric(12);
+        PatchUserReq patchUserReq = new PatchUserReq(id, pw);
+        try {
+            modifyUserPw(patchUserReq); // 비밀번호 변경
+            mailService.sendResetPwMail(email, pw);
+        } catch (Exception exception) { // DB에 이상이 있는 경우
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    /**
+     * 회원 가입 정보 regex 체크
+     *
+     * @param postUserReq
+     * @throws BaseException
+     * @author yunhee
+     */
+    public void checkCreateUserRegex(PostUserReq postUserReq) throws BaseException {
+        if (!isRegexId(postUserReq.getUser_id())) {   // id 형식 체크
+            throw new BaseException(POST_USERS_INVALID_ID);
+        }
+        if (!isRegexPw(postUserReq.getUser_pw())) {    // 비밀번호 형식 체크
+            throw new BaseException(POST_USERS_INVALID_PW);
+        }
+        if (!isRegexName(postUserReq.getUser_name())) {   // 이름 형식 체크
+            throw new BaseException(POST_USERS_INVALID_NAME);
+        }
+        if (!isRegexPhone(postUserReq.getUser_phone())) {    // 핸드폰 번호 형식 체크
+            throw new BaseException(POST_USERS_INVALID_PHONE);
+        }
+        if (!isRegexEmail(postUserReq.getUser_email())) {    // 이메일 형식 체크
+            throw new BaseException(POST_USERS_INVALID_EMAIL);
         }
     }
 

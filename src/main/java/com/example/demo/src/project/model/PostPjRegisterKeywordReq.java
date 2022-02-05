@@ -10,8 +10,8 @@ import lombok.Setter;
 @AllArgsConstructor
 public class PostPjRegisterKeywordReq {
     private int pj_num;
-    private String keyword1;
-    private String keyword2;
-    private String keyword3;
-    private String keyword4;
+    private String hashtag1;
+    private String hashtag2;
+    private String hashtag3;
+    private String hashtag4;
 }

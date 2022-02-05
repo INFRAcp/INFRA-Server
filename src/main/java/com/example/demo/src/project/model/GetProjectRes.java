@@ -15,12 +15,12 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class GetProjectRes {
     private String pj_header;
-    private String pj_field;
+    private String pj_category;
     private String pj_name;
     private String pj_progress;
     private String pj_deadline;
     private int pj_totalPerson;
     private int pj_recruitPerson;
     private String pj_recruit;
-    private int pj_DaySub;
+    private int pj_daysub;
 }

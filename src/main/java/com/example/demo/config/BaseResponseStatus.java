@@ -46,7 +46,6 @@ public enum BaseResponseStatus {
     POST_USERS_EXISTS_NICKNAME(false, 2022, "중복된 닉네임 입니다."),
 
 
-
     // Project 프로젝트 등록시 빈값 에러
     POST_PROJECT_EMPTY_HEADER(false, 2310, "프로젝트 제목을 입력해주세요."),
     POST_PROJECT_EMPTY_FIELD(false, 2311, "프로젝트 분야를 입력해주세요."),
@@ -60,15 +59,15 @@ public enum BaseResponseStatus {
     POST_PROJECT_EMPTY_TOTAL_PERSON(false, 2319, "프로젝트 모집 인원을 입력해주세요."),
 
 
-    POST_PROJECT_COINCIDE_CHECK(false, 2320,"이미 지원한 프로젝트입니다."),
+    POST_PROJECT_COINCIDE_CHECK(false, 2320, "이미 지원한 프로젝트입니다."),
 
     //프로젝트 등록시 키워드 글자수 초과
-    POST_PROJECT_KEYWORD_EXCEED(false,2321,"키워드 5글자를 초과하였습니다."),
-    POST_PROJECT_KEYWORD_CNT_EXCEED(false,2322,"키워드 4개를 초과하였습니다."),
+    POST_PROJECT_KEYWORD_EXCEED(false, 2321, "키워드 5글자를 초과하였습니다."),
+    POST_PROJECT_KEYWORD_CNT_EXCEED(false, 2322, "키워드 4개를 초과하였습니다."),
 
     //프로젝트 날짜 오류
-    POST_PROJECT_DEADLINE_BEFORE_START(false,2323,"예상 시작일이 마감일 이전에 있습니다."),
-    POST_PROJECT_END_BEFORE_START(false,2324,"예상 시작일이 예상 종료일보다 이전에 있습니다."),
+    POST_PROJECT_DEADLINE_BEFORE_START(false, 2323, "예상 시작일이 마감일 이전에 있습니다."),
+    POST_PROJECT_END_BEFORE_START(false, 2324, "예상 시작일이 예상 종료일보다 이전에 있습니다."),
 
     // 팀원 평가
     // [Post] /evaluate
@@ -81,8 +80,11 @@ public enum BaseResponseStatus {
 
     DELETE_FAIL_QA(false, 2511, "질문 삭제 실패"),
     MODIFY_FAIL_QA(false, 2512, "질문 수정 실패"),
-    MODIFY_FAIL_ANSWER(false, 2513, "질문 답변 실패"),
-    INVALID_AUTHORITY_ANSWER(false, 2514, "질문 답변 권한이 없습니다. (관리자만 답변이 가능합니다.)"),
+
+
+
+    POST_SMS_PHONECHECK_ERROE(false, 2601, "해당번호로 이미 가입하였습니다."),
+
     /**
      * 3000 : Response 오류
      */
@@ -91,18 +93,22 @@ public enum BaseResponseStatus {
 
     // [POST] /users
     DUPLICATED_EMAIL(false, 3013, "중복된 이메일입니다."),
-    FAILED_TO_LOGIN(false,3014,"없는 아이디거나 비밀번호가 틀렸습니다."),
+    FAILED_TO_LOGIN(false, 3014, "없는 아이디거나 비밀번호가 틀렸습니다."),
+    NOT_EXISTS_EMAIL(false, 3115, "해당하는 이메일 정보가 없습니다."),
+    NOT_EXISTS_USER_ID(false, 3116, "해당하는 아이디가 없습니다."),
 
-    // 팀원 평가
-    PROJECT_EVALUATE_AUTHORITY(false, 3351,"평가 권한이 없습니다. (프로젝트에 참여해야 평가 권한이 주어집니다.)"),
-    PROJECT_MEMBER(false, 3352,"해당 프로젝트의 참여 인원이 아닙니다. 프로젝트 번호와 평가 인원의 이름을 확인해주세요."),
-    PROJECT_EVALUATE(false, 3353, "존재하지 않는 평가입니다."),
+    // 회원가입 관련
+    FAILED_TO_SIGNUP_DEL_USER(false, 3116, "탈퇴한 후 일주일 후에 가입 가능합니다."),
+    FAILED_TO_SIGNUP_OUT_USER(false, 3117, "강제 탈퇴된 사용자로 3개월 후에 가입 가능합니다."),
+    FAILED_TO_SIGNUP_ALREADY_USER(false, 3118, "이미 인프라의 회원입니다."),
 
     /**
      * 4000 : Database, Server 오류
      */
     DATABASE_ERROR(false, 4000, "데이터베이스 연결에 실패하였습니다."),
     SERVER_ERROR(false, 4001, "서버와의 연결에 실패하였습니다."),
+    EMAIL_ERROR(false, 4002, "서버 전용 이메일에 문제가 발생했습니다."),
+    EMAIL_AUTH_ERROR(false, 4003, "서버 전용 이메일 계정 인증에 실패했습니다."),
 
     //[PATCH] /users/{userIdx}
     MODIFY_FAIL_USERNAME(false, 4014, "유저네임 수정 실패"),

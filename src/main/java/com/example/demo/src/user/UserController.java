@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 import static com.example.demo.config.BaseResponseStatus.*;
-import static com.example.demo.utils.ValidationRegex.*;
+import static com.example.demo.utils.ValidationRegex.isRegexId;
 
 @RestController
 @RequestMapping("/user")
@@ -37,6 +37,10 @@ public class UserController {
     /**
      * 회원가입 API
      * [POST] /user/sign-up
+     *
+     * @param postUserReq - id, pw, name, email, phone, nickname
+     * @return BaseResponse
+     * @author yunhee
      */
     @ResponseBody
     @PostMapping("/sign-up")
@@ -46,21 +50,6 @@ public class UserController {
             return new BaseResponse<>(POST_USERS_EMPTY_INFO);
         }
 
-        if (!isRegexId(postUserReq.getUser_id())) {   // id 형식 체크
-            return new BaseResponse<>(POST_USERS_INVALID_ID);
-        }
-        if (!isRegexPw(postUserReq.getUser_pw())) {    // 비밀번호 형식 체크
-            return new BaseResponse<>(POST_USERS_INVALID_PW);
-        }
-        if (!isRegexName(postUserReq.getUser_name())) {   // 이름 형식 체크
-            return new BaseResponse<>(POST_USERS_INVALID_NAME);
-        }
-        if (!isRegexPhone(postUserReq.getUser_phone())) {    // 핸드폰 번호 형식 체크
-            return new BaseResponse<>(POST_USERS_INVALID_PHONE);
-        }
-        if (!isRegexEmail(postUserReq.getUser_email())) {    // 이메일 형식 체크
-            return new BaseResponse<>(POST_USERS_INVALID_EMAIL);
-        }
         try {
             PostUserRes postUserRes = userService.createUser(postUserReq);
             return new BaseResponse<>(postUserRes);
@@ -72,6 +61,10 @@ public class UserController {
     /**
      * 로그인 API
      * [POST] /user/logIn
+     *
+     * @param postLoginReq - id, pw
+     * @return BaseResponse
+     * @author yunhee
      */
     @ResponseBody
     @PostMapping("/log-in")
@@ -90,6 +83,10 @@ public class UserController {
     /**
      * ID 중복 체크 API
      * [GET] /user/valid-id/:user_id
+     *
+     * @param user_id
+     * @return BaseResponse
+     * @author yunhee
      */
     @ResponseBody
     @GetMapping("/valid-id/{user_id}")
@@ -133,10 +130,40 @@ public class UserController {
         }
     }
 
+    /**
+     * 비밀번호 초기화 API
+     * [PATCH] /user/reset-pw
+     *
+     * @param user - phone 정보 들어와야 함
+     * @return BaseResponse
+     * @author yunhee
+     */
+    @ResponseBody
+    @PatchMapping("/reset-pw")
+    public BaseResponse<String> resetPw(@RequestBody User user) {
+        if (user.getUser_phone() == null) {
+            return new BaseResponse<>(POST_USERS_EMPTY_INFO);
+        }
+        try {
+            User userInfo = userProvider.getEmailFromPhone(user.getUser_phone());
+            if (userInfo == null)
+                return new BaseResponse<>(NOT_EXISTS_EMAIL);
+
+            userService.resetPwMail(userInfo.getUser_id(), userInfo.getUser_email()); // 비밀번호 변경후 메일 전송
+            return new BaseResponse<>("임시 비밀번호가 성공적으로 발송되었습니다.");
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
 
     /**
      * 회원정보조회 API
      * [POST] /user/{user_id}
+     *
+     * @param user_id
+     * @return
+     * @author yewon
      */
     @ResponseBody
     @GetMapping("/{user_id}")
@@ -152,4 +179,49 @@ public class UserController {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
+
+    /**
+     * 회원탈퇴  API
+     * [PATCH] /user/{user_id}
+     *
+     * @param user_id
+     * @return
+     * @author yewon
+     */
+    @ResponseBody
+    @PatchMapping("/{user_id}")
+    public BaseResponse<String> delUser(@PathVariable("user_id") String user_id) {
+        try {
+            String userIdByJwt = jwtService.getUserId();
+            if (!user_id.equals(userIdByJwt)) {
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
+            userService.delUser(user_id);
+            String result = "탈퇴가 정상적으로 처리되었습니다.";
+            return new BaseResponse<>(result);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    /**
+     * 소개 페이지 내용 조회 API
+     * [GET] /user/profile/:userId
+     *
+     * @param userId
+     * @return BaseResponse
+     * @author yunhee
+     */
+    @ResponseBody
+    @GetMapping("/profile/{userId}")
+    public BaseResponse<GetProfileRes> getProfile(@PathVariable("userId") String userId) {
+        try {
+            GetProfileRes getProfileRes = userProvider.getProfile(userId);
+            return new BaseResponse<>(getProfileRes);
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
 }
+
+
