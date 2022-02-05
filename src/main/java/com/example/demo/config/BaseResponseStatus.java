@@ -80,7 +80,8 @@ public enum BaseResponseStatus {
 
     DELETE_FAIL_QA(false, 2511, "질문 삭제 실패"),
     MODIFY_FAIL_QA(false, 2512, "질문 수정 실패"),
-
+    MODIFY_FAIL_ANSWER(false, 2513, "질문 답변 실패"),
+    INVALID_AUTHORITY_ANSWER(false, 2514, "질문 답변 권한이 없습니다. (관리자만 답변이 가능합니다.)"),
 
 
     POST_SMS_PHONECHECK_ERROE(false, 2601, "해당번호로 이미 가입하였습니다."),
@@ -101,6 +102,11 @@ public enum BaseResponseStatus {
     FAILED_TO_SIGNUP_DEL_USER(false, 3116, "탈퇴한 후 일주일 후에 가입 가능합니다."),
     FAILED_TO_SIGNUP_OUT_USER(false, 3117, "강제 탈퇴된 사용자로 3개월 후에 가입 가능합니다."),
     FAILED_TO_SIGNUP_ALREADY_USER(false, 3118, "이미 인프라의 회원입니다."),
+
+    // 팀원 평가
+    PROJECT_EVALUATE_AUTHORITY(false, 3351,"평가 권한이 없습니다. (프로젝트에 참여해야 평가 권한이 주어집니다.)"),
+    PROJECT_MEMBER(false, 3352,"해당 프로젝트의 참여 인원이 아닙니다. 프로젝트 번호와 평가 인원의 이름을 확인해주세요."),
+    PROJECT_EVALUATE(false, 3353, "존재하지 않는 평가입니다."),
 
     /**
      * 4000 : Database, Server 오류
