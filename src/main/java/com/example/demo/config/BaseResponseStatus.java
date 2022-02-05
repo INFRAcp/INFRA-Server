@@ -73,8 +73,7 @@ public enum BaseResponseStatus {
     // 팀원 평가
     // [Post] /evaluate
     POST_PROJECT_EVALUATE_SCORE(false, 2350,"평가 점수 범위는 0 ~ 5 이어야 합니다."),
-    POST_PROJECT_EVALUATE_MEMBER1(false, 2351,"평가 권한이 없습니다. (프로젝트에 참여해야 평가 권한이 주어집니다.)"),
-    POST_PROJECT_EVALUATE_MEMBER2(false, 2352,"해당 프로젝트의 참여 인원이 아닙니다. 프로젝트 번호와 평가 인원의 이름을 확인해주세요."),
+    POST_PROJECT_EVALUATE_EMPTY(false, 2351,"필수 요소가 비었습니다."),
 
     // [POST] /report
     POST_REPORTS_EMPTY_INFO(false, 2501, "신고 접수에 필요한 모든 항목을 작성해주세요."),
@@ -94,7 +93,10 @@ public enum BaseResponseStatus {
     DUPLICATED_EMAIL(false, 3013, "중복된 이메일입니다."),
     FAILED_TO_LOGIN(false,3014,"없는 아이디거나 비밀번호가 틀렸습니다."),
 
-
+    // 팀원 평가
+    PROJECT_EVALUATE_AUTHORITY(false, 3351,"평가 권한이 없습니다. (프로젝트에 참여해야 평가 권한이 주어집니다.)"),
+    PROJECT_MEMBER(false, 3352,"해당 프로젝트의 참여 인원이 아닙니다. 프로젝트 번호와 평가 인원의 이름을 확인해주세요."),
+    PROJECT_EVALUATE(false, 3353, "존재하지 않는 평가입니다."),
 
     /**
      * 4000 : Database, Server 오류

@@ -2,6 +2,7 @@ package com.example.demo.src.project;
 
 import com.example.demo.src.project.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -387,5 +388,24 @@ public class ProjectDao {
 
         this.jdbcTemplate.update(delEvalQuery, delEvalParms);
 
+    }
+
+    /**
+     * 평가 존재 유무
+     * @param user_id
+     * @param passiveUser_id
+     * @param pj_num
+     * @return Integer
+     * @author shinhyeon
+     */
+    public Integer getEvalCheck(String user_id, String passiveUser_id, Integer pj_num) {
+        String getEvalCheckQuery = "SELECT 1 FROM Pj_evaluate WHERE user_id = ? and passiveUser_id = ? and pj_num = ? LIMIT 1";
+        Object getEvalCheckParms = new Object[]{
+                user_id,
+                passiveUser_id,
+                pj_num
+        };
+
+        return this.jdbcTemplate.queryForObject(getEvalCheckQuery, (Object[]) getEvalCheckParms,Integer.class);
     }
 }

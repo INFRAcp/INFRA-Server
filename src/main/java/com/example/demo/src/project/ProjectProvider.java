@@ -138,23 +138,55 @@ public class ProjectProvider {
         }
     }
 
-    // 평가하는 인원의 승인 상태 조회
+    /**
+     * 평가하는 인원의 승인 상태 조회
+     * @param user_id
+     * @param pj_num
+     * @return String
+     * @throws BaseException
+     * @author shinhyeon
+     */
     public String getPjInviteStatus1(String user_id, Integer pj_num) throws BaseException {
         try {
             String pj_inviteStatus = projectDao.getPjInviteStatus1(user_id, pj_num);
             return pj_inviteStatus;
         } catch (Exception exception) {
-            throw new BaseException(POST_PROJECT_EVALUATE_MEMBER1);
+            throw new BaseException(PROJECT_EVALUATE_AUTHORITY);
         }
     }
 
-    // 평가받는 인원의 승인 상태 조회
+    /**
+     * 평가받는 인원의 승인 상태 조회
+     * @param passiveUser_id
+     * @param pj_num
+     * @return String
+     * @throws BaseException
+     * @author shinhyeon
+     */
     public String getPjInviteStatus2(String passiveUser_id, Integer pj_num) throws BaseException {
         try {
             String pj_inviteStatus = projectDao.getPjInviteStatus2(passiveUser_id, pj_num);
             return pj_inviteStatus;
         } catch (Exception exception) {
-            throw new BaseException(POST_PROJECT_EVALUATE_MEMBER2);
+            throw new BaseException(PROJECT_MEMBER);
+        }
+    }
+
+    /**
+     * 팀원 평가 존재 유무
+     * @param user_id
+     * @param passiveUser_id
+     * @param pj_num
+     * @return Integer
+     * @throws BaseException
+     * @author shinhyeon
+     */
+    public Integer getEvalCheck (String user_id, String passiveUser_id, Integer pj_num) throws BaseException{
+        try {
+            Integer evalCheck = projectDao.getEvalCheck(user_id, passiveUser_id, pj_num);
+            return evalCheck;
+        } catch (Exception exception) {
+            throw new BaseException(PROJECT_EVALUATE);
         }
     }
 }
