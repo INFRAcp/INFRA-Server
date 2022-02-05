@@ -196,18 +196,18 @@ public class ProjectService {
     }
 
     /**
-     * 키워드 값 확인 프로젝트 5글자, 4개 제한
+     * 키워드 값 확인 프로젝트 5글자, 6개 제한
      *
      * @param hashtag
      * @throws BaseException
      * @author 한규범
      */
     public void PjKeywordCheck(String[] hashtag) throws BaseException {
-        if (hashtag.length > 4) {
+        if (hashtag.length > 7) {
             throw new BaseException(POST_PROJECT_KEYWORD_CNT_EXCEED);
         }
         for (int j = 0; j < hashtag.length; j++) {
-            if (hashtag[j].length() > 5) {
+            if (hashtag[j].length() > 6) {
                 throw new BaseException(POST_PROJECT_KEYWORD_EXCEED);
             }
         }
