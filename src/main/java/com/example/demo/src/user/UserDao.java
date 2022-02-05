@@ -1,6 +1,5 @@
 package com.example.demo.src.user;
 
-
 import com.example.demo.src.user.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -161,16 +160,22 @@ public class UserDao {
     }
 
     /**
-     *  소개 페이지 작성 API
+     * 소개 페이지 작성 API
+     *
      * @param postProfileReq - photo, profile, ability, link, keyword, request(project)
      * @author yewon
+     * @return
      */
     public int createProfile(String user_id, PostProfileReq postProfileReq) {
-        String createProfileQuery = "";
+        String createProfileQuery = "UPDATE User SET user_prPhoto = ?, user_prProfile = ? WHERE user_id = ?;" +
+                "INSERT INTO User_ability (user_id, user_prAbility) VALUES (?, ?),(?, ?);" +
+                "INSERT INTO User_link (user_id, user_prLink) VALUES (?, ?);" +
+                "INSERT INTO User_keyword (user_id, user_prKeyword) VALUES (?, ?), (?, ?), (?, ?), (?, ?), (?, ?),(?, ?);" +
+                "SELECT pj_num, pj_inviteStatus FROM Pj_request WHERE user_id = ?;";
         String createProfileParam1 = user_id;
 //        String createProfileParam2 = user_nickname;
         Object[] createProfileParams = new Object[]{postProfileReq.getUser_prPhoto(), postProfileReq.getUser_prProfile(), postProfileReq.getUser_prAbility(),
-                postProfileReq.getUser_prLink(), postProfileReq.getUser_prKeyword(), postProfileReq.getPj_request() };
+                postProfileReq.getUser_prLink(), postProfileReq.getUser_prKeyword(), postProfileReq.getPj_request()};
         return this.jdbcTemplate.update(createProfileQuery, createProfileParam1, createProfileParams);
     }
 
