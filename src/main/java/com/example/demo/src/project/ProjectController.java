@@ -45,7 +45,6 @@ public class ProjectController {
             if (search == null) {
                 List<GetProjectRes> getProjectRes = projectProvider.getProjects();
                 projectService.recruit(getProjectRes);
-//                getProjectRes = projectProvider.getPjCategory(getProjectRes);
                 return new BaseResponse<>(getProjectRes);
             }
             List<GetProjectRes> getProjectRes = projectProvider.getProjectsByKeyword(search);
@@ -320,7 +319,6 @@ public class ProjectController {
 
     @ResponseBody
     @GetMapping("/evaluate")
-
     public BaseResponse<List<GetEvalRes>> getEval(@RequestParam String passiveUser_id) {
         try {
             // Query String (user_id) 가 받은 평가들만 조회
@@ -348,7 +346,6 @@ public class ProjectController {
 
     @ResponseBody
     @PostMapping("/evaluate")
-
     public BaseResponse<String> uploadEval(@RequestBody PostEvalReq postEvalReq) {
         if (postEvalReq.getUser_id() == null || postEvalReq.getPassiveUser_id() == null || postEvalReq.getPj_num() == null ||
                 postEvalReq.getOpinion() == null || postEvalReq.getResponsibility() == null || postEvalReq.getAbility() == null ||
@@ -383,7 +380,6 @@ public class ProjectController {
 
     @ResponseBody
     @PatchMapping("/evaluate/modify")
-
     public BaseResponse<String> modifyEval(@RequestBody PatchEvalReq patchEvalReq) {
         if (patchEvalReq.getUser_id() == null || patchEvalReq.getPassiveUser_id() == null || patchEvalReq.getPj_num() == null ||
                 patchEvalReq.getOpinion() == null || patchEvalReq.getResponsibility() == null || patchEvalReq.getAbility() == null ||
@@ -418,7 +414,6 @@ public class ProjectController {
 
     @ResponseBody
     @PatchMapping("/evaluate/del")
-
     public BaseResponse<String> delEval(@RequestBody PatchEvalDelReq patchEvalDelReq) {
         try {
             // jwt
