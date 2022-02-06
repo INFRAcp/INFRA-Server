@@ -10,8 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.example.demo.config.BaseResponseStatus.DATABASE_ERROR;
-import static com.example.demo.config.BaseResponseStatus.SEARCH_LENGTH_ERROR;
+import static com.example.demo.config.BaseResponseStatus.*;
 
 @Service
 public class ProjectProvider {
@@ -173,12 +172,75 @@ public class ProjectProvider {
         }
     }
 
-//    public List<GetProjectRes> getPjCategory(List<GetProjectRes> getProjectRes) throws BaseException{
-//        try {
-//            List<GetProjectRes> getProjectResList = projectDao.getPjCategory(getProjectRes);
-//            return getProjectResList;
-//        }catch (Exception exception){
-//            throw new BaseException(DATABASE_ERROR);
-//        }
-//    }
+    /**
+     * 팀원 평가 조회
+     *
+     * @param passiveUser_id
+     * @return List <GetEvalRes>
+     * @throws BaseException
+     * @author shinhyeon
+     */
+    public List<GetEvalRes> getEval(String passiveUser_id) throws BaseException {
+        try {
+            List<GetEvalRes> getEvalRes = projectDao.getEval(passiveUser_id);
+            return getEvalRes;
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    /**
+     * 평가하는 인원의 승인 상태 조회
+     *
+     * @param user_id
+     * @param pj_num
+     * @return String
+     * @throws BaseException
+     * @author shinhyeon
+     */
+    public String getPjInviteStatus1(String user_id, Integer pj_num) throws BaseException {
+        try {
+            String pj_inviteStatus = projectDao.getPjInviteStatus1(user_id, pj_num);
+            return pj_inviteStatus;
+        } catch (Exception exception) {
+            throw new BaseException(PROJECT_EVALUATE_AUTHORITY);
+        }
+    }
+
+    /**
+     * 평가받는 인원의 승인 상태 조회
+     *
+     * @param passiveUser_id
+     * @param pj_num
+     * @return String
+     * @throws BaseException
+     * @author shinhyeon
+     */
+    public String getPjInviteStatus2(String passiveUser_id, Integer pj_num) throws BaseException {
+        try {
+            String pj_inviteStatus = projectDao.getPjInviteStatus2(passiveUser_id, pj_num);
+            return pj_inviteStatus;
+        } catch (Exception exception) {
+            throw new BaseException(PROJECT_MEMBER);
+        }
+    }
+
+    /**
+     * 팀원 평가 존재 유무
+     *
+     * @param user_id
+     * @param passiveUser_id
+     * @param pj_num
+     * @return Integer
+     * @throws BaseException
+     * @author shinhyeon
+     */
+    public Integer getEvalCheck(String user_id, String passiveUser_id, Integer pj_num) throws BaseException {
+        try {
+            Integer evalCheck = projectDao.getEvalCheck(user_id, passiveUser_id, pj_num);
+            return evalCheck;
+        } catch (Exception exception) {
+            throw new BaseException(PROJECT_EVALUATE);
+        }
+    }
 }

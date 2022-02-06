@@ -2,6 +2,8 @@ package com.example.demo.src.project;
 
 import com.example.demo.config.BaseException;
 import com.example.demo.config.BaseResponse;
+import com.example.demo.src.help.qa.model.GetQaRes;
+import com.example.demo.src.help.qa.model.PostQaReq;
 import com.example.demo.src.project.model.*;
 import com.example.demo.utils.JwtService;
 import org.slf4j.Logger;
@@ -11,8 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static com.example.demo.config.BaseResponseStatus.INVALID_USER_JWT;
-import static com.example.demo.config.BaseResponseStatus.POST_PROJECT_COINCIDE_CHECK;
+import static com.example.demo.config.BaseResponseStatus.*;
 
 @RestController
 @RequestMapping("/project")
@@ -62,11 +63,11 @@ public class ProjectController {
      * @author 한규범
      */
     public void recruit(List<GetProjectRes> getProjectRes) {
-        for (int i = 0; i < getProjectRes.size(); i++) {
-            if (getProjectRes.get(i).getPj_daysub() <= 2 && getProjectRes.get(i).getPj_daysub() >= 0) {
-                getProjectRes.get(i).setPj_recruit("마감임박");
+            for (int i = 0; i < getProjectRes.size(); i++) {
+                if (getProjectRes.get(i).getPj_daysub() <= 2 && getProjectRes.get(i).getPj_daysub() >= 0) {
+                    getProjectRes.get(i).setPj_recruit("마감임박");
+                }
             }
-        }
     }
 
     /**
@@ -288,7 +289,12 @@ public class ProjectController {
         }
     }
 
-    //프로젝트 찜 등록
+    /**
+     * 프로젝트 찜 등록
+     * @param postLikeRegisterReq
+     * @return 등록 완료된 메세지
+     * @author 윤성식
+     */
     @ResponseBody
     @PostMapping("/like")
     public BaseResponse<PostLikeRegisterRes> likeRegister(@RequestBody PostLikeRegisterReq postLikeRegisterReq) {
@@ -300,13 +306,146 @@ public class ProjectController {
         }
     }
 
-    //프로젝트 찜 삭제
+    /**
+     * 프로젝트 찜 삭제
+     * @param postLikeRegisterReq
+     * @return 찜 삭제된 메세지
+     * @author 윤성식
+     */
     @ResponseBody
     @DeleteMapping("/like-del")
     public BaseResponse<PostLikeRegisterRes> likeDel(@RequestBody PostLikeRegisterReq postLikeRegisterReq) {
         try {
             PostLikeRegisterRes postLikeRegisterRes = projectService.likeDel(postLikeRegisterReq);
             return new BaseResponse<>(postLikeRegisterRes);
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
+
+    /**
+     * [GET] /project/evaluate?passiveUser_id=
+     * 팀원 평가 조회 API
+     *
+     * @param user_id
+     * @return List <평가한 id, 평가 받은 id, 프로젝트 num, 의견, 책임감, 역량, 팀워크, 리더쉽>
+     * @author shinhyeon
+     */
+
+    @ResponseBody
+    @GetMapping("/evaluate")
+
+    public BaseResponse<List<GetEvalRes>> getEval(@RequestParam String passiveUser_id) {
+        try {
+            // Query String (user_id) 가 받은 평가들만 조회
+            // jwt
+            String userIdByJwt = jwtService.getUserId();
+            if (!passiveUser_id.equals(userIdByJwt)) {
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
+
+            List<GetEvalRes> getEvalRes = projectProvider.getEval(passiveUser_id);
+            return new BaseResponse<>(getEvalRes);
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
+    /**
+     * [POST] /project/evaluate
+     * 팀원 평가 등록 API
+     *
+     * @param PostEvalReq
+     * @return String
+     * @author shinhyeon
+     */
+
+    @ResponseBody
+    @PostMapping("/evaluate")
+
+    public BaseResponse<String> uploadEval(@RequestBody PostEvalReq postEvalReq) {
+        if (postEvalReq.getUser_id() == null || postEvalReq.getPassiveUser_id() == null || postEvalReq.getPj_num() == null ||
+                postEvalReq.getOpinion() == null || postEvalReq.getResponsibility() == null || postEvalReq.getAbility() == null ||
+                postEvalReq.getTeamwork() == null || postEvalReq.getLeadership() == null) {
+            return new BaseResponse<>(POST_PROJECT_EVALUATE_EMPTY);
+        }
+
+        try {
+            // jwt (평가하는 user_id 와 jwt의 id 를 비교)
+            String userIdByJwt = jwtService.getUserId();
+            if (!postEvalReq.getUser_id().equals(userIdByJwt)) {
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
+
+            projectService.uploadEval(postEvalReq);
+
+            return new BaseResponse<>(SUCCESS);
+
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
+    /**
+     * [POST] /project/evaluate/modify
+     * 팀원 평가 수정 API
+     *
+     * @param PatchEvalReq
+     * @return String
+     * @author shinhyeon
+     */
+
+    @ResponseBody
+    @PatchMapping("/evaluate/modify")
+
+    public BaseResponse<String> modifyEval(@RequestBody PatchEvalReq patchEvalReq) {
+        if (patchEvalReq.getUser_id() == null || patchEvalReq.getPassiveUser_id() == null || patchEvalReq.getPj_num() == null ||
+                patchEvalReq.getOpinion() == null || patchEvalReq.getResponsibility() == null || patchEvalReq.getAbility() == null ||
+                patchEvalReq.getTeamwork() == null || patchEvalReq.getLeadership() == null) {
+            return new BaseResponse<>(POST_PROJECT_EVALUATE_EMPTY);
+        }
+
+        try {
+            // jwt
+            String userIdByJwt = jwtService.getUserId();
+
+            if (!patchEvalReq.getUser_id().equals(userIdByJwt)) {
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
+
+            projectService.modifyEval(patchEvalReq);
+
+            return new BaseResponse<>(SUCCESS);
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
+    /**
+     * [POST] /project/evaluate/del
+     * 팀원 평가 삭제 API
+     *
+     * @param PatchEvalDelReq
+     * @return String
+     * @author shinhyeon
+     */
+
+    @ResponseBody
+    @PatchMapping("/evaluate/del")
+
+    public BaseResponse<String> delEval(@RequestBody PatchEvalDelReq patchEvalDelReq) {
+        try {
+            // jwt
+            String userIdByJwt = jwtService.getUserId();
+
+            if (!patchEvalDelReq.getUser_id().equals(userIdByJwt)) {
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
+
+            projectService.delEval(patchEvalDelReq);
+
+            return new BaseResponse<>(SUCCESS);
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
         }

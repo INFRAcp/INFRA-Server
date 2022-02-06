@@ -2,6 +2,7 @@ package com.example.demo.src.project;
 
 import com.example.demo.src.project.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -360,7 +361,12 @@ public class ProjectDao {
                 pj_num);
     }
 
-    //프로젝트 찜 등록
+    /**
+     * 프로젝트 찜 등록
+     * @param postLikeRegisterReq
+     * @return 등록 완료된 메세지
+     * @author 윤성식
+     */
     public String likeRegister(PostLikeRegisterReq postLikeRegisterReq) {
         String likeRegisterQuery = "INSERT into Pj_like (user_id, pj_num) VALUES (?,?)";
         this.jdbcTemplate.update(likeRegisterQuery, postLikeRegisterReq.getUser_id(), postLikeRegisterReq.getPj_num());
@@ -368,12 +374,161 @@ public class ProjectDao {
         return "찜 등록완료";
     }
 
-    //프로젝트 찜 삭제
+    /**
+     * 프로젝트 찜 삭제
+     * @param postLikeRegisterReq
+     * @return 찜 삭제된 메세지
+     * @author 윤성식
+     */
     public String likeDel(PostLikeRegisterReq postLikeRegisterReq) {
         String likeDelQuery = "delete from Pj_like where user_id = ? and pj_num = ?";
         this.jdbcTemplate.update(likeDelQuery, postLikeRegisterReq.getUser_id(), postLikeRegisterReq.getPj_num());
 
         return "찜 삭제";
+    }
+    /**
+     * 팀원 평가 조회
+     *
+     * @param user_id
+     * @return List <평가한 id, 평가 받은 id, 프로젝트 num, 의견, 책임감, 역량, 팀워크, 리더쉽>
+     * @author shinhyeon
+     */
+    public List<GetEvalRes> getEval(String passiveUser_id) {
+        String getEvalQuery = "select * from Pj_evaluate where passiveUser_id = ? order By pj_num";
+
+        return this.jdbcTemplate.query(getEvalQuery,
+                (rs, rowNum) -> new GetEvalRes(
+                        rs.getString("user_id"),
+                        rs.getString("passiveUser_id"),
+                        rs.getInt("pj_num"),
+                        rs.getString("opinion"),
+                        rs.getFloat("responsibility"),
+                        rs.getFloat("ability"),
+                        rs.getFloat("teamwork"),
+                        rs.getFloat("leadership")
+                ),
+                passiveUser_id
+        );
+    }
+
+    /**
+     * 질문 등록
+     *
+     * @param PostEvalReq
+     * @return int
+     * @author shinhyeon
+     */
+    public int uploadEval(PostEvalReq postEvalReq) {
+        String uploadEvalQuery = "insert into Pj_evaluate (user_id, passiveUser_id, pj_num, opinion, responsibility, ability, teamwork, leadership) VALUES (?,?,?,?,?,?,?,?)";
+        Object[] uploadEvalParms = new Object[]{
+                postEvalReq.getUser_id(),
+                postEvalReq.getPassiveUser_id(),
+                postEvalReq.getPj_num(),
+                postEvalReq.getOpinion(),
+                postEvalReq.getResponsibility(),
+                postEvalReq.getAbility(),
+                postEvalReq.getTeamwork(),
+                postEvalReq.getLeadership()
+        };
+
+        return this.jdbcTemplate.update(uploadEvalQuery, uploadEvalParms);
+    }
+
+    /**
+     * 평가하는 인원의 승인 상태 조회
+     *
+     * @param PostEvalReq
+     * @return String
+     * @author shinhyeon
+     */
+    public String getPjInviteStatus1(String user_id, Integer pj_num) {
+        String getPjInviteStatusQuery = "select pj_inviteStatus from Pj_request where user_id = ? and pj_num = ?";
+        Object[] getPjInviteStatusParms = new Object[]{
+                user_id,
+                pj_num
+        };
+
+        return this.jdbcTemplate.queryForObject(getPjInviteStatusQuery, getPjInviteStatusParms, String.class);
+    }
+
+    /**
+     * 평가받는 인원의 승인 상태 조회
+     *
+     * @param PostEvalReq
+     * @return String
+     * @author shinhyeon
+     */
+    public String getPjInviteStatus2(String passiveUser_id, Integer pj_num) {
+        String getPjInviteStatusQuery = "select pj_inviteStatus from Pj_request where user_id = ? and pj_num = ?";
+        Object[] getPjInviteStatusParms = new Object[]{
+                passiveUser_id,
+                pj_num
+        };
+
+        return this.jdbcTemplate.queryForObject(getPjInviteStatusQuery, getPjInviteStatusParms, String.class);
+    }
+
+    /**
+     * 팀원 평가 수정
+     *
+     * @param PatchEvalReq
+     * @return x
+     * @author shinhyeon
+     */
+    public void modifyEval(PatchEvalReq patchEvalReq) {
+        String modifyEvalQuery = "update Pj_evaluate set opinion = ?, responsibility = ?, ability = ?, teamwork = ?, leadership = ? where user_id = ? and passiveUser_id = ? and pj_num = ?";
+        Object[] modifyEvalParms = new Object[]{
+                patchEvalReq.getOpinion(),
+                patchEvalReq.getResponsibility(),
+                patchEvalReq.getAbility(),
+                patchEvalReq.getTeamwork(),
+                patchEvalReq.getLeadership(),
+                patchEvalReq.getUser_id(),
+                patchEvalReq.getPassiveUser_id(),
+                patchEvalReq.getPj_num()
+        };
+
+        this.jdbcTemplate.update(modifyEvalQuery, modifyEvalParms);
+    }
+
+    /**
+     * 팀원 평가 삭제
+     *
+     * @param PatchEvalReq
+     * @return x
+     * @author shinhyeon
+     */
+    public void delEval(PatchEvalDelReq patchEvalDelReq) {
+        String delEvalQuery = "update Pj_evaluate set status = ? where user_id = ? and passiveUser_id = ? and pj_num = ?";
+        Object[] delEvalParms = new Object[]{
+                "삭제",
+                patchEvalDelReq.getUser_id(),
+                patchEvalDelReq.getPassiveUser_id(),
+                patchEvalDelReq.getPj_num()
+        };
+
+        this.jdbcTemplate.update(delEvalQuery, delEvalParms);
+
+    }
+
+    /**
+     * 평가 존재 유무
+     *
+     * @param user_id
+     * @param passiveUser_id
+     * @param pj_num
+     * @return Integer
+     * @author shinhyeon
+     */
+    public Integer getEvalCheck(String user_id, String passiveUser_id, Integer pj_num) {
+        String getEvalCheckQuery = "SELECT 1 FROM Pj_evaluate WHERE user_id = ? and passiveUser_id = ? and pj_num = ? LIMIT 1";
+        Object getEvalCheckParms = new Object[]{
+                user_id,
+                passiveUser_id,
+                pj_num
+        };
+
+        return this.jdbcTemplate.queryForObject(getEvalCheckQuery, (Object[]) getEvalCheckParms, Integer.class);
     }
 
 

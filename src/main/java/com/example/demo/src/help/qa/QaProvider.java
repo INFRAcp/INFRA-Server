@@ -27,34 +27,53 @@ public class QaProvider {
         this.qaDao = qaDao;
     }
 
-    // 모든 질문 조회
-    public List<GetQaRes> getQa() throws BaseException{
-        try{
+    /**
+     * 모든 질문 조회
+     *
+     * @param
+     * @return List<질문 번호, 아이디, 질문, 답변, 질문한 시간, 답변한 시간, status>
+     * @throws BaseException
+     * @author shinhyeon
+     */
+    public List<GetQaRes> getQa() throws BaseException {
+        try {
             List<GetQaRes> getQaRes = qaDao.getQaRes();
             return getQaRes;
-        }
-        catch (Exception exception){
+        } catch (Exception exception) {
             throw new BaseException(RESPONSE_ERROR);
         }
     }
 
-    // 특정 질문 조회 (해당 user_id 를 갖는)
+    /**
+     * 특정 유저 질문 조회
+     *
+     * @param user_id
+     * @return List<질문 번호, 아이디, 질문, 답변, 질문한 시간, 답변한 시간, status>
+     * @throws BaseException
+     * @author shinhyeon
+     */
     public List<GetQaRes> getQaByUser_id(String user_id) throws BaseException {
-        try{
+        try {
             List<GetQaRes> getQaRes = qaDao.getQaByUserId(user_id);
             return getQaRes;
-        }
-        catch (Exception exception){
+        } catch (Exception exception) {
             throw new BaseException(RESPONSE_ERROR);
         }
     }
 
+    /**
+     * 특정 질문 조회
+     *
+     * @param qa_num
+     * @return 질문 번호, 아이디, 질문, 답변, 질문한 시간, 답변한 시간, status
+     * @throws BaseException
+     * @author shinhyeon
+     */
     public GetQaRes getQaByQaNum(int qa_num) throws BaseException {
-        try{
+        try {
             GetQaRes getQaRes = qaDao.getQaByQaNum(qa_num);
             return getQaRes;
-        }
-        catch (Exception exception){
+        } catch (Exception exception) {
             throw new BaseException(RESPONSE_ERROR);
         }
     }
