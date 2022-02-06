@@ -7,6 +7,7 @@ import com.example.demo.src.sms.model.PostSmsRes;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,7 +27,9 @@ public class SmsController {
 
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    @Autowired
     private SmsService smsService;
+
     public SmsController(SmsService smsService) {
         this.smsService = smsService;
     }
