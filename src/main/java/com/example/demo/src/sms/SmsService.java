@@ -30,6 +30,7 @@ public class SmsService {
     private final String accessKey = "EQMuFM97557V6hkO2X1a";
     private final String secretKey = "L1CTIwI2qkRS7PeTzWojZqPT1AnZFZf0XAJJLx5l";
 
+    @Autowired
     private SmsDao smsDao;
 
     @Autowired
