@@ -361,7 +361,12 @@ public class ProjectDao {
                 pj_num);
     }
 
-    //프로젝트 찜 등록
+    /**
+     * 프로젝트 찜 등록
+     * @param postLikeRegisterReq
+     * @return 등록 완료된 메세지
+     * @author 윤성식
+     */
     public String likeRegister(PostLikeRegisterReq postLikeRegisterReq) {
         String likeRegisterQuery = "INSERT into Pj_like (user_id, pj_num) VALUES (?,?)";
         this.jdbcTemplate.update(likeRegisterQuery, postLikeRegisterReq.getUser_id(), postLikeRegisterReq.getPj_num());
@@ -369,7 +374,12 @@ public class ProjectDao {
         return "찜 등록완료";
     }
 
-    //프로젝트 찜 삭제
+    /**
+     * 프로젝트 찜 삭제
+     * @param postLikeRegisterReq
+     * @return 찜 삭제된 메세지
+     * @author 윤성식
+     */
     public String likeDel(PostLikeRegisterReq postLikeRegisterReq) {
         String likeDelQuery = "delete from Pj_like where user_id = ? and pj_num = ?";
         this.jdbcTemplate.update(likeDelQuery, postLikeRegisterReq.getUser_id(), postLikeRegisterReq.getPj_num());

@@ -13,8 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static com.example.demo.config.BaseResponseStatus.INVALID_USER_JWT;
-import static com.example.demo.config.BaseResponseStatus.POST_PROJECT_COINCIDE_CHECK;
+import static com.example.demo.config.BaseResponseStatus.*;
 
 @RestController
 @RequestMapping("/project")
@@ -64,14 +63,11 @@ public class ProjectController {
      * @author 한규범
      */
     public void recruit(List<GetProjectRes> getProjectRes) {
-        for (int i = 0; i < getProjectRes.size(); i++) {
-            if (getProjectRes.get(i).getPj_daysub() <= 2 && getProjectRes.get(i).getPj_daysub() >= 0) {
-                getProjectRes.get(i).setPj_recruit("마감임박");
+            for (int i = 0; i < getProjectRes.size(); i++) {
+                if (getProjectRes.get(i).getPj_daysub() <= 2 && getProjectRes.get(i).getPj_daysub() >= 0) {
+                    getProjectRes.get(i).setPj_recruit("마감임박");
+                }
             }
-            return new BaseResponse<>(getProjectRes);
-        } catch (BaseException exception) {
-            return new BaseResponse<>((exception.getStatus()));
-        }
     }
 
     /**
@@ -293,7 +289,12 @@ public class ProjectController {
         }
     }
 
-    //프로젝트 찜 등록
+    /**
+     * 프로젝트 찜 등록
+     * @param postLikeRegisterReq
+     * @return 등록 완료된 메세지
+     * @author 윤성식
+     */
     @ResponseBody
     @PostMapping("/like")
     public BaseResponse<PostLikeRegisterRes> likeRegister(@RequestBody PostLikeRegisterReq postLikeRegisterReq) {
@@ -305,7 +306,12 @@ public class ProjectController {
         }
     }
 
-    //프로젝트 찜 삭제
+    /**
+     * 프로젝트 찜 삭제
+     * @param postLikeRegisterReq
+     * @return 찜 삭제된 메세지
+     * @author 윤성식
+     */
     @ResponseBody
     @DeleteMapping("/like-del")
     public BaseResponse<PostLikeRegisterRes> likeDel(@RequestBody PostLikeRegisterReq postLikeRegisterReq) {
