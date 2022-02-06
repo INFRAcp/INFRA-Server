@@ -8,10 +8,9 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 
 public class PostProfileReq {
-    String user_prPhoto;
-    String user_prProfile;
-    String user_prAbility;
-    String user_prLink;
-    String user_prKeyword;
-    String pj_request;
+    private String user_prPhoto;
+    private String user_prProfile;
+    private String [] user_prAbility = null;
+    private String [] user_prLink= null;
+    private String [] user_prKeyword = null;
 }

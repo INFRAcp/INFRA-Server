@@ -162,21 +162,36 @@ public class UserDao {
     /**
      * 소개 페이지 작성 API
      *
-     * @param postProfileReq - photo, profile, ability, link, keyword, request(project)
-     * @author yewon
+     * @param postProfileReq - photo, profile, ability, link, keyword
      * @return
      */
-    public int createProfile(String user_id, PostProfileReq postProfileReq) {
-        String createProfileQuery = "UPDATE User SET user_prPhoto = ?, user_prProfile = ? WHERE user_id = ?;" +
-                "INSERT INTO User_ability (user_id, user_prAbility) VALUES (?, ?),(?, ?);" +
-                "INSERT INTO User_link (user_id, user_prLink) VALUES (?, ?);" +
-                "INSERT INTO User_keyword (user_id, user_prKeyword) VALUES (?, ?), (?, ?), (?, ?), (?, ?), (?, ?),(?, ?);" +
-                "SELECT pj_num, pj_inviteStatus FROM Pj_request WHERE user_id = ?;";
-        String createProfileParam1 = user_id;
-//        String createProfileParam2 = user_nickname;
-        Object[] createProfileParams = new Object[]{postProfileReq.getUser_prPhoto(), postProfileReq.getUser_prProfile(), postProfileReq.getUser_prAbility(),
-                postProfileReq.getUser_prLink(), postProfileReq.getUser_prKeyword(), postProfileReq.getPj_request()};
-        return this.jdbcTemplate.update(createProfileQuery, createProfileParam1, createProfileParams);
+    public String createProfile(String user_id, PostProfileReq postProfileReq) {
+        String userId = user_id;
+
+        // photo와 profile을 user 테이블에 추가하기 (이미 존재하는 아이디에 넣는 것이기 때문에 update)
+        String userProfileQuery = "UPDATE User SET user_prPhoto = ?, user_prProfile = ? WHERE user_id = ? ";
+        Object[] createProfileParams = new Object[]{postProfileReq.getUser_prPhoto(), postProfileReq.getUser_prProfile(), userId};
+        this.jdbcTemplate.update(userProfileQuery, createProfileParams);
+
+        // user_prAbility 여러 개 입력 가능
+        for (int i = 0; i < postProfileReq.getUser_prAbility().length; i++) {
+            String abilityQuery = "INSERT INTO User_ability (user_id, user_prAbility) VALUES (?, ?)";
+            this.jdbcTemplate.update(abilityQuery, userId, postProfileReq.getUser_prAbility()[i]);
+        }
+
+        // user_prLink 여러 개 입력 가능
+        for (int i = 0; i < postProfileReq.getUser_prLink().length; i++) {
+            String linkQuery = "INSERT INTO User_link (user_id, user_prLink) VALUES (?, ?)";
+            this.jdbcTemplate.update(linkQuery, userId, postProfileReq.getUser_prLink()[i]);
+        }
+
+        // user_prKeyword 여러 개 입력 가능
+        for (int i = 0; i < postProfileReq.getUser_prKeyword().length; i++) {
+            String keywordQuery = "INSERT INTO User_keyword (user_id, user_prKeyword) VALUES (?, ?)";
+            this.jdbcTemplate.update(keywordQuery, userId, postProfileReq.getUser_prKeyword()[i]);
+        }
+
+        return "소개 페이지가 완성되었습니다~!";
     }
 
     /**

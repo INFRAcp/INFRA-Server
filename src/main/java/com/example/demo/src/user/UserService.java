@@ -183,10 +183,10 @@ public class UserService {
      */
     public PostProfileRes createProfile(String user_id, PostProfileReq postProfileReq) throws BaseException {
         try {
-            userDao.createProfile(user_id, postProfileReq);
+            String result = userDao.createProfile(user_id, postProfileReq);
+            return new PostProfileRes(result);
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }
-        return null;
     }
 }

@@ -215,18 +215,19 @@ public class UserController {
     @ResponseBody
     @PostMapping("/profile/{user_id}")
     public BaseResponse<PostProfileRes> createProfile(@PathVariable("user_id") String user_id, @RequestBody PostProfileReq postProfileReq) {
+        // 예외처리
         if (postProfileReq.getUser_prProfile() == null || postProfileReq.getUser_prAbility() == null
                 || postProfileReq.getUser_prKeyword() == null) {
             return new BaseResponse<>(POST_USERS_PROFILE_EMPTY_INFO);   // 필수로 입력해야 할 정보(닉네임, 소개글, 능력, 키워드)
         }
-//        if (postProfileReq.getUser_prKeyword().size() <= 6) {       // 키워드는 총 6개를 입력해야 함.
-//            return new BaseResponse<>(POST_USERS_PROFILE_KEYWORD_COUNT);
-//        }
-//        for (int i = 0; i < postProfileReq.getUser_prKeyword().size(); i++) {
-//            if (postProfileReq.getUser_prKeyword().get(i).length() > 5) {
-//                return new BaseResponse<>(POST_USERS_PROFILE_KEYWORD_WORD_COUNT);   // 키워드의 글자 수는 5글자 이하
-//            }
-//        }
+        if (postProfileReq.getUser_prKeyword().length <= 6) {       // 키워드는 최대 6개를 입력할 수 있음.
+            return new BaseResponse<>(POST_USERS_PROFILE_KEYWORD_COUNT);
+        }
+        for (int i = 0; i < postProfileReq.getUser_prKeyword().length; i++) {
+            if (postProfileReq.getUser_prKeyword()[i].length() > 5) {
+                return new BaseResponse<>(POST_USERS_PROFILE_KEYWORD_WORD_COUNT);   // 키워드의 글자 수는 5글자 이하
+            }
+        }
         try {
             PostProfileRes postProfileRes = userService.createProfile(user_id, postProfileReq);
             return new BaseResponse<>(postProfileRes);
