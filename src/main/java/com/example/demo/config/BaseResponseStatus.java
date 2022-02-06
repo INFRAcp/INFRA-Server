@@ -69,6 +69,9 @@ public enum BaseResponseStatus {
     POST_PROJECT_DEADLINE_BEFORE_START(false, 2323, "예상 시작일이 마감일 이전에 있습니다."),
     POST_PROJECT_END_BEFORE_START(false, 2324, "예상 종료일이 예상 시작일보다 이전에 있습니다."),
 
+    //거절된 프로젝트 재지원
+    POST_PROJECT_REJECT_RESTART(false, 2325, "거절된 프로젝트입니다."),
+
     // 팀원 평가
     // [Post] /evaluate
     POST_PROJECT_EVALUATE_SCORE(false, 2350,"평가 점수 범위는 0 ~ 5 이어야 합니다."),

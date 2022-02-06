@@ -208,7 +208,9 @@ public class ProjectController {
     public BaseResponse<PostPjApplyRes> pjApply(@RequestBody PostPjApplyReq postPjApplyReq) {
         try {
             PostPjApplyRes postPjApplyRes = projectService.pjApply(postPjApplyReq);
-            if (postPjApplyRes.getComment().equals("중복"))
+            if(postPjApplyRes.getComment().equals("거절"))
+                throw new BaseException(POST_PROJECT_REJECT_RESTART);
+            else if (postPjApplyRes.getComment().equals("중복"))
                 throw new BaseException(POST_PROJECT_COINCIDE_CHECK);
             else
                 return new BaseResponse<>(postPjApplyRes);
