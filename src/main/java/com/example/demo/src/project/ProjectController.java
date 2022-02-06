@@ -2,6 +2,8 @@ package com.example.demo.src.project;
 
 import com.example.demo.config.BaseException;
 import com.example.demo.config.BaseResponse;
+import com.example.demo.src.help.qa.model.GetQaRes;
+import com.example.demo.src.help.qa.model.PostQaReq;
 import com.example.demo.src.project.model.*;
 import com.example.demo.utils.JwtService;
 import org.slf4j.Logger;
@@ -49,6 +51,10 @@ public class ProjectController {
                 return new BaseResponse<>(getProjectRes);
             }
             List<GetProjectRes> getProjectRes = projectProvider.getProjectsByKeyword(search);
+            projectService.recruit(getProjectRes);
+            return new BaseResponse<>(getProjectRes);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
             recruit(getProjectRes);
             return new BaseResponse<>(getProjectRes);
         } catch (BaseException exception) {
@@ -223,7 +229,9 @@ public class ProjectController {
     public BaseResponse<PostPjApplyRes> pjApply(@RequestBody PostPjApplyReq postPjApplyReq) {
         try {
             PostPjApplyRes postPjApplyRes = projectService.pjApply(postPjApplyReq);
-            if (postPjApplyRes.getComment().equals("중복"))
+            if(postPjApplyRes.getComment().equals("거절"))
+                throw new BaseException(POST_PROJECT_REJECT_RESTART);
+            else if (postPjApplyRes.getComment().equals("중복"))
                 throw new BaseException(POST_PROJECT_COINCIDE_CHECK);
             else
                 return new BaseResponse<>(postPjApplyRes);
@@ -287,7 +295,12 @@ public class ProjectController {
         }
     }
 
-    //프로젝트 찜 등록
+    /**
+     * 프로젝트 찜 등록
+     * @param postLikeRegisterReq
+     * @return 등록 완료된 메세지
+     * @author 윤성식
+     */
     @ResponseBody
     @PostMapping("/like")
     public BaseResponse<PostLikeRegisterRes> likeRegister(@RequestBody PostLikeRegisterReq postLikeRegisterReq) {
@@ -299,7 +312,12 @@ public class ProjectController {
         }
     }
 
-    //프로젝트 찜 삭제
+    /**
+     * 프로젝트 찜 삭제
+     * @param postLikeRegisterReq
+     * @return 찜 삭제된 메세지
+     * @author 윤성식
+     */
     @ResponseBody
     @DeleteMapping("/like-del")
     public BaseResponse<PostLikeRegisterRes> likeDel(@RequestBody PostLikeRegisterReq postLikeRegisterReq) {
