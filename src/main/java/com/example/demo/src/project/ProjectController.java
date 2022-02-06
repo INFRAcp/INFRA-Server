@@ -2,8 +2,6 @@ package com.example.demo.src.project;
 
 import com.example.demo.config.BaseException;
 import com.example.demo.config.BaseResponse;
-import com.example.demo.src.help.qa.model.GetQaRes;
-import com.example.demo.src.help.qa.model.PostQaReq;
 import com.example.demo.src.project.model.*;
 import com.example.demo.utils.JwtService;
 import org.slf4j.Logger;
@@ -46,28 +44,16 @@ public class ProjectController {
         try {
             if (search == null) {
                 List<GetProjectRes> getProjectRes = projectProvider.getProjects();
-                recruit(getProjectRes);
+                projectService.recruit(getProjectRes);
 //                getProjectRes = projectProvider.getPjCategory(getProjectRes);
                 return new BaseResponse<>(getProjectRes);
             }
             List<GetProjectRes> getProjectRes = projectProvider.getProjectsByKeyword(search);
-            recruit(getProjectRes);
+            projectService.recruit(getProjectRes);
             return new BaseResponse<>(getProjectRes);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
-    }
-
-    /**
-     * @param getProjectRes
-     * @author 한규범
-     */
-    public void recruit(List<GetProjectRes> getProjectRes) {
-            for (int i = 0; i < getProjectRes.size(); i++) {
-                if (getProjectRes.get(i).getPj_daysub() <= 2 && getProjectRes.get(i).getPj_daysub() >= 0) {
-                    getProjectRes.get(i).setPj_recruit("마감임박");
-                }
-            }
     }
 
     /**
@@ -103,17 +89,14 @@ public class ProjectController {
     @PostMapping("/likePj")
     public BaseResponse<List<PostPjLikeRes>> like(@RequestBody PostPjLikeReq postPj_likeReq) {
         try {
-            String userIdByJwt = jwtService.getUserId();
-            if (!postPj_likeReq.getUser_id().equals(userIdByJwt)) {
-                return new BaseResponse<>(INVALID_USER_JWT);
-            }
+            projectService.userIdJwt(postPj_likeReq.getUser_id(), jwtService.getUserId());
+
             List<PostPjLikeRes> postPj_likeRes = projectProvider.like(postPj_likeReq);
             return new BaseResponse<>(postPj_likeRes);
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
         }
     }
-
 
     /**
      * 유저가 조회했던 프로젝트 조회

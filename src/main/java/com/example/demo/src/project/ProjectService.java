@@ -1,6 +1,7 @@
 package com.example.demo.src.project;
 
 import com.example.demo.config.BaseException;
+import com.example.demo.config.BaseResponse;
 import com.example.demo.src.help.qa.model.PostQaReq;
 import com.example.demo.src.project.model.*;
 import com.example.demo.utils.JwtService;
@@ -210,7 +211,7 @@ public class ProjectService {
     }
 
     /**
-     * 키워드 값 확인 프로젝트 5글자, 6개 제한
+     * 키워드 값 확인 5글자, 6개 제한
      *
      * @param hashtag
      * @throws BaseException
@@ -354,5 +355,31 @@ public class ProjectService {
         Integer evalCheck = projectProvider.getEvalCheck(user_id, passiveUser_id, pj_num);
 
         if (evalCheck != 1) throw new BaseException(PROJECT_EVALUATE);
+    }
+
+    /**
+     * @param getProjectRes
+     * @author 한규범
+     */
+    public void recruit(List<GetProjectRes> getProjectRes) {
+        for (int i = 0; i < getProjectRes.size(); i++) {
+            if (getProjectRes.get(i).getPj_daysub() <= 2 && getProjectRes.get(i).getPj_daysub() >= 0) {
+                getProjectRes.get(i).setPj_recruit("마감임박");
+            }
+        }
+    }
+
+    /**
+     * 유저 JWT 유효성 검사
+     * @param userId
+     * @param userIdByJwt
+     * @return BaseResponse
+     * @author 한규범
+     */
+    public BaseResponse<Object> userIdJwt(String userId, String userIdByJwt){
+        if (!userId.equals(userIdByJwt)) {
+            return new BaseResponse<>(INVALID_USER_JWT);
+        }
+        return null;
     }
 }

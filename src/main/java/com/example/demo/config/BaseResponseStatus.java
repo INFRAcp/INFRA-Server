@@ -63,11 +63,11 @@ public enum BaseResponseStatus {
 
     //프로젝트 등록시 키워드 글자수 초과
     POST_PROJECT_KEYWORD_EXCEED(false, 2321, "키워드 5글자를 초과하였습니다."),
-    POST_PROJECT_KEYWORD_CNT_EXCEED(false, 2322, "키워드 4개를 초과하였습니다."),
+    POST_PROJECT_KEYWORD_CNT_EXCEED(false, 2322, "키워드 6개를 초과하였습니다."),
 
     //프로젝트 날짜 오류
     POST_PROJECT_DEADLINE_BEFORE_START(false, 2323, "예상 시작일이 마감일 이전에 있습니다."),
-    POST_PROJECT_END_BEFORE_START(false, 2324, "예상 시작일이 예상 종료일보다 이전에 있습니다."),
+    POST_PROJECT_END_BEFORE_START(false, 2324, "예상 종료일이 예상 시작일보다 이전에 있습니다."),
 
     // 팀원 평가
     // [Post] /evaluate
