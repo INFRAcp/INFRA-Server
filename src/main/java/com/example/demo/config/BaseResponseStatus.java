@@ -27,7 +27,7 @@ public enum BaseResponseStatus {
     INVALID_JWT(false, 2002, "유효하지 않은 JWT입니다."),
     INVALID_USER_JWT(false, 2003, "권한이 없는 유저의 접근입니다."),
 
-
+    REQUEST_EMPTY(false, 2004,"필수 정보가 비었습니다."),
 
     // users
     USERS_EMPTY_USER_ID(false, 2010, "유저 아이디 값을 확인해주세요."),
@@ -113,6 +113,11 @@ public enum BaseResponseStatus {
     PROJECT_EVALUATE_AUTHORITY(false, 3351,"평가 권한이 없습니다. (프로젝트에 참여해야 평가 권한이 주어집니다.)"),
     PROJECT_MEMBER(false, 3352,"해당 프로젝트의 참여 인원이 아닙니다. 프로젝트 번호와 평가 인원의 이름을 확인해주세요."),
     PROJECT_EVALUATE(false, 3353, "존재하지 않는 평가입니다."),
+
+    // 프로젝트 신청 유저 승인 관련
+    PROJECT_APPROVE_AUTHORITY(false, 3360, "승인 권한이 없습니다. (프로젝트 팀장 권한)"),
+    PROJECT_INVITESTATUS_ALREADY(false, 3361, "이미 승인한 유저입니다."),
+    PROJECT_INVITESTATUS_REJECT(false, 3362, "이미 거절한 유저입니다."),
 
     /**
      * 4000 : Database, Server 오류

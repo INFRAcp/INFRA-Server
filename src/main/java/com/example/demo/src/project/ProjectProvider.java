@@ -243,4 +243,9 @@ public class ProjectProvider {
             throw new BaseException(PROJECT_EVALUATE);
         }
     }
+
+    public String getTeamLeader(Integer pj_num){
+        String teamLeader = projectDao.getTeamLeader(pj_num);
+        return teamLeader;
+    }
 }

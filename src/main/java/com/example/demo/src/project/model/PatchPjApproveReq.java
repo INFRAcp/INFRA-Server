@@ -9,6 +9,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class PatchPjApproveReq {
     private String user_id;
-    private int pj_num;
+    private Integer pj_num;
     private String pj_inviteStatus;
 }

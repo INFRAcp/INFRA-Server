@@ -538,4 +538,8 @@ public class ProjectDao {
     }
 
 
+    public String getTeamLeader(Integer pj_num) {
+        String getTeamLeaderQuery = "SELECT user_id FROM Project WHERE pj_num=?";
+        return this.jdbcTemplate.queryForObject(getTeamLeaderQuery, new Integer[]{pj_num},String.class);
+    }
 }

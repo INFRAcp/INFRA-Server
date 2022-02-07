@@ -104,7 +104,19 @@ public class ProjectService {
      * @return PatchPjApproveRes 완료 메시지
      * @author 윤성식
      */
-    public PatchPjApproveRes pjApprove(PatchPjApproveReq patchPjApproveReq) throws BaseException {
+    public PatchPjApproveRes pjApprove(PatchPjApproveReq patchPjApproveReq, String userIdByJwt) throws BaseException {
+        // jwt id 가 해당 프로젝트의 팀장인지 확인
+        String teamLeader = projectProvider.getTeamLeader(patchPjApproveReq.getPj_num());
+        if(!userIdByJwt.equals(teamLeader)){
+            throw new BaseException(PROJECT_APPROVE_AUTHORITY);
+        }
+
+        // 이미 승인한 유저인지, 거절한 유저인지 확인
+        String pj_inviteStatus = projectProvider.getPjInviteStatus1(patchPjApproveReq.getUser_id(),patchPjApproveReq.getPj_num());
+        if(pj_inviteStatus.equals("승인완료")) throw new BaseException(PROJECT_INVITESTATUS_ALREADY);
+        if(pj_inviteStatus.equals("거절")) throw new BaseException(PROJECT_INVITESTATUS_REJECT);
+
+        // 유저 승인
         try {
             String PjApprove = projectDao.pjApprove(patchPjApproveReq);
             return new PatchPjApproveRes(PjApprove);
