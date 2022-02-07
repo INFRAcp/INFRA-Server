@@ -2,8 +2,6 @@ package com.example.demo.src.project;
 
 import com.example.demo.config.BaseException;
 import com.example.demo.config.BaseResponse;
-import com.example.demo.src.help.qa.model.GetQaRes;
-import com.example.demo.src.help.qa.model.PostQaReq;
 import com.example.demo.src.project.model.*;
 import com.example.demo.utils.JwtService;
 import org.slf4j.Logger;
@@ -52,10 +50,6 @@ public class ProjectController {
             }
             List<GetProjectRes> getProjectRes = projectProvider.getProjectsByKeyword(search);
             projectService.recruit(getProjectRes);
-            return new BaseResponse<>(getProjectRes);
-        } catch (BaseException exception) {
-            return new BaseResponse<>((exception.getStatus()));
-            recruit(getProjectRes);
             return new BaseResponse<>(getProjectRes);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));

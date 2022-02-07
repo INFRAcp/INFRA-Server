@@ -51,10 +51,12 @@ public class UserProvider {
             throw new BaseException(PASSWORD_DECRYPTION_ERROR);
         }
 
-        if (postLoginReq.getUser_pw().equals(password)) { //비밀번호 일치
+        if (postLoginReq.getUser_pw().equals(password)) { //비밀번호 일치하면 user_id, name, nickname 가져오기
             String userId = userDao.getPwd(postLoginReq).getUser_id();
             String jwt = jwtService.createJwt(userId);
-            return new PostLoginRes(userId, jwt);
+            String user_name = userDao.getPwd(postLoginReq).getUser_name();
+            String user_nickname = userDao.getPwd(postLoginReq).getUser_nickname();
+            return new PostLoginRes(userId, jwt, user_name, user_nickname);
         } else { // 비밀번호 불일치
             throw new BaseException(FAILED_TO_LOGIN);
         }
@@ -185,7 +187,7 @@ public class UserProvider {
             if (!link.isEmpty())
                 getProfileRes.setUser_prLink(link);
 
-            // TODO : 프로젝트 리스트
+            // TODO : 프로젝트 리스트, 팀원 평가(user_grade 불러오기)
 
             return getProfileRes;
         } catch (IncorrectResultSizeDataAccessException error) {

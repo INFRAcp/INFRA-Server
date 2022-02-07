@@ -182,6 +182,32 @@ public class UserService {
      * @author yewon
      */
     public PostProfileRes createProfile(String user_id, PostProfileReq postProfileReq) throws BaseException {
+        /** 소개 페이지 작성 예외처리 **/
+        // 필수로 입력해야 할 정보(닉네임, 소개글, 능력, 키워드) 미입력시 예외 발생
+        if (postProfileReq.getUser_prProfile() == null || postProfileReq.getUser_prAbility() == null
+                || postProfileReq.getUser_prKeyword() == null) {
+            throw new BaseException(POST_USERS_PROFILE_EMPTY_INFO);  
+        }
+        // 소개글(profile)은 최소 10자 이상 작성 - 그 미만일 경우 예외 발생
+        if (postProfileReq.getUser_prProfile().length() < 10) {
+            throw new BaseException(POST_USER_PROFILE_MIN_PROFILE);
+        }
+        // 능력(ability)는 최소 1글자 이상 입력, 총 개수는 무제한 - 빈 값이 들어올 경우 예외 발생
+        for (int i = 0; i < postProfileReq.getUser_prAbility().length; i++) {
+            if (postProfileReq.getUser_prAbility()[i].trim().length() == 0) {
+                throw new BaseException(POST_USER_PROFILE_MIN_ABILITY);
+            }
+        }
+        // 키워드는 최대 6개를 입력할 수 있음 - 6개 초과시 예외 발생
+        if (postProfileReq.getUser_prKeyword().length > 6) {   
+            throw new BaseException(POST_USERS_PROFILE_KEYWORD_COUNT);
+        }
+        // 키워드의 글자 수는 최소 1글자 이상 최대 5글자 이하 - 빈 값이나 6글자 이상일 경우에 예외 발생
+        for (int i = 0; i < postProfileReq.getUser_prKeyword().length; i++) {
+            if (postProfileReq.getUser_prKeyword()[i].length() > 5 || postProfileReq.getUser_prKeyword()[i].trim().length() == 0) {
+                throw new BaseException(POST_USERS_PROFILE_KEYWORD_WORD_COUNT);
+            }
+        }
         try {
             String result = userDao.createProfile(user_id, postProfileReq);
             return new PostProfileRes(result);
