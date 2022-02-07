@@ -40,13 +40,15 @@ public class ProjectController {
      */
     @ResponseBody
     @GetMapping("/inquiry")
-    public BaseResponse<List<GetProjectRes>> getProjects(@RequestParam(required = false) String search) {
+    public BaseResponse<List<GetProjectRes>> getProjects(@RequestParam(required = false) String search, String user_id) {
         try {
             if (search == null) {
+                projectService.userIdJwt(user_id, jwtService.getUserId());
                 List<GetProjectRes> getProjectRes = projectProvider.getProjects();
                 projectService.recruit(getProjectRes);
                 return new BaseResponse<>(getProjectRes);
             }
+            projectService.userIdJwt(user_id, jwtService.getUserId());
             List<GetProjectRes> getProjectRes = projectProvider.getProjectsByKeyword(search);
             projectService.recruit(getProjectRes);
             return new BaseResponse<>(getProjectRes);
@@ -144,6 +146,7 @@ public class ProjectController {
     @PostMapping("/registration")
     public BaseResponse<PostPjRegisterRes> pjRegistration(@RequestBody PostPjRegisterReq postPjRegisterReq) {
         try {
+            projectService.userIdJwt(postPjRegisterReq.getUser_id(), jwtService.getUserId());
             projectService.PjDateCheck(postPjRegisterReq.getPj_deadline(), postPjRegisterReq.getPj_startTerm(), postPjRegisterReq.getPj_endTerm());
             projectService.PjNullCheck(postPjRegisterReq.getPj_header(), postPjRegisterReq.getPj_categoryName(), postPjRegisterReq.getPj_content(), postPjRegisterReq.getPj_name(), postPjRegisterReq.getPj_subCategoryName(), postPjRegisterReq.getPj_progress(), postPjRegisterReq.getPj_endTerm(), postPjRegisterReq.getPj_startTerm(), postPjRegisterReq.getPj_deadline(), postPjRegisterReq.getPj_totalPerson());
             projectService.PjKeywordCheck(postPjRegisterReq.getHashtag());
@@ -432,4 +435,6 @@ public class ProjectController {
             return new BaseResponse<>(exception.getStatus());
         }
     }
+
+
 }
