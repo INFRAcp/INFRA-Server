@@ -197,13 +197,13 @@ public class UserDao {
         return "소개 페이지가 완성되었습니다~!";
     }
 
-        /**
-         * phone에 해당하는 email 정보 가져오기
-         *
-         * @param phone
-         * @return String - email
-         * @author yunhee
-         */
+    /**
+     * phone에 해당하는 email 정보 가져오기
+     *
+     * @param phone
+     * @return String - email
+     * @author yunhee
+     */
     public User getEmailFromPhone(String phone) {
         String getEmailQuery = "select user_id, user_email from User where user_phone=? and user_status REGEXP 'ACTIVE|STOP'";
         return this.jdbcTemplate.queryForObject(getEmailQuery,

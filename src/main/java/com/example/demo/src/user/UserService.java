@@ -198,6 +198,33 @@ public class UserService {
                 throw new BaseException(POST_USER_PROFILE_MIN_ABILITY);
             }
         }
+        // 능력(ability)의 중복값에 대한 처리
+        for (int i = 0; i < postProfileReq.getUser_prAbility().length; i++) {
+            String result = postProfileReq.getUser_prAbility()[i];
+            for (int j = i+1; j < postProfileReq.getUser_prAbility().length; j++) {
+                if (result.equals(postProfileReq.getUser_prAbility()[j])) {
+                    throw new BaseException(POST_USER_PROFILE_SAME_ABILITY);
+                }
+            }
+        }
+        // 링크(link)의 중복값에 대한 처리
+        for (int i = 0; i < postProfileReq.getUser_prLink().length; i++) {
+            String result = postProfileReq.getUser_prLink()[i];
+            for (int j = i+1; j < postProfileReq.getUser_prLink().length; j++) {
+                if (result.equals(postProfileReq.getUser_prLink()[j])) {
+                    throw new BaseException(POST_USER_PROFILE_SAME_LINK);
+                }
+            }
+        }
+        // 키워드(keyword)의 중복값에 대한 처리
+        for (int i = 0; i < postProfileReq.getUser_prKeyword().length; i++) {
+            String result = postProfileReq.getUser_prKeyword()[i];
+            for (int j = i+1; j < postProfileReq.getUser_prKeyword().length; j++) {
+                if (result.equals(postProfileReq.getUser_prKeyword()[j])) {
+                    throw new BaseException(POST_USER_PROFILE_SAME_KEYWORD);
+                }
+            }
+        }
         // 키워드는 최대 6개를 입력할 수 있음 - 6개 초과시 예외 발생
         if (postProfileReq.getUser_prKeyword().length > 6) {
             throw new BaseException(POST_USERS_PROFILE_KEYWORD_COUNT);

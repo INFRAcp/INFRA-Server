@@ -112,13 +112,19 @@ public enum BaseResponseStatus {
     FAILED_TO_SIGNUP_OUT_USER(false, 3117, "강제 탈퇴된 사용자로 3개월 후에 가입 가능합니다."),
     FAILED_TO_SIGNUP_ALREADY_USER(false, 3118, "이미 인프라의 회원입니다."),
 
-    //SMS 관련
-    DUPLICATED_PHONE(false, 3601, "해당번호로 이미 가입하였습니다."),
+    // 소개페이지 관련
+    POST_USER_PROFILE_SAME_ABILITY(false, 3121, "중복된 능력(ability)은 입력할 수 없습니다."),
+    POST_USER_PROFILE_SAME_LINK(false,3122, "중복된 링크(link)는 입력할 수 없습니다."),
+    POST_USER_PROFILE_SAME_KEYWORD(false, 3123, "중복된 키워드(keyword)는 입력할 수 없습니다."),
 
     // 팀원 평가
     PROJECT_EVALUATE_AUTHORITY(false, 3351,"평가 권한이 없습니다. (프로젝트에 참여해야 평가 권한이 주어집니다.)"),
     PROJECT_MEMBER(false, 3352,"해당 프로젝트의 참여 인원이 아닙니다. 프로젝트 번호와 평가 인원의 이름을 확인해주세요."),
     PROJECT_EVALUATE(false, 3353, "존재하지 않는 평가입니다."),
+
+    //SMS 관련
+    DUPLICATED_PHONE(false, 3601, "해당번호로 이미 가입하였습니다."),
+
 
     /**
      * 4000 : Database, Server 오류
