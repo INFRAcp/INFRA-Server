@@ -2,7 +2,6 @@ package com.example.demo.src.project;
 
 import com.example.demo.config.BaseException;
 import com.example.demo.config.BaseResponse;
-import com.example.demo.src.help.qa.model.PostQaReq;
 import com.example.demo.src.project.model.*;
 import com.example.demo.utils.JwtService;
 import org.slf4j.Logger;
@@ -225,16 +224,10 @@ public class ProjectService {
         }
     }
 
-<<<<<<<<< Temporary merge branch 1
-
-
-
-=========
->>>>>>>>> Temporary merge branch 2
     /**
      * 팀원 평가 등록
      *
-     * @param PostEvalReq
+     * @param postEvalReq
      * @return x
      * @throws BaseException
      * @author shinhyeon
@@ -302,7 +295,7 @@ public class ProjectService {
     /**
      * 팀원 평가 수정
      *
-     * @param PatchEvalReq
+     * @param patchEvalReq
      * @return x
      * @throws BaseException
      * @author shinhyeon
@@ -326,7 +319,7 @@ public class ProjectService {
     /**
      * 팀원 평가 삭제
      *
-     * @param PatchEvalDelReq
+     * @param patchEvalDelReq
      * @return x
      * @throws BaseException
      * @author shinhyeon
