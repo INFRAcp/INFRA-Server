@@ -145,8 +145,10 @@ public class ProjectController {
     public BaseResponse<PostPjRegisterRes> pjRegistration(@RequestBody PostPjRegisterReq postPjRegisterReq) {
         try {
             projectService.PjDateCheck(postPjRegisterReq.getPj_deadline(), postPjRegisterReq.getPj_startTerm(), postPjRegisterReq.getPj_endTerm());
-            projectService.PjNullCheck(postPjRegisterReq.getPj_header(), postPjRegisterReq.getPj_categoryNum(), postPjRegisterReq.getPj_content(), postPjRegisterReq.getPj_name(), postPjRegisterReq.getPj_subCategoryNum(), postPjRegisterReq.getPj_progress(), postPjRegisterReq.getPj_endTerm(), postPjRegisterReq.getPj_startTerm(), postPjRegisterReq.getPj_deadline(), postPjRegisterReq.getPj_totalPerson());
+            projectService.PjNullCheck(postPjRegisterReq.getPj_header(), postPjRegisterReq.getPj_categoryName(), postPjRegisterReq.getPj_content(), postPjRegisterReq.getPj_name(), postPjRegisterReq.getPj_subCategoryName(), postPjRegisterReq.getPj_progress(), postPjRegisterReq.getPj_endTerm(), postPjRegisterReq.getPj_startTerm(), postPjRegisterReq.getPj_deadline(), postPjRegisterReq.getPj_totalPerson());
             projectService.PjKeywordCheck(postPjRegisterReq.getHashtag());
+            postPjRegisterReq.setPj_categoryNum(projectProvider.getPjCategoryNum(postPjRegisterReq.getPj_categoryName()));
+            postPjRegisterReq.setPj_subCategoryNum(projectProvider.getPjSubCategoryNum(postPjRegisterReq.getPj_subCategoryName()));
             PostPjRegisterRes postPjRegisterRes = projectService.registrationPj(postPjRegisterReq);
             return new BaseResponse<>(postPjRegisterRes);
         } catch (BaseException exception) {
@@ -312,7 +314,7 @@ public class ProjectController {
      * [GET] /project/evaluate?passiveUser_id=
      * 팀원 평가 조회 API
      *
-     * @param user_id
+     * @param passiveUser_id
      * @return List <평가한 id, 평가 받은 id, 프로젝트 num, 의견, 책임감, 역량, 팀워크, 리더쉽>
      * @author shinhyeon
      */
@@ -339,7 +341,7 @@ public class ProjectController {
      * [POST] /project/evaluate
      * 팀원 평가 등록 API
      *
-     * @param PostEvalReq
+     * @param postEvalReq
      * @return String
      * @author shinhyeon
      */
@@ -373,7 +375,7 @@ public class ProjectController {
      * [POST] /project/evaluate/modify
      * 팀원 평가 수정 API
      *
-     * @param PatchEvalReq
+     * @param patchEvalReq
      * @return String
      * @author shinhyeon
      */
@@ -407,7 +409,7 @@ public class ProjectController {
      * [POST] /project/evaluate/del
      * 팀원 평가 삭제 API
      *
-     * @param PatchEvalDelReq
+     * @param patchEvalDelReq
      * @return String
      * @author shinhyeon
      */
