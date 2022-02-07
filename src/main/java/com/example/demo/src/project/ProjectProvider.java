@@ -243,4 +243,35 @@ public class ProjectProvider {
             throw new BaseException(PROJECT_EVALUATE);
         }
     }
+
+    /**
+     * 카테고리 이름을 통한 번호 반환
+     * @param pj_categoryName
+     * @return
+     * @throws BaseException
+     * @author 한규범
+     */
+    public String getPjCategoryNum(String pj_categoryName) throws BaseException {
+        try {
+            return projectDao.getPjCategoryNum(pj_categoryName);
+        }catch (Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    /**
+     * 세부 카테고리 이름을 통한 번호 반환
+     * @param pj_subCategoryName
+     * @return
+     * @throws BaseException
+     * @author 한규범
+     */
+    public String getPjSubCategoryNum(String pj_subCategoryName) throws BaseException {
+        try {
+            return projectDao.getPjsubCategoryNum(pj_subCategoryName);
+        }catch (Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
 }

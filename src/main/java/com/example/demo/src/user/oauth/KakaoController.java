@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
 import javax.servlet.http.HttpSession;
 import java.io.UnsupportedEncodingException;
 
@@ -42,33 +43,31 @@ public class KakaoController {
 
     /**
      * 카카오 로그아웃 API
-     *
      * @param session
      * @return
      * @author yewon
      */
     @GetMapping("/logout")
     public String logOut(HttpSession session) {
-        String access_Token = (String) session.getAttribute("access_Token");
+        String access_Token = (String)session.getAttribute("access_Token");
         session.invalidate();
         return "로그아웃 되었습니다.";
     }
 
     /**
      * 카카오 연결 끊기 API
-     *
      * @param session
      * @return
      * @author yewon
      */
     @GetMapping("/unlink")
     public String sessionOut(HttpSession session) {
-        String access_Token = (String) session.getAttribute("access_Token");
+        String access_Token = (String)session.getAttribute("access_Token");
         session.invalidate();
-        if (access_Token != null && !"".equals(access_Token)) {
+        if(access_Token != null && !"".equals(access_Token)){
             kakaoService.kakaoLogout(access_Token);
             //session.removeAttribute("userId");
-        } else {
+        }else{
             System.out.println("access_Token is null");
             return "redirect:/";
         }

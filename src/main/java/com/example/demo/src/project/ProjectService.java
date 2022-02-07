@@ -13,9 +13,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
 
-import javax.transaction.Transactional;
-import java.util.List;
-
 import static com.example.demo.config.BaseResponseStatus.*;
 
 @Service
@@ -228,6 +225,12 @@ public class ProjectService {
         }
     }
 
+<<<<<<<<< Temporary merge branch 1
+
+
+
+=========
+>>>>>>>>> Temporary merge branch 2
     /**
      * 팀원 평가 등록
      *

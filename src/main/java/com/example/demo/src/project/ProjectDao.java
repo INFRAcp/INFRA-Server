@@ -1,5 +1,6 @@
 package com.example.demo.src.project;
 
+import com.example.demo.config.BaseException;
 import com.example.demo.src.project.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcOperations;
@@ -206,7 +207,6 @@ public class ProjectDao {
      */
     public String pjRegistration(PostPjRegisterReq postPjRegisterReq) {
 
-
         String registrationPjQuery = "insert into Project(user_id, pj_views, pj_header, pj_categoryNum,    pj_content, pj_name, pj_subCategoryNum, pj_progress, pj_endTerm,      pj_startTerm, pj_deadline, pj_totalPerson, pj_recruitPerson) VALUES (?,?,?,?  ,?,?,?,?,?   ,?,?,?,?)";
         Object[] registrationParms = new Object[]
                 {postPjRegisterReq.getUser_id(),
@@ -395,7 +395,7 @@ public class ProjectDao {
     /**
      * 팀원 평가 조회
      *
-     * @param user_id
+     * @param passiveUser_id
      * @return List <평가한 id, 평가 받은 id, 프로젝트 num, 의견, 책임감, 역량, 팀워크, 리더쉽>
      * @author shinhyeon
      */
@@ -420,7 +420,7 @@ public class ProjectDao {
     /**
      * 질문 등록
      *
-     * @param PostEvalReq
+     * @param postEvalReq
      * @return int
      * @author shinhyeon
      */
@@ -443,7 +443,7 @@ public class ProjectDao {
     /**
      * 평가하는 인원의 승인 상태 조회
      *
-     * @param PostEvalReq
+     * @param user_id, pj_num
      * @return String
      * @author shinhyeon
      */
@@ -460,7 +460,7 @@ public class ProjectDao {
     /**
      * 평가받는 인원의 승인 상태 조회
      *
-     * @param PostEvalReq
+     * @param passiveUser_id
      * @return String
      * @author shinhyeon
      */
@@ -477,7 +477,7 @@ public class ProjectDao {
     /**
      * 팀원 평가 수정
      *
-     * @param PatchEvalReq
+     * @param patchEvalReq
      * @return x
      * @author shinhyeon
      */
@@ -500,7 +500,7 @@ public class ProjectDao {
     /**
      * 팀원 평가 삭제
      *
-     * @param PatchEvalReq
+     * @param patchEvalDelReq
      * @return x
      * @author shinhyeon
      */
@@ -537,5 +537,27 @@ public class ProjectDao {
         return this.jdbcTemplate.queryForObject(getEvalCheckQuery, (Object[]) getEvalCheckParms, Integer.class);
     }
 
+    /**
+     * 카테고리 이름을 통한 번호 반환
+     * @param pj_categoryName
+     * @return
+     * @throws BaseException
+     * @author 한규범
+     */
+    public String getPjCategoryNum(String pj_categoryName) {
+        String getPjCategoryNumQuery = "SELECT pj_categoryNum FROM Pj_category WHERE pj_categoryName = ?";
+        return this.jdbcTemplate.queryForObject(getPjCategoryNumQuery, String.class, pj_categoryName);
+    }
 
+    /**
+     * 세부 카테고리 이름을 통한 번호 반환
+     * @param pj_subCategoryName
+     * @return
+     * @throws BaseException
+     * @author 한규범
+     */
+    public String getPjsubCategoryNum(String pj_subCategoryName) {
+        String getPjSubCategoryNumQuery = "SELECT pj_subCategoryNum FROM Pj_subCategory WHERE pj_subCategoryName = ?";
+        return this.jdbcTemplate.queryForObject(getPjSubCategoryNumQuery, String.class, pj_subCategoryName);
+    }
 }

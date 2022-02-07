@@ -14,7 +14,6 @@ import java.util.HashMap;
 public class KakaoService {
     /**
      * 카카오 로그인 API
-     *
      * @param authorize_code
      * @return
      * @throws UnsupportedEncodingException
@@ -131,7 +130,6 @@ public class KakaoService {
 
     /**
      * 카카오 로그아웃 API
-     *
      * @param access_Token
      * @author yewon
      */
@@ -163,7 +161,6 @@ public class KakaoService {
 
     /**
      * 카카오 세션 만료 API
-     *
      * @param access_Token
      * @author yewon
      */

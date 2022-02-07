@@ -186,7 +186,7 @@ public class UserService {
         // 필수로 입력해야 할 정보(닉네임, 소개글, 능력, 키워드) 미입력시 예외 발생
         if (postProfileReq.getUser_prProfile() == null || postProfileReq.getUser_prAbility() == null
                 || postProfileReq.getUser_prKeyword() == null) {
-            throw new BaseException(POST_USERS_PROFILE_EMPTY_INFO);  
+            throw new BaseException(POST_USERS_PROFILE_EMPTY_INFO);
         }
         // 소개글(profile)은 최소 10자 이상 작성 - 그 미만일 경우 예외 발생
         if (postProfileReq.getUser_prProfile().length() < 10) {
@@ -199,7 +199,7 @@ public class UserService {
             }
         }
         // 키워드는 최대 6개를 입력할 수 있음 - 6개 초과시 예외 발생
-        if (postProfileReq.getUser_prKeyword().length > 6) {   
+        if (postProfileReq.getUser_prKeyword().length > 6) {
             throw new BaseException(POST_USERS_PROFILE_KEYWORD_COUNT);
         }
         // 키워드의 글자 수는 최소 1글자 이상 최대 5글자 이하 - 빈 값이나 6글자 이상일 경우에 예외 발생

@@ -1,5 +1,6 @@
 package com.example.demo.src.user;
 
+
 import com.example.demo.src.user.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -158,41 +159,6 @@ public class UserDao {
         String delUserQuery = "update User set user_status = 'DEL', user_leaveTime = now() where user_id = ?";
         String delUserParams = user_id;
         this.jdbcTemplate.update(delUserQuery, delUserParams);
-    }
-
-    /**
-     * 소개 페이지 작성 API
-     *
-     * @param postProfileReq - photo, profile, ability, link, keyword
-     * @return
-     */
-    public String createProfile(String user_id, PostProfileReq postProfileReq) {
-        String userId = user_id;
-
-        // photo와 profile을 user 테이블에 추가하기 (이미 존재하는 아이디에 넣는 것이기 때문에 update)
-        String userProfileQuery = "UPDATE User SET user_prPhoto = ?, user_prProfile = ? WHERE user_id = ? ";
-        Object[] createProfileParams = new Object[]{postProfileReq.getUser_prPhoto(), postProfileReq.getUser_prProfile(), userId};
-        this.jdbcTemplate.update(userProfileQuery, createProfileParams);
-
-        // user_prAbility 여러 개 입력 가능
-        for (int i = 0; i < postProfileReq.getUser_prAbility().length; i++) {
-            String abilityQuery = "INSERT INTO User_ability (user_id, user_prAbility) VALUES (?, ?)";
-            this.jdbcTemplate.update(abilityQuery, userId, postProfileReq.getUser_prAbility()[i]);
-        }
-
-        // user_prLink 여러 개 입력 가능
-        for (int i = 0; i < postProfileReq.getUser_prLink().length; i++) {
-            String linkQuery = "INSERT INTO User_link (user_id, user_prLink) VALUES (?, ?)";
-            this.jdbcTemplate.update(linkQuery, userId, postProfileReq.getUser_prLink()[i]);
-        }
-
-        // user_prKeyword 여러 개 입력 가능
-        for (int i = 0; i < postProfileReq.getUser_prKeyword().length; i++) {
-            String keywordQuery = "INSERT INTO User_keyword (user_id, user_prKeyword) VALUES (?, ?)";
-            this.jdbcTemplate.update(keywordQuery, userId, postProfileReq.getUser_prKeyword()[i]);
-        }
-
-        return "소개 페이지가 완성되었습니다~!";
     }
 
     /**

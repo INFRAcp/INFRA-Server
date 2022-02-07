@@ -40,14 +40,15 @@ public class ProjectController {
      */
     @ResponseBody
     @GetMapping("/inquiry")
-    public BaseResponse<List<GetProjectRes>> getProjects(@RequestParam(required = false) String search) {
+    public BaseResponse<List<GetProjectRes>> getProjects(@RequestParam(required = false) String search, String user_id) {
         try {
             if (search == null) {
+                projectService.userIdJwt(user_id, jwtService.getUserId());
                 List<GetProjectRes> getProjectRes = projectProvider.getProjects();
-                recruit(getProjectRes);
-//                getProjectRes = projectProvider.getPjCategory(getProjectRes);
+                projectService.recruit(getProjectRes);
                 return new BaseResponse<>(getProjectRes);
             }
+            projectService.userIdJwt(user_id, jwtService.getUserId());
             List<GetProjectRes> getProjectRes = projectProvider.getProjectsByKeyword(search);
             projectService.recruit(getProjectRes);
             return new BaseResponse<>(getProjectRes);
@@ -101,17 +102,14 @@ public class ProjectController {
     @PostMapping("/likePj")
     public BaseResponse<List<PostPjLikeRes>> like(@RequestBody PostPjLikeReq postPj_likeReq) {
         try {
-            String userIdByJwt = jwtService.getUserId();
-            if (!postPj_likeReq.getUser_id().equals(userIdByJwt)) {
-                return new BaseResponse<>(INVALID_USER_JWT);
-            }
+            projectService.userIdJwt(postPj_likeReq.getUser_id(), jwtService.getUserId());
+
             List<PostPjLikeRes> postPj_likeRes = projectProvider.like(postPj_likeReq);
             return new BaseResponse<>(postPj_likeRes);
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
         }
     }
-
 
     /**
      * 유저가 조회했던 프로젝트 조회
@@ -160,9 +158,12 @@ public class ProjectController {
     @PostMapping("/registration")
     public BaseResponse<PostPjRegisterRes> pjRegistration(@RequestBody PostPjRegisterReq postPjRegisterReq) {
         try {
+            projectService.userIdJwt(postPjRegisterReq.getUser_id(), jwtService.getUserId());
             projectService.PjDateCheck(postPjRegisterReq.getPj_deadline(), postPjRegisterReq.getPj_startTerm(), postPjRegisterReq.getPj_endTerm());
-            projectService.PjNullCheck(postPjRegisterReq.getPj_header(), postPjRegisterReq.getPj_categoryNum(), postPjRegisterReq.getPj_content(), postPjRegisterReq.getPj_name(), postPjRegisterReq.getPj_subCategoryNum(), postPjRegisterReq.getPj_progress(), postPjRegisterReq.getPj_endTerm(), postPjRegisterReq.getPj_startTerm(), postPjRegisterReq.getPj_deadline(), postPjRegisterReq.getPj_totalPerson());
+            projectService.PjNullCheck(postPjRegisterReq.getPj_header(), postPjRegisterReq.getPj_categoryName(), postPjRegisterReq.getPj_content(), postPjRegisterReq.getPj_name(), postPjRegisterReq.getPj_subCategoryName(), postPjRegisterReq.getPj_progress(), postPjRegisterReq.getPj_endTerm(), postPjRegisterReq.getPj_startTerm(), postPjRegisterReq.getPj_deadline(), postPjRegisterReq.getPj_totalPerson());
             projectService.PjKeywordCheck(postPjRegisterReq.getHashtag());
+            postPjRegisterReq.setPj_categoryNum(projectProvider.getPjCategoryNum(postPjRegisterReq.getPj_categoryName()));
+            postPjRegisterReq.setPj_subCategoryNum(projectProvider.getPjSubCategoryNum(postPjRegisterReq.getPj_subCategoryName()));
             PostPjRegisterRes postPjRegisterRes = projectService.registrationPj(postPjRegisterReq);
             return new BaseResponse<>(postPjRegisterRes);
         } catch (BaseException exception) {
@@ -328,14 +329,13 @@ public class ProjectController {
      * [GET] /project/evaluate?passiveUser_id=
      * 팀원 평가 조회 API
      *
-     * @param user_id
+     * @param passiveUser_id
      * @return List <평가한 id, 평가 받은 id, 프로젝트 num, 의견, 책임감, 역량, 팀워크, 리더쉽>
      * @author shinhyeon
      */
 
     @ResponseBody
     @GetMapping("/evaluate")
-
     public BaseResponse<List<GetEvalRes>> getEval(@RequestParam String passiveUser_id) {
         try {
             // Query String (user_id) 가 받은 평가들만 조회
@@ -356,14 +356,13 @@ public class ProjectController {
      * [POST] /project/evaluate
      * 팀원 평가 등록 API
      *
-     * @param PostEvalReq
+     * @param postEvalReq
      * @return String
      * @author shinhyeon
      */
 
     @ResponseBody
     @PostMapping("/evaluate")
-
     public BaseResponse<String> uploadEval(@RequestBody PostEvalReq postEvalReq) {
         if (postEvalReq.getUser_id() == null || postEvalReq.getPassiveUser_id() == null || postEvalReq.getPj_num() == null ||
                 postEvalReq.getOpinion() == null || postEvalReq.getResponsibility() == null || postEvalReq.getAbility() == null ||
@@ -391,14 +390,13 @@ public class ProjectController {
      * [POST] /project/evaluate/modify
      * 팀원 평가 수정 API
      *
-     * @param PatchEvalReq
+     * @param patchEvalReq
      * @return String
      * @author shinhyeon
      */
 
     @ResponseBody
     @PatchMapping("/evaluate/modify")
-
     public BaseResponse<String> modifyEval(@RequestBody PatchEvalReq patchEvalReq) {
         if (patchEvalReq.getUser_id() == null || patchEvalReq.getPassiveUser_id() == null || patchEvalReq.getPj_num() == null ||
                 patchEvalReq.getOpinion() == null || patchEvalReq.getResponsibility() == null || patchEvalReq.getAbility() == null ||
@@ -426,14 +424,13 @@ public class ProjectController {
      * [POST] /project/evaluate/del
      * 팀원 평가 삭제 API
      *
-     * @param PatchEvalDelReq
+     * @param patchEvalDelReq
      * @return String
      * @author shinhyeon
      */
 
     @ResponseBody
     @PatchMapping("/evaluate/del")
-
     public BaseResponse<String> delEval(@RequestBody PatchEvalDelReq patchEvalDelReq) {
         try {
             // jwt
