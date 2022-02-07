@@ -537,7 +537,12 @@ public class ProjectDao {
         return this.jdbcTemplate.queryForObject(getEvalCheckQuery, (Object[]) getEvalCheckParms, Integer.class);
     }
 
-
+    /**
+     * 프로젝트 팀장 조회
+     * @param pj_num
+     * @return String
+     * @author shinhyeon
+     */
     public String getTeamLeader(Integer pj_num) {
         String getTeamLeaderQuery = "SELECT user_id FROM Project WHERE pj_num=?";
         return this.jdbcTemplate.queryForObject(getTeamLeaderQuery, new Integer[]{pj_num},String.class);

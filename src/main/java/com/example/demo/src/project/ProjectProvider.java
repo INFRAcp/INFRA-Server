@@ -244,6 +244,12 @@ public class ProjectProvider {
         }
     }
 
+    /**
+     * 프로젝트 팀장 조회
+     * @param pj_num
+     * @return String
+     * @author shinhyeon
+     */
     public String getTeamLeader(Integer pj_num){
         String teamLeader = projectDao.getTeamLeader(pj_num);
         return teamLeader;
