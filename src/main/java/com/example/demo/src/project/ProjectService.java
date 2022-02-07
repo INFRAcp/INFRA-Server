@@ -1,6 +1,7 @@
 package com.example.demo.src.project;
 
 import com.example.demo.config.BaseException;
+import com.example.demo.config.BaseResponse;
 import com.example.demo.src.help.qa.model.PostQaReq;
 import com.example.demo.src.project.model.*;
 import com.example.demo.utils.JwtService;
@@ -112,7 +113,12 @@ public class ProjectService {
         }
     }
 
-    //프로젝트 찜 등록
+    /**
+     * 프로젝트 찜 등록
+     * @param postLikeRegisterReq
+     * @return 등록 완료된 메세지
+     * @author 윤성식
+     */
     public PostLikeRegisterRes likeRegister(PostLikeRegisterReq postLikeRegisterReq) throws BaseException {
         try {
             String postLikeRegisterRes = projectDao.likeRegister(postLikeRegisterReq);
@@ -122,7 +128,12 @@ public class ProjectService {
         }
     }
 
-    //프로젝트 찜 삭제
+    /**
+     * 프로젝트 찜 삭제
+     * @param postLikeRegisterReq
+     * @return 찜 삭제된 메세지
+     * @author 윤성식
+     */
     public PostLikeRegisterRes likeDel(PostLikeRegisterReq postLikeRegisterReq) throws BaseException {
         try {
             String postLikeDelRes = projectDao.likeDel(postLikeRegisterReq);
@@ -200,25 +211,22 @@ public class ProjectService {
     }
 
     /**
-     * 키워드 값 확인 프로젝트 5글자, 4개 제한
+     * 키워드 값 확인 5글자, 6개 제한
      *
      * @param hashtag
      * @throws BaseException
      * @author 한규범
      */
     public void PjKeywordCheck(String[] hashtag) throws BaseException {
-        if (hashtag.length > 4) {
+        if (hashtag.length > 7) {
             throw new BaseException(POST_PROJECT_KEYWORD_CNT_EXCEED);
         }
         for (int j = 0; j < hashtag.length; j++) {
-            if (hashtag[j].length() > 5) {
+            if (hashtag[j].length() > 6) {
                 throw new BaseException(POST_PROJECT_KEYWORD_EXCEED);
             }
         }
     }
-
-
-
 
     /**
      * 팀원 평가 등록
@@ -347,5 +355,31 @@ public class ProjectService {
         Integer evalCheck = projectProvider.getEvalCheck(user_id, passiveUser_id, pj_num);
 
         if (evalCheck != 1) throw new BaseException(PROJECT_EVALUATE);
+    }
+
+    /**
+     * @param getProjectRes
+     * @author 한규범
+     */
+    public void recruit(List<GetProjectRes> getProjectRes) {
+        for (int i = 0; i < getProjectRes.size(); i++) {
+            if (getProjectRes.get(i).getPj_daysub() <= 2 && getProjectRes.get(i).getPj_daysub() >= 0) {
+                getProjectRes.get(i).setPj_recruit("마감임박");
+            }
+        }
+    }
+
+    /**
+     * 유저 JWT 유효성 검사
+     * @param userId
+     * @param userIdByJwt
+     * @return BaseResponse
+     * @author 한규범
+     */
+    public BaseResponse<Object> userIdJwt(String userId, String userIdByJwt){
+        if (!userId.equals(userIdByJwt)) {
+            return new BaseResponse<>(INVALID_USER_JWT);
+        }
+        return null;
     }
 }

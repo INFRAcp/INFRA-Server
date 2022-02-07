@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -61,7 +62,7 @@ public class SmsService {
         HttpEntity<String> body = new HttpEntity<>(jsonBody, headers);
 
         RestTemplate restTemplate = new RestTemplate();
-
+        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
         PostSmsRes smsResponse = restTemplate.postForObject(
                 new URI("https://sens.apigw.ntruss.com/sms/v2/services/"+this.serviceId+"/messages"), body, PostSmsRes.class);
         return smsResponse;

@@ -2,8 +2,6 @@ package com.example.demo.src.project;
 
 import com.example.demo.config.BaseException;
 import com.example.demo.config.BaseResponse;
-import com.example.demo.src.help.qa.model.GetQaRes;
-import com.example.demo.src.help.qa.model.PostQaReq;
 import com.example.demo.src.project.model.*;
 import com.example.demo.utils.JwtService;
 import org.slf4j.Logger;
@@ -46,27 +44,14 @@ public class ProjectController {
         try {
             if (search == null) {
                 List<GetProjectRes> getProjectRes = projectProvider.getProjects();
-                recruit(getProjectRes);
-//                getProjectRes = projectProvider.getPjCategory(getProjectRes);
+                projectService.recruit(getProjectRes);
                 return new BaseResponse<>(getProjectRes);
             }
             List<GetProjectRes> getProjectRes = projectProvider.getProjectsByKeyword(search);
-            recruit(getProjectRes);
+            projectService.recruit(getProjectRes);
             return new BaseResponse<>(getProjectRes);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
-        }
-    }
-
-    /**
-     * @param getProjectRes
-     * @author 한규범
-     */
-    public void recruit(List<GetProjectRes> getProjectRes) {
-        for (int i = 0; i < getProjectRes.size(); i++) {
-            if (getProjectRes.get(i).getPj_daysub() <= 2 && getProjectRes.get(i).getPj_daysub() >= 0) {
-                getProjectRes.get(i).setPj_recruit("마감임박");
-            }
         }
     }
 
@@ -103,17 +88,14 @@ public class ProjectController {
     @PostMapping("/likePj")
     public BaseResponse<List<PostPjLikeRes>> like(@RequestBody PostPjLikeReq postPj_likeReq) {
         try {
-            String userIdByJwt = jwtService.getUserId();
-            if (!postPj_likeReq.getUser_id().equals(userIdByJwt)) {
-                return new BaseResponse<>(INVALID_USER_JWT);
-            }
+            projectService.userIdJwt(postPj_likeReq.getUser_id(), jwtService.getUserId());
+
             List<PostPjLikeRes> postPj_likeRes = projectProvider.like(postPj_likeReq);
             return new BaseResponse<>(postPj_likeRes);
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
         }
     }
-
 
     /**
      * 유저가 조회했던 프로젝트 조회
@@ -225,7 +207,9 @@ public class ProjectController {
     public BaseResponse<PostPjApplyRes> pjApply(@RequestBody PostPjApplyReq postPjApplyReq) {
         try {
             PostPjApplyRes postPjApplyRes = projectService.pjApply(postPjApplyReq);
-            if (postPjApplyRes.getComment().equals("중복"))
+            if(postPjApplyRes.getComment().equals("거절"))
+                throw new BaseException(POST_PROJECT_REJECT_RESTART);
+            else if (postPjApplyRes.getComment().equals("중복"))
                 throw new BaseException(POST_PROJECT_COINCIDE_CHECK);
             else
                 return new BaseResponse<>(postPjApplyRes);
@@ -289,7 +273,12 @@ public class ProjectController {
         }
     }
 
-    //프로젝트 찜 등록
+    /**
+     * 프로젝트 찜 등록
+     * @param postLikeRegisterReq
+     * @return 등록 완료된 메세지
+     * @author 윤성식
+     */
     @ResponseBody
     @PostMapping("/like")
     public BaseResponse<PostLikeRegisterRes> likeRegister(@RequestBody PostLikeRegisterReq postLikeRegisterReq) {
@@ -301,7 +290,12 @@ public class ProjectController {
         }
     }
 
-    //프로젝트 찜 삭제
+    /**
+     * 프로젝트 찜 삭제
+     * @param postLikeRegisterReq
+     * @return 찜 삭제된 메세지
+     * @author 윤성식
+     */
     @ResponseBody
     @DeleteMapping("/like-del")
     public BaseResponse<PostLikeRegisterRes> likeDel(@RequestBody PostLikeRegisterReq postLikeRegisterReq) {
@@ -325,7 +319,6 @@ public class ProjectController {
 
     @ResponseBody
     @GetMapping("/evaluate")
-
     public BaseResponse<List<GetEvalRes>> getEval(@RequestParam String passiveUser_id) {
         try {
             // Query String (user_id) 가 받은 평가들만 조회
@@ -353,7 +346,6 @@ public class ProjectController {
 
     @ResponseBody
     @PostMapping("/evaluate")
-
     public BaseResponse<String> uploadEval(@RequestBody PostEvalReq postEvalReq) {
         if (postEvalReq.getUser_id() == null || postEvalReq.getPassiveUser_id() == null || postEvalReq.getPj_num() == null ||
                 postEvalReq.getOpinion() == null || postEvalReq.getResponsibility() == null || postEvalReq.getAbility() == null ||
@@ -388,7 +380,6 @@ public class ProjectController {
 
     @ResponseBody
     @PatchMapping("/evaluate/modify")
-
     public BaseResponse<String> modifyEval(@RequestBody PatchEvalReq patchEvalReq) {
         if (patchEvalReq.getUser_id() == null || patchEvalReq.getPassiveUser_id() == null || patchEvalReq.getPj_num() == null ||
                 patchEvalReq.getOpinion() == null || patchEvalReq.getResponsibility() == null || patchEvalReq.getAbility() == null ||
@@ -423,7 +414,6 @@ public class ProjectController {
 
     @ResponseBody
     @PatchMapping("/evaluate/del")
-
     public BaseResponse<String> delEval(@RequestBody PatchEvalDelReq patchEvalDelReq) {
         try {
             // jwt

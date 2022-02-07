@@ -49,7 +49,7 @@ public class ProjectDao {
      * 프로젝트 전체, 검색 조회
      *
      * @param search
-     * @return List 제목, 분야, 이름, 진행, 모집마감일, 전체인원, 모집인원, (모집, 마감임박), 마감 남은 일수
+     * @return List 제목, 분야,ㅂ 이름, 진행, 모집마감일, 전체인원, 모집인원, (모집, 마감임박), 마감 남은 일수
      * @author 한규범, 윤성식
      */
     public List<GetProjectRes> getProjectsBySearch(String search) {
@@ -292,8 +292,14 @@ public class ProjectDao {
      */
     public String pjApply(PostPjApplyReq postPjApplyReq) {
         String pjApplyCoincideCheckQuery = "Select Count(*) from Pj_request where pj_num = ? and user_id = ?";
+        String pjApplyRejectCheckQuery = "select pj_inviteStatus from Pj_request where pj_num = ? and user_id = ?";
 
-        if (this.jdbcTemplate.queryForObject(pjApplyCoincideCheckQuery, int.class, postPjApplyReq.getPj_num(), postPjApplyReq.getUser_id()) == 1) {
+        String comment = this.jdbcTemplate.queryForObject(pjApplyRejectCheckQuery, String.class, postPjApplyReq.getPj_num(), postPjApplyReq.getUser_id());
+
+        if(comment.equals("거절")){
+            return "거절";
+        }
+        else if (this.jdbcTemplate.queryForObject(pjApplyCoincideCheckQuery, int.class, postPjApplyReq.getPj_num(), postPjApplyReq.getUser_id()) == 1) {
             return "중복";
         } else {
             String pjApplyQuery = "insert into Pj_request (user_id, pj_num, pj_inviteStatus) VALUES (?,?,'신청')";
@@ -361,7 +367,12 @@ public class ProjectDao {
                 pj_num);
     }
 
-    //프로젝트 찜 등록
+    /**
+     * 프로젝트 찜 등록
+     * @param postLikeRegisterReq
+     * @return 등록 완료된 메세지
+     * @author 윤성식
+     */
     public String likeRegister(PostLikeRegisterReq postLikeRegisterReq) {
         String likeRegisterQuery = "INSERT into Pj_like (user_id, pj_num) VALUES (?,?)";
         this.jdbcTemplate.update(likeRegisterQuery, postLikeRegisterReq.getUser_id(), postLikeRegisterReq.getPj_num());
@@ -369,7 +380,12 @@ public class ProjectDao {
         return "찜 등록완료";
     }
 
-    //프로젝트 찜 삭제
+    /**
+     * 프로젝트 찜 삭제
+     * @param postLikeRegisterReq
+     * @return 찜 삭제된 메세지
+     * @author 윤성식
+     */
     public String likeDel(PostLikeRegisterReq postLikeRegisterReq) {
         String likeDelQuery = "delete from Pj_like where user_id = ? and pj_num = ?";
         this.jdbcTemplate.update(likeDelQuery, postLikeRegisterReq.getUser_id(), postLikeRegisterReq.getPj_num());
