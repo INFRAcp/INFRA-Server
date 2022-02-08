@@ -368,7 +368,12 @@ public class ProjectController {
                 return new BaseResponse<>(INVALID_USER_JWT);
             }
 
+            // 팀원 평가 등록
             projectService.uploadEval(postEvalReq);
+
+            // 팀원 등급 등록(or 최신화)
+            float grade = (float) ((postEvalReq.getResponsibility() + postEvalReq.getAbility() + postEvalReq.getTeamwork() + postEvalReq.getLeadership()) / 4.0);
+            projectService.uploadGrade(postEvalReq.getPassiveUser_id(), grade);
 
             return new BaseResponse<>(SUCCESS);
 
@@ -403,7 +408,12 @@ public class ProjectController {
                 return new BaseResponse<>(INVALID_USER_JWT);
             }
 
+            // 팀원 평가 수정
             projectService.modifyEval(patchEvalReq);
+
+            // 팀원 등급 등록(or 최신화)
+            float grade = (float) ((patchEvalReq.getResponsibility() + patchEvalReq.getAbility() + patchEvalReq.getTeamwork() + patchEvalReq.getLeadership()) / 4.0);
+            projectService.uploadGrade(patchEvalReq.getPassiveUser_id(), grade);
 
             return new BaseResponse<>(SUCCESS);
         } catch (BaseException exception) {
@@ -434,6 +444,7 @@ public class ProjectController {
                 return new BaseResponse<>(INVALID_USER_JWT);
             }
 
+            // 팀원 평가 삭제
             projectService.delEval(patchEvalDelReq);
 
             return new BaseResponse<>(SUCCESS);

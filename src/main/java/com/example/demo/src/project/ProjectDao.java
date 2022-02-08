@@ -418,7 +418,7 @@ public class ProjectDao {
     }
 
     /**
-     * 질문 등록
+     * 팀원 평가 등록
      *
      * @param postEvalReq
      * @return int
@@ -472,6 +472,16 @@ public class ProjectDao {
         };
 
         return this.jdbcTemplate.queryForObject(getPjInviteStatusQuery, getPjInviteStatusParms, String.class);
+    }
+
+    public void uploadGrade(String user_id, float user_grade) {
+        String uploadGradeQuery = "UPDATE User SET user_grade = ? WHERE user_id = ?";
+        Object[] uploadGradeParams = new Object[]{
+                user_grade,
+                user_id
+        };
+
+        this.jdbcTemplate.update(uploadGradeQuery,uploadGradeParams);
     }
 
     /**
@@ -570,5 +580,16 @@ public class ProjectDao {
     public String getPjsubCategoryNum(String pj_subCategoryName) {
         String getPjSubCategoryNumQuery = "SELECT pj_subCategoryNum FROM Pj_subCategory WHERE pj_subCategoryName = ?";
         return this.jdbcTemplate.queryForObject(getPjSubCategoryNumQuery, String.class, pj_subCategoryName);
+    }
+
+    /**
+     * 유저 등급 조회
+     * @param user_id
+     * @return float
+     * @qathor shinhyeon
+     */
+    public float getGrade(String user_id) {
+        String getGradeQuery = "SELECT user_grade FROM User WHERE user_id = ?";
+        return this.jdbcTemplate.queryForObject(getGradeQuery, Float.class, user_id);
     }
 }

@@ -284,4 +284,19 @@ public class ProjectProvider {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
+    /**
+     * 유저 등급 조회
+     * @param user_id
+     * @return float
+     * @throws BaseException
+     * @author shinhyeon
+     */
+    public float getGrade(String user_id) throws BaseException {
+        try{
+            return projectDao.getGrade(user_id);
+        }catch (Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 }

@@ -103,14 +103,14 @@ public class ProjectService {
     public PatchPjApproveRes pjApprove(PatchPjApproveReq patchPjApproveReq, String userIdByJwt) throws BaseException {
         // jwt id 가 해당 프로젝트의 팀장인지 확인
         String teamLeader = projectProvider.getTeamLeader(patchPjApproveReq.getPj_num());
-        if(!userIdByJwt.equals(teamLeader)){
+        if (!userIdByJwt.equals(teamLeader)) {
             throw new BaseException(PROJECT_APPROVE_AUTHORITY);
         }
 
         // 이미 승인한 유저인지, 거절한 유저인지 확인
-        String pj_inviteStatus = projectProvider.getPjInviteStatus1(patchPjApproveReq.getUser_id(),patchPjApproveReq.getPj_num());
-        if(pj_inviteStatus.equals("승인완료")) throw new BaseException(PROJECT_INVITESTATUS_ALREADY);
-        if(pj_inviteStatus.equals("거절")) throw new BaseException(PROJECT_INVITESTATUS_REJECT);
+        String pj_inviteStatus = projectProvider.getPjInviteStatus1(patchPjApproveReq.getUser_id(), patchPjApproveReq.getPj_num());
+        if (pj_inviteStatus.equals("승인완료")) throw new BaseException(PROJECT_INVITESTATUS_ALREADY);
+        if (pj_inviteStatus.equals("거절")) throw new BaseException(PROJECT_INVITESTATUS_REJECT);
 
         // 유저 승인
         try {
@@ -123,6 +123,7 @@ public class ProjectService {
 
     /**
      * 프로젝트 찜 등록
+     *
      * @param postLikeRegisterReq
      * @return 등록 완료된 메세지
      * @author 윤성식
@@ -138,6 +139,7 @@ public class ProjectService {
 
     /**
      * 프로젝트 찜 삭제
+     *
      * @param postLikeRegisterReq
      * @return 찜 삭제된 메세지
      * @author 윤성식
@@ -305,6 +307,33 @@ public class ProjectService {
     }
 
     /**
+     * 유저 등급 등록(or 최신화)
+     *
+     * @param postEvalReq
+     * @throws BaseException
+     * @ahthor shinhyeon
+     */
+    public void uploadGrade(String user_id, float grade) throws BaseException {
+        try {
+            float current_grade, final_grade;
+            current_grade = projectProvider.getGrade(user_id);
+
+            if (current_grade != 0.0) { // 유저 등급 최신화
+                final_grade = (float) ((current_grade + grade) / 2.0);
+                final_grade = (float) (Math.round(final_grade * 10) / 10.0); // 소수점 아래 첫째자리까지만 사용
+
+            } else { // 유저 등급 등록 (아직 등록된 평가가 없어 등급이 없을 경우)
+                final_grade = (float) (Math.round(grade * 10) / 10.0); // 소수점 아래 첫째자리까지만 사용
+            }
+
+            projectDao.uploadGrade(user_id, final_grade);
+
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    /**
      * 팀원 평가 수정
      *
      * @param PatchEvalReq
@@ -379,12 +408,13 @@ public class ProjectService {
 
     /**
      * 유저 JWT 유효성 검사
+     *
      * @param userId
      * @param userIdByJwt
      * @return BaseResponse
      * @author 한규범
      */
-    public BaseResponse<Object> userIdJwt(String userId, String userIdByJwt){
+    public BaseResponse<Object> userIdJwt(String userId, String userIdByJwt) {
         if (!userId.equals(userIdByJwt)) {
             return new BaseResponse<>(INVALID_USER_JWT);
         }
