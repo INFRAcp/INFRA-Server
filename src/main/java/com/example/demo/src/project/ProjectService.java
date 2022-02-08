@@ -60,6 +60,11 @@ public class ProjectService {
      */
     public PatchPjModifyRes pjModify(PatchPjModifyReq patchPjModifyReq) throws BaseException {
         try {
+            userIdJwt(patchPjModifyReq.getUser_id(), jwtService.getUserId());
+            PjDateCheck(patchPjModifyReq.getPj_deadline(), patchPjModifyReq.getPj_startTerm(), patchPjModifyReq.getPj_endTerm());
+            PjNullCheck(patchPjModifyReq.getPj_header(), patchPjModifyReq.getPj_categoryNum(), patchPjModifyReq.getPj_content(), patchPjModifyReq.getPj_name(), patchPjModifyReq.getPj_subCategoryNum(), patchPjModifyReq.getPj_progress(), patchPjModifyReq.getPj_endTerm(), patchPjModifyReq.getPj_startTerm(), patchPjModifyReq.getPj_deadline(), patchPjModifyReq.getPj_totalPerson());
+            PjKeywordCheck(patchPjModifyReq.getHashtag());
+
             String PjModify = projectDao.pjModify(patchPjModifyReq);
             return new PatchPjModifyRes(PjModify);
         } catch (Exception exception) {
@@ -76,6 +81,7 @@ public class ProjectService {
      */
     public DelPjDelRes pjDel(DelPjDelReq delPjDelReq) throws BaseException {
         try {
+            userIdJwt(delPjDelReq.getUser_id(), jwtService.getUserId());
             String pjDel = projectDao.pjDel(delPjDelReq);
             return new DelPjDelRes(pjDel);
         } catch (Exception exception) {
@@ -92,6 +98,7 @@ public class ProjectService {
      */
     public PostPjApplyRes pjApply(PostPjApplyReq postPjApplyReq) throws BaseException {
         try {
+            userIdJwt(postPjApplyReq.getUser_id(), jwtService.getUserId());
             String pjApplyName = projectDao.pjApply(postPjApplyReq);
             return new PostPjApplyRes(pjApplyName);
         } catch (Exception exception) {
@@ -108,6 +115,7 @@ public class ProjectService {
      */
     public PatchPjApproveRes pjApprove(PatchPjApproveReq patchPjApproveReq) throws BaseException {
         try {
+            userIdJwt(patchPjApproveReq.getUser_id(), jwtService.getUserId());
             String PjApprove = projectDao.pjApprove(patchPjApproveReq);
             return new PatchPjApproveRes(PjApprove);
         } catch (Exception exception) {
@@ -123,6 +131,7 @@ public class ProjectService {
      */
     public PostLikeRegisterRes likeRegister(PostLikeRegisterReq postLikeRegisterReq) throws BaseException {
         try {
+            userIdJwt(postLikeRegisterReq.getUser_id(), jwtService.getUserId());
             String postLikeRegisterRes = projectDao.likeRegister(postLikeRegisterReq);
             return new PostLikeRegisterRes(postLikeRegisterRes);
         } catch (Exception exception) {
@@ -138,6 +147,8 @@ public class ProjectService {
      */
     public PostLikeRegisterRes likeDel(PostLikeRegisterReq postLikeRegisterReq) throws BaseException {
         try {
+            userIdJwt(postLikeRegisterReq.getUser_id(), jwtService.getUserId());
+
             String postLikeDelRes = projectDao.likeDel(postLikeRegisterReq);
             return new PostLikeRegisterRes(postLikeDelRes);
         } catch (Exception exception) {
