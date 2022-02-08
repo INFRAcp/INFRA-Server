@@ -38,6 +38,12 @@ public class ProjectService {
      */
     public PostPjRegisterRes registrationPj(PostPjRegisterReq postPjRegisterReq) throws BaseException {
         try {
+            userIdJwt(postPjRegisterReq.getUser_id(), jwtService.getUserId());
+            PjDateCheck(postPjRegisterReq.getPj_deadline(), postPjRegisterReq.getPj_startTerm(), postPjRegisterReq.getPj_endTerm());
+            PjNullCheck(postPjRegisterReq.getPj_header(), postPjRegisterReq.getPj_categoryName(), postPjRegisterReq.getPj_content(), postPjRegisterReq.getPj_name(), postPjRegisterReq.getPj_subCategoryName(), postPjRegisterReq.getPj_progress(), postPjRegisterReq.getPj_endTerm(), postPjRegisterReq.getPj_startTerm(), postPjRegisterReq.getPj_deadline(), postPjRegisterReq.getPj_totalPerson());
+            PjKeywordCheck(postPjRegisterReq.getHashtag());
+            postPjRegisterReq.setPj_categoryNum(projectProvider.getPjCategoryNum(postPjRegisterReq.getPj_categoryName()));
+            postPjRegisterReq.setPj_subCategoryNum(projectProvider.getPjSubCategoryNum(postPjRegisterReq.getPj_subCategoryName()));
             String pjRegisterSucese = projectDao.pjRegistration(postPjRegisterReq);
             return new PostPjRegisterRes(pjRegisterSucese);
         } catch (Exception exception) {
@@ -378,4 +384,6 @@ public class ProjectService {
         }
         return null;
     }
+
+
 }

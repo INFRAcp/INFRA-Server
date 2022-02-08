@@ -26,12 +26,13 @@ public class ProjectDao {
      * @return List 제목, 분야, 이름, 진행, 모집마감일, 전체인원, 모집인원, (모집, 마감임박), 마감 남은 일수
      * @author 한규범, 윤성식
      */
-    public List<GetProjectRes> getProjects() {
+    public List<GetProjectRes> getProjects(String user_id) {
         String getProjectQuery = "select Project.pj_num, user_id, pj_views, pj_header, pj_categoryName, pj_content, pj_name, pj_subCategoryNum, pj_progress, pj_endTerm,pj_startTerm, pj_deadline, pj_totalPerson,pj_recruitPerson, pj_time, DATEDIFF(pj_deadline,now()) " +
                 "from Project, Pj_category " +
                 "where pj_status = '등록' and Project.pj_categoryNum = Pj_category.pj_categoryNum";
         return this.jdbcTemplate.query(getProjectQuery,
                 (rs, rowNum) -> new GetProjectRes(
+                        user_id,
                         rs.getInt("pj_num"),
                         rs.getString("pj_header"),
                         rs.getString("pj_categoryName"),
@@ -41,7 +42,8 @@ public class ProjectDao {
                         rs.getInt("pj_totalPerson"),
                         rs.getInt("pj_recruitPerson"),
                         "모집중",
-                        rs.getInt("DATEDIFF(pj_deadline,now())")
+                        rs.getInt("DATEDIFF(pj_deadline,now())"),
+                        0
                 ));
     }
 
@@ -53,7 +55,7 @@ public class ProjectDao {
      * @return List 제목, 분야,ㅂ 이름, 진행, 모집마감일, 전체인원, 모집인원, (모집, 마감임박), 마감 남은 일수
      * @author 한규범, 윤성식
      */
-    public List<GetProjectRes> getProjectsBySearch(String search) {
+    public List<GetProjectRes> getProjectsBySearch(String search, String user_id) {
         String getProjectsBySearchQuery = "select distinct Project.pj_num, pj_header, Project.pj_categoryNum, pj_name, pj_name, pj_progress, pj_deadline, pj_totalPerson,pj_recruitPerson, DATEDIFF(pj_deadline,now()) " +
                 "from Project, Pj_hashtag, Pj_category, Pj_subCategory " +
 
@@ -67,6 +69,7 @@ public class ProjectDao {
 
         return this.jdbcTemplate.query(getProjectsBySearchQuery,
                 (rs, rowNum) -> new GetProjectRes(
+                        user_id,
                         rs.getInt("pj_num"),
                         rs.getString("pj_header"),
                         rs.getString("pj_categoryNum"),
@@ -76,7 +79,8 @@ public class ProjectDao {
                         rs.getInt("pj_totalPerson"),
                         rs.getInt("pj_recruitPerson"),
                         "모집중",
-                        rs.getInt("DATEDIFF(pj_deadline,now())")),
+                        rs.getInt("DATEDIFF(pj_deadline,now())"),
+                        0),
                 getProjectsBySearchParams,
                 getProjectsBySearchParams,
                 getProjectsBySearchParams,
@@ -559,5 +563,11 @@ public class ProjectDao {
     public String getPjsubCategoryNum(String pj_subCategoryName) {
         String getPjSubCategoryNumQuery = "SELECT pj_subCategoryNum FROM Pj_subCategory WHERE pj_subCategoryName = ?";
         return this.jdbcTemplate.queryForObject(getPjSubCategoryNumQuery, String.class, pj_subCategoryName);
+    }
+
+
+    public int checkPjLike(int pj_num, String user_id) {
+        String checkPjLikeQuery="SELECT count(*) FROM Pj_like WHERE pj_num = ? and user_id = ?";
+        return this.jdbcTemplate.queryForObject(checkPjLikeQuery,int.class, pj_num, user_id);
     }
 }

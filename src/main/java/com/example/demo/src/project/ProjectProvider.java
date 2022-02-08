@@ -32,9 +32,9 @@ public class ProjectProvider {
      * @return List 제목, 분야, 이름, 진행, 모집마감일, 전체인원, 모집인원, (모집, 마감임박), 마감 남은 일수
      * @author 한규범, 윤성식
      */
-    public List<GetProjectRes> getProjects() throws BaseException {
+    public List<GetProjectRes> getProjects(String user_id) throws BaseException {
         try {
-            List<GetProjectRes> getProjectRes = projectDao.getProjects();
+            List<GetProjectRes> getProjectRes = projectDao.getProjects(user_id);
             return getProjectRes;
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
@@ -48,13 +48,13 @@ public class ProjectProvider {
      * @return List 제목, 분야, 이름, 진행, 모집마감일, 전체인원, 모집인원, (모집, 마감임박), 마감 남은 일수
      * @author 한규범, 윤성식
      */
-    public List<GetProjectRes> getProjectsByKeyword(String search) throws BaseException {
+    public List<GetProjectRes> getProjectsByKeyword(String search, String user_id) throws BaseException {
         if (search.length() < 2) {
             throw new BaseException(SEARCH_LENGTH_ERROR);
         }
 
         try {
-            List<GetProjectRes> getProjectRes = projectDao.getProjectsBySearch(search);
+            List<GetProjectRes> getProjectRes = projectDao.getProjectsBySearch(search, user_id);
             return getProjectRes;
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
@@ -274,4 +274,11 @@ public class ProjectProvider {
         }
     }
 
+    public int checkPjLike(int pj_num, String user_id) throws BaseException{
+        try{
+            return projectDao.checkPjLike(pj_num, user_id);
+        }catch (Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 }
