@@ -11,6 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 public class GetProfileRes {
     String user_nickname;
+    Float user_grade;
     String user_prPhoto;
     String user_prProfile;
     List<String> user_prAbility;

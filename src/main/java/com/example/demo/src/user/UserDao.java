@@ -251,13 +251,14 @@ public class UserDao {
      * 소개 페이지 관련 user 테이블에서 정보 가져오기
      *
      * @param userId
-     * @return User - user_nickname, user_prPhoto, user_prProfile
+     * @return User - user_nickname, user_grade, user_prPhoto, user_prProfile
      * @author yunhee
      */
     public User getUserProfileInfo(String userId) {
-        String getUserProfileInfoQuery = "select user_nickname, user_prPhoto, user_prProfile from User where user_id = ?";
+        String getUserProfileInfoQuery = "select user_nickname, user_grade, user_prPhoto, user_prProfile from User where user_id = ?";
         return this.jdbcTemplate.queryForObject(getUserProfileInfoQuery,
                 (rs, rowNum) -> User.builder().user_nickname(rs.getString("user_nickname")).
+                        user_grade(rs.getFloat("user_grade")).
                         user_prPhoto(rs.getString("user_prPhoto")).
                         user_prProfile(rs.getString("user_prProfile")).build(), userId);
     }

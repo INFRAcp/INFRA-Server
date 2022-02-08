@@ -171,8 +171,9 @@ public class UserProvider {
         try {
             GetProfileRes getProfileRes = new GetProfileRes();
 
-            User user = userDao.getUserProfileInfo(userId); // 닉네임, 프로필, 사진
+            User user = userDao.getUserProfileInfo(userId); // 닉네임, 평가점수, 프로필, 사진
             getProfileRes.setUser_nickname(user.getUser_nickname());
+            getProfileRes.setUser_grade(user.getUser_grade());
             getProfileRes.setUser_prProfile(user.getUser_prProfile());
             getProfileRes.setUser_prPhoto(user.getUser_prPhoto());
 
@@ -187,7 +188,7 @@ public class UserProvider {
             if (!link.isEmpty())
                 getProfileRes.setUser_prLink(link);
 
-            // TODO : 프로젝트 리스트, 팀원 평가(user_grade 불러오기)
+            // TODO : 프로젝트 리스트
 
             return getProfileRes;
         } catch (IncorrectResultSizeDataAccessException error) {
