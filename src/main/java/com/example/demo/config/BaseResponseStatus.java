@@ -105,7 +105,7 @@ public enum BaseResponseStatus {
     POST_USERS_EXISTS_ID(false, 3102, "중복된 아이디입니다."),
     POST_USERS_EXISTS_PHONE(false, 3103, "중복된 핸드폰 번호입니다."),
     POST_USERS_EXISTS_NICKNAME(false, 3104, "중복된 닉네임 입니다."),
-    DUPLICATED_EMAIL(false, 3105, "중복된 이메일입니다."),
+    POST_USERS_EXISTS_EMAIL(false, 3105, "중복된 이메일입니다."),
     FAILED_TO_LOGIN(false, 3106, "없는 아이디거나 비밀번호가 틀렸습니다."),
 
     // 회원가입 관련
