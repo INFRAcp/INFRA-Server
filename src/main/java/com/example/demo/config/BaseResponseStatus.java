@@ -72,6 +72,11 @@ public enum BaseResponseStatus {
     //거절된 프로젝트 재지원
     POST_PROJECT_REJECT_RESTART(false, 2325, "거절된 프로젝트입니다."),
 
+    //프로젝트에 지원한 사람이 아무도 없을 때
+    GET_PROJECT_APPLY_LIST_NULL(false, 2340, "지원한 사람이 없습니다."),
+
+    //프로젝트에 승인된 유저가 아무도 없을 때
+    POST_PROJECT_GETTEAM_NULL(false, 2341, "승인된 팀원이 없습니다."),
     // 팀원 평가
     // [Post] /evaluate
     POST_PROJECT_EVALUATE_SCORE(false, 2350,"평가 점수 범위는 0 ~ 5 이어야 합니다."),
