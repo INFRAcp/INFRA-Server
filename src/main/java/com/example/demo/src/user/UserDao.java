@@ -267,7 +267,8 @@ public class UserDao {
      * 소개페이지 조회 - 프로젝트 가져오기
      *
      * @param userId
-     * @return
+     * @return pj_name
+     * @author yewon
      */
     public List<String> getUserProject(String userId) {
         String getUserProjectQuery = "select Project.pj_name from Project " +
