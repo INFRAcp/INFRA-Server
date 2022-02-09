@@ -141,7 +141,12 @@ public class ProjectController {
     public BaseResponse<List<PostPjParticipateRes>> getTeam(@RequestBody PostPjParticipateReq postPj_participateReq) {
         try {
             List<PostPjParticipateRes> postPj_participateRes = projectProvider.getTeam(postPj_participateReq);
-            return new BaseResponse<>(postPj_participateRes);
+            if(postPj_participateRes == null){
+                throw new BaseException(POST_PROJECT_GETTEAM_NULL);
+            }
+            else {
+                return new BaseResponse<>(postPj_participateRes);
+            }
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
         }
@@ -224,12 +229,9 @@ public class ProjectController {
     public BaseResponse<PostPjApplyRes> pjApply(@RequestBody PostPjApplyReq postPjApplyReq) {
         try {
             PostPjApplyRes postPjApplyRes = projectService.pjApply(postPjApplyReq);
-            if(postPjApplyRes.getComment().equals("거절"))
-                throw new BaseException(POST_PROJECT_REJECT_RESTART);
-            else if (postPjApplyRes.getComment().equals("중복"))
-                throw new BaseException(POST_PROJECT_COINCIDE_CHECK);
-            else
-                return new BaseResponse<>(postPjApplyRes);
+            projectService.rejectCheck(postPjApplyRes);
+            projectService.coincideCheck(postPjApplyRes);
+            return new BaseResponse<>(postPjApplyRes);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
@@ -266,6 +268,9 @@ public class ProjectController {
     public BaseResponse<List<GetApplyListRes>> pjApplyList(@RequestParam(required = false) String pj_num) {
         try {
             List<GetApplyListRes> getApplyListRes = projectProvider.pjApplyList(pj_num);
+            if(getApplyListRes == null){
+                throw new BaseException(GET_PROJECT_APPLY_LIST_NULL);
+            }
             return new BaseResponse<>(getApplyListRes);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));

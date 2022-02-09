@@ -378,4 +378,16 @@ public class ProjectService {
         }
         return null;
     }
+
+    public void rejectCheck(PostPjApplyRes postPjApplyRes) throws BaseException {
+        if(postPjApplyRes.getComment().equals("거절")){
+            throw new BaseException(POST_PROJECT_REJECT_RESTART);
+        }
+    }
+
+    public void coincideCheck(PostPjApplyRes postPjApplyRes) throws BaseException{
+        if(postPjApplyRes.getComment().equals("중복")){
+            throw new BaseException(POST_PROJECT_COINCIDE_CHECK);
+        }
+    }
 }
