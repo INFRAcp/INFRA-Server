@@ -12,6 +12,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
+
 import static com.example.demo.config.BaseResponseStatus.*;
 import static com.example.demo.utils.ValidationRegex.*;
 
@@ -40,6 +42,7 @@ public class UserService {
      * @throws BaseException
      * @author yunhee
      */
+    @Transactional
     public PostUserRes createUser(PostUserReq postUserReq) throws BaseException {
         checkCreateUserRegex(postUserReq);  // 데이터 형식 체크
 
@@ -95,6 +98,7 @@ public class UserService {
      * @throws BaseException
      * @author yunhee
      */
+    @Transactional
     public void modifyUserPw(PatchUserReq patchUserReq) throws BaseException {
         String pwd;
         try {   // 비밀번호 암호화
@@ -122,6 +126,7 @@ public class UserService {
      * @throws BaseException
      * @author yewon
      */
+    @Transactional
     public void delUser(String user_id) throws BaseException {
         try {
             userDao.delUser(user_id);
@@ -137,6 +142,7 @@ public class UserService {
      * @throws BaseException
      * @author yunhee
      */
+    @Transactional
     public void resetPwMail(String id, String email) throws BaseException {
         String pw = RandomStringUtils.randomAlphanumeric(12);
         PatchUserReq patchUserReq = new PatchUserReq(id, pw);
@@ -181,6 +187,7 @@ public class UserService {
      * @throws BaseException
      * @author yewon
      */
+    @Transactional
     public PostProfileRes createProfile(String user_id, PostProfileReq postProfileReq) throws BaseException {
         /** 소개 페이지 작성 예외처리 **/
         // 필수로 입력해야 할 정보(닉네임, 소개글, 능력, 키워드) 미입력시 예외 발생
@@ -201,7 +208,7 @@ public class UserService {
         // 능력(ability)의 중복값에 대한 처리
         for (int i = 0; i < postProfileReq.getUser_prAbility().length; i++) {
             String result = postProfileReq.getUser_prAbility()[i];
-            for (int j = i+1; j < postProfileReq.getUser_prAbility().length; j++) {
+            for (int j = i + 1; j < postProfileReq.getUser_prAbility().length; j++) {
                 if (result.equals(postProfileReq.getUser_prAbility()[j])) {
                     throw new BaseException(POST_USER_PROFILE_SAME_ABILITY);
                 }
@@ -210,7 +217,7 @@ public class UserService {
         // 링크(link)의 중복값에 대한 처리
         for (int i = 0; i < postProfileReq.getUser_prLink().length; i++) {
             String result = postProfileReq.getUser_prLink()[i];
-            for (int j = i+1; j < postProfileReq.getUser_prLink().length; j++) {
+            for (int j = i + 1; j < postProfileReq.getUser_prLink().length; j++) {
                 if (result.equals(postProfileReq.getUser_prLink()[j])) {
                     throw new BaseException(POST_USER_PROFILE_SAME_LINK);
                 }
@@ -219,7 +226,7 @@ public class UserService {
         // 키워드(keyword)의 중복값에 대한 처리
         for (int i = 0; i < postProfileReq.getUser_prKeyword().length; i++) {
             String result = postProfileReq.getUser_prKeyword()[i];
-            for (int j = i+1; j < postProfileReq.getUser_prKeyword().length; j++) {
+            for (int j = i + 1; j < postProfileReq.getUser_prKeyword().length; j++) {
                 if (result.equals(postProfileReq.getUser_prKeyword()[j])) {
                     throw new BaseException(POST_USER_PROFILE_SAME_KEYWORD);
                 }
