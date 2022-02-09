@@ -10,12 +10,12 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GetProfileRes {
-    String user_nickname;
-    Float user_grade;
-    String user_prPhoto;
-    String user_prProfile;
-    List<String> user_prAbility;
-    List<String> user_prLink;
-    List<String> user_prKeyword;
-    List<String> pj_request;
+    private String user_nickname;
+    private float user_grade;
+    private String user_prPhoto;
+    private String user_prProfile;
+    private List<String> user_prAbility;
+    private List<String> user_prLink;
+    private List<String> user_prKeyword;
+    private List<String> pj_name;
 }

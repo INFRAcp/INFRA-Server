@@ -234,7 +234,7 @@ public class UserController {
      *
      * @param userId
      * @return BaseResponse
-     * @author yunhee
+     * @author yunhee, yewon
      */
     @ResponseBody
     @GetMapping("/profile/{userId}")

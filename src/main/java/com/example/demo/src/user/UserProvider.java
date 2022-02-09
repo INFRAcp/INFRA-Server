@@ -165,7 +165,7 @@ public class UserProvider {
      * @param userId
      * @return
      * @throws BaseException
-     * @author yunhee
+     * @author yunhee, yewon
      */
     public GetProfileRes getProfile(String userId) throws BaseException {
         try {
@@ -181,6 +181,7 @@ public class UserProvider {
             List<String> keyword = userDao.getUserPrKeyword(userId);    // 키워드
             List<String> link = userDao.getUserLink(userId);    // 프로필 링크
 
+            // 능력, 키워드, 링크는 필수로 들어와야하는 값
             if (!ability.isEmpty())
                 getProfileRes.setUser_prAbility(ability);
             if (!keyword.isEmpty())
@@ -188,7 +189,10 @@ public class UserProvider {
             if (!link.isEmpty())
                 getProfileRes.setUser_prLink(link);
 
-            // TODO : 프로젝트 리스트
+            // 프로젝트 리스트
+            List<String> project = userDao.getUserProject(userId);
+            getProfileRes.setPj_name(project);
+
 
             return getProfileRes;
         } catch (IncorrectResultSizeDataAccessException error) {
