@@ -164,7 +164,7 @@ public class UserDao {
     /**
      * 소개 페이지 작성 API
      *
-     * @param postProfileReq - photo, profile, ability, link, keyword
+     * @param postProfileReq - profile, ability, link, keyword
      * @return
      * @author yewon
      */
@@ -172,8 +172,8 @@ public class UserDao {
         String userId = user_id;
 
         // photo와 profile을 user 테이블에 추가하기 (이미 존재하는 아이디에 넣는 것이기 때문에 update)
-        String userProfileQuery = "UPDATE User SET user_prPhoto = ?, user_prProfile = ? WHERE user_id = ? ";
-        Object[] createProfileParams = new Object[]{postProfileReq.getUser_prPhoto(), postProfileReq.getUser_prProfile(), userId};
+        String userProfileQuery = "UPDATE User SET user_prProfile = ? WHERE user_id = ? ";
+        Object[] createProfileParams = new Object[]{postProfileReq.getUser_prProfile(), userId};
         this.jdbcTemplate.update(userProfileQuery, createProfileParams);
 
         // user_prAbility 여러 개 입력 가능
@@ -197,13 +197,13 @@ public class UserDao {
         return "소개 페이지가 완성되었습니다~!";
     }
 
-        /**
-         * phone에 해당하는 email 정보 가져오기
-         *
-         * @param phone
-         * @return String - email
-         * @author yunhee
-         */
+    /**
+     * phone에 해당하는 email 정보 가져오기
+     *
+     * @param phone
+     * @return String - email
+     * @author yunhee
+     */
     public User getEmailFromPhone(String phone) {
         String getEmailQuery = "select user_id, user_email from User where user_phone=? and user_status REGEXP 'ACTIVE|STOP'";
         return this.jdbcTemplate.queryForObject(getEmailQuery,
@@ -212,7 +212,7 @@ public class UserDao {
     }
 
     /**
-     * 프로필 링크 가져오기
+     * 소개페이지 조회 - 프로필 링크 가져오기
      *
      * @param userId
      * @return List - 프로필 링크
@@ -224,7 +224,7 @@ public class UserDao {
     }
 
     /**
-     * 능력(user_prAbility) 가져오기
+     * 소개페이지 조회 - 능력(user_prAbility) 가져오기
      *
      * @param userId
      * @return List - 능력
@@ -236,7 +236,7 @@ public class UserDao {
     }
 
     /**
-     * 키워드(user_prKeyword) 가져오기
+     * 소개페이지 조회 - 키워드(user_prKeyword) 가져오기
      *
      * @param userId
      * @return List
@@ -248,17 +248,32 @@ public class UserDao {
     }
 
     /**
-     * 소개 페이지 관련 user 테이블에서 정보 가져오기
+     * 소개페이지 조회 -  user 테이블에서 정보 가져오기(닉네임, 평가, 사진, 소개글)
      *
      * @param userId
-     * @return User - user_nickname, user_prPhoto, user_prProfile
-     * @author yunhee
+     * @return User - user_nickname, user_grade, user_prPhoto, user_prProfile
+     * @author yunhee, yewon
      */
     public User getUserProfileInfo(String userId) {
-        String getUserProfileInfoQuery = "select user_nickname, user_prPhoto, user_prProfile from User where user_id = ?";
+        String getUserProfileInfoQuery = "select user_nickname, user_grade, user_prPhoto, user_prProfile from User where user_id = ?";
         return this.jdbcTemplate.queryForObject(getUserProfileInfoQuery,
                 (rs, rowNum) -> User.builder().user_nickname(rs.getString("user_nickname")).
+                        user_grade(rs.getFloat("user_grade")).
                         user_prPhoto(rs.getString("user_prPhoto")).
                         user_prProfile(rs.getString("user_prProfile")).build(), userId);
+    }
+
+    /**
+     * 소개페이지 조회 - 프로젝트 가져오기
+     *
+     * @param userId
+     * @return pj_name
+     * @author yewon
+     */
+    public List<String> getUserProject(String userId) {
+        String getUserProjectQuery = "select Project.pj_name from Project " +
+                    "inner join Pj_request on Project.pj_num = Pj_request.pj_num " +
+                    "where Pj_request.user_id = ? and Pj_request.pj_inviteStatus = '승인완료'";
+        return this.jdbcTemplate.queryForList(getUserProjectQuery, String.class, userId);
     }
 }

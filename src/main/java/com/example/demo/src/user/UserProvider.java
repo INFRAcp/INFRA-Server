@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -37,6 +38,7 @@ public class UserProvider {
      * @throws BaseException
      * @author yunhee
      */
+    @Transactional(readOnly = true)
     public PostLoginRes logIn(PostLoginReq postLoginReq) throws BaseException {
         if (checkId(postLoginReq.getUser_id()) == 0) {
             throw new BaseException(FAILED_TO_LOGIN);
@@ -70,6 +72,7 @@ public class UserProvider {
      * @throws BaseException
      * @author yunhee
      */
+    @Transactional(readOnly = true)
     public int checkId(String id) throws BaseException {
         try {
             return userDao.checkId(id);
@@ -87,6 +90,7 @@ public class UserProvider {
      * @throws BaseException
      * @author yunhee
      */
+    @Transactional(readOnly = true)
     public int checkEmail(String email) throws BaseException {
         try {
             return userDao.checkEmail(email);
@@ -104,6 +108,7 @@ public class UserProvider {
      * @throws BaseException
      * @author yunhee
      */
+    @Transactional(readOnly = true)
     public int checkPhone(String phone) throws BaseException {
         try {
             return userDao.checkPhone(phone);
@@ -120,6 +125,7 @@ public class UserProvider {
      * @throws BaseException
      * @author yunhee
      */
+    @Transactional(readOnly = true)
     public int checkNickname(String nickname) throws BaseException {
         try {
             return userDao.checkNickname(nickname);
@@ -130,7 +136,12 @@ public class UserProvider {
 
     /**
      * phone에 해당하는 email 정보 가져오기
+     * @param phone
+     * @return User
+     * @throws BaseException
+     * @author yunhee
      */
+    @Transactional(readOnly = true)
     public User getEmailFromPhone(String phone) throws BaseException {
         try {
             return userDao.getEmailFromPhone(phone);
@@ -150,6 +161,7 @@ public class UserProvider {
      * @throws BaseException
      * @author yewon
      */
+    @Transactional(readOnly = true)
     public List<GetUserRes> getUser(String user_id) throws BaseException {
         try {
             List<GetUserRes> getUserRes = userDao.getUser(user_id);
@@ -165,14 +177,16 @@ public class UserProvider {
      * @param userId
      * @return
      * @throws BaseException
-     * @author yunhee
+     * @author yunhee, yewon
      */
+    @Transactional(readOnly = true)
     public GetProfileRes getProfile(String userId) throws BaseException {
         try {
             GetProfileRes getProfileRes = new GetProfileRes();
 
-            User user = userDao.getUserProfileInfo(userId); // 닉네임, 프로필, 사진
+            User user = userDao.getUserProfileInfo(userId); // 닉네임, 평가점수, 프로필, 사진
             getProfileRes.setUser_nickname(user.getUser_nickname());
+            getProfileRes.setUser_grade(user.getUser_grade());
             getProfileRes.setUser_prProfile(user.getUser_prProfile());
             getProfileRes.setUser_prPhoto(user.getUser_prPhoto());
 
@@ -180,6 +194,7 @@ public class UserProvider {
             List<String> keyword = userDao.getUserPrKeyword(userId);    // 키워드
             List<String> link = userDao.getUserLink(userId);    // 프로필 링크
 
+            // 능력, 키워드, 링크는 필수로 들어와야하는 값
             if (!ability.isEmpty())
                 getProfileRes.setUser_prAbility(ability);
             if (!keyword.isEmpty())
@@ -187,7 +202,10 @@ public class UserProvider {
             if (!link.isEmpty())
                 getProfileRes.setUser_prLink(link);
 
-            // TODO : 프로젝트 리스트, 팀원 평가(user_grade 불러오기)
+            // 프로젝트 리스트
+            List<String> project = userDao.getUserProject(userId);
+            getProfileRes.setPj_name(project);
+
 
             return getProfileRes;
         } catch (IncorrectResultSizeDataAccessException error) {

@@ -216,6 +216,10 @@ public class UserController {
     @PostMapping("/profile/{user_id}")
     public BaseResponse<PostProfileRes> createProfile(@PathVariable("user_id") String user_id, @RequestBody PostProfileReq postProfileReq) {
         try {
+            String userIdByJwt = jwtService.getUserId();
+            if (!user_id.equals(userIdByJwt)) {
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
             PostProfileRes postProfileRes = userService.createProfile(user_id, postProfileReq);
             return new BaseResponse<>(postProfileRes);
         } catch (BaseException exception) {
@@ -230,7 +234,7 @@ public class UserController {
      *
      * @param userId
      * @return BaseResponse
-     * @author yunhee
+     * @author yunhee, yewon
      */
     @ResponseBody
     @GetMapping("/profile/{userId}")

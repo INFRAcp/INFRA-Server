@@ -8,7 +8,6 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 
 public class PostProfileReq {
-    private String user_prPhoto;
     private String user_prProfile;
     private String [] user_prAbility = null;
     private String [] user_prLink= null;

@@ -157,16 +157,23 @@ public class ProjectDao {
      * @author 윤성식
      */
     public List<PostPjParticipateRes> getTeam(PostPjParticipateReq postPj_participateReq) {
-        String getTeam_Query = "select user_nickname, user_prPhoto " +
-                "from User " +
-                "where user_id in (select user_id from Pj_request where pj_inviteStatus = '승인완료' and pj_num = ?)";
-        Integer getParams = postPj_participateReq.getPj_num();
-        return this.jdbcTemplate.query(getTeam_Query,
-                (rs, rowNum) -> new PostPjParticipateRes(
-                        rs.getString("user_nickname"),
-                        rs.getString("user_prPhoto")),
-                getParams
-        );
+        String getTeamCheckQuery = "select count(*) from Pj_request where pj_inviteStatus = '승인완료' and pj_num = ?";
+
+        if(this.jdbcTemplate.queryForObject(getTeamCheckQuery, int.class, postPj_participateReq.getPj_num()) == 0){
+            return null;
+        }
+        else {
+            String getTeam_Query = "select user_nickname, user_prPhoto " +
+                    "from User " +
+                    "where user_id in (select user_id from Pj_request where pj_inviteStatus = '승인완료' and pj_num = ?)";
+            Integer getParams = postPj_participateReq.getPj_num();
+            return this.jdbcTemplate.query(getTeam_Query,
+                    (rs, rowNum) -> new PostPjParticipateRes(
+                            rs.getString("user_nickname"),
+                            rs.getString("user_prPhoto")),
+                    getParams
+            );
+        }
     }
 
     /**
@@ -350,15 +357,21 @@ public class ProjectDao {
      * @author 윤성식
      */
     public List<GetApplyListRes> pjApplyList(String pj_num) {
-        String pjApplyListQuery = "select User.user_id, user_nickname, user_grade, user_prPhoto, pj_inviteStatus from User, Pj_request where User.user_id = Pj_request.user_id and pj_num = ?";
-        return this.jdbcTemplate.query(pjApplyListQuery,
-                (rs, rowNum) -> new GetApplyListRes(
-                        rs.getString("user_id"),
-                        rs.getString("user_nickname"),
-                        rs.getString("user_grade"),
-                        rs.getString("user_prPhoto"),
-                        rs.getString("pj_inviteStatus")),
-                pj_num);
+        String pjCountApplyListQuery = "select count(*) from Pj_request where pj_num = ?";
+        if(this.jdbcTemplate.queryForObject(pjCountApplyListQuery, int.class, pj_num) == 0){
+            return null;
+        }
+        else {
+            String pjApplyListQuery = "select User.user_id, user_nickname, user_grade, user_prPhoto, pj_inviteStatus from User, Pj_request where User.user_id = Pj_request.user_id and pj_num = ?";
+            return this.jdbcTemplate.query(pjApplyListQuery,
+                    (rs, rowNum) -> new GetApplyListRes(
+                            rs.getString("user_id"),
+                            rs.getString("user_nickname"),
+                            rs.getString("user_grade"),
+                            rs.getString("user_prPhoto"),
+                            rs.getString("pj_inviteStatus")),
+                    pj_num);
+        }
     }
 
     /**
