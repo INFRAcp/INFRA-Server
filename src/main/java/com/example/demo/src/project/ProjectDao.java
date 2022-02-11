@@ -345,6 +345,24 @@ public class ProjectDao {
     }
 
     /**
+     * 프로젝트 팀원 강퇴
+     *
+     * @param patchPjApproveReq
+     * @return PatchPjApproveRes 완료 메시지
+     * @author shinhyeon
+     */
+    public String pjKickOut(PatchPjApproveReq patchPjApproveReq) {
+        String pjRejectQuery = "update Pj_request set pj_inviteStatus = '강퇴' where user_id = ? and pj_num = ? and pj_inviteStatus = '승인완료'";
+        Object[] pjRejectParams = new Object[]{
+                patchPjApproveReq.getUser_id(),
+                patchPjApproveReq.getPj_num()
+        };
+        this.jdbcTemplate.update(pjRejectQuery, pjRejectParams);
+
+        return "강퇴";
+    }
+
+    /**
      * 본인이 지원한 프로젝트 신청 현황
      *
      * @param postUserApplyReq

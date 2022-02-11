@@ -245,13 +245,13 @@ public class ProjectController {
     }
 
     /**
-     * 프로젝트 신청한 유저 관리 (승인, 거절)
+     * 프로젝트 신청한 유저 승인, 거절 / 팀원 강퇴
      * @param patchPjApproveReq
      * @return PatchPjApproveRes 완료 메시지
      * @author shinhyeon
      */
     @ResponseBody
-    @PatchMapping("/accept")
+    @PatchMapping("/member")
     public BaseResponse<PatchPjApproveRes> pjAcceptRequest(@RequestBody PatchPjApproveReq patchPjApproveReq) {
         if(patchPjApproveReq.getUser_id() == null || patchPjApproveReq.getPj_num() == null || patchPjApproveReq.getPj_inviteStatus() == null){
             return new BaseResponse<>(REQUEST_EMPTY);
@@ -259,6 +259,11 @@ public class ProjectController {
         try {
             // jwt
             String userIdByJwt = jwtService.getUserId();
+
+            if(patchPjApproveReq.getPj_inviteStatus().equals("강퇴")){
+                PatchPjApproveRes patchPjApproveRes = projectService.pjKickOut(patchPjApproveReq, userIdByJwt);
+                return new BaseResponse<>(patchPjApproveRes);
+            }
 
             PatchPjApproveRes patchPjApproveRes = projectService.pjAcceptRequest(patchPjApproveReq, userIdByJwt);
             return new BaseResponse<>(patchPjApproveRes);

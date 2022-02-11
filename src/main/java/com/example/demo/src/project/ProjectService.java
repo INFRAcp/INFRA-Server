@@ -122,7 +122,7 @@ public class ProjectService {
     }
 
     /**
-     * 프로젝트 신청한 유저 관리 (승인, 거절)
+     * 프로젝트 신청한 유저 승인, 거절
      *
      * @param patchPjApproveReq
      * @return PatchPjApproveRes 완료 메시지
@@ -153,6 +153,34 @@ public class ProjectService {
             if (patchPjApproveReq.getPj_inviteStatus().equals("거절")){
                 res = projectDao.pjReject(patchPjApproveReq);
             }
+
+            return new PatchPjApproveRes(res);
+
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    /**
+     * 프로젝트 팀원 강퇴
+     *
+     * @param patchPjApproveReq
+     * @return PatchPjApproveRes 완료 메시지
+     * @author shinhyeon
+     */
+    public PatchPjApproveRes pjKickOut(PatchPjApproveReq patchPjApproveReq, String userIdByJwt) throws BaseException {
+        // jwt id 가 해당 프로젝트의 팀장인지 확인
+        String teamLeader = projectProvider.getTeamLeader(patchPjApproveReq.getPj_num());
+        if (!userIdByJwt.equals(teamLeader)) {
+            throw new BaseException(PROJECT_APPROVE_AUTHORITY);
+        }
+
+        // 팀원만 강퇴 가능
+        String pj_inviteStatus = projectProvider.getPjInviteStatus1(patchPjApproveReq.getUser_id(), patchPjApproveReq.getPj_num());
+        if (!pj_inviteStatus.equals("승인완료")) throw new BaseException(PROJECT_KICK_OUT);
+
+        try {
+            String res = projectDao.pjKickOut(patchPjApproveReq);
 
             return new PatchPjApproveRes(res);
 

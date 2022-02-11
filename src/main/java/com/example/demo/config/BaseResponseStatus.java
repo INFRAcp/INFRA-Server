@@ -118,6 +118,7 @@ public enum BaseResponseStatus {
     PROJECT_APPROVE_AUTHORITY(false, 3360, "승인 권한이 없습니다. (프로젝트 팀장 권한)"),
     PROJECT_INVITESTATUS_ALREADY(false, 3361, "이미 승인한 유저입니다."),
     PROJECT_INVITESTATUS_REJECT(false, 3362, "이미 거절한 유저입니다."),
+    PROJECT_KICK_OUT(false,3363,"팀원이 아닙니다. (팀원만 강퇴가 가능합니다.)"),
 
     /**
      * 4000 : Database, Server 오류
