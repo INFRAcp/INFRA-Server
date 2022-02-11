@@ -3,12 +3,10 @@ package com.example.demo.src.project;
 import com.example.demo.config.BaseException;
 import com.example.demo.src.project.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
-import java.sql.ResultSet;
 import java.util.List;
 
 @Repository
@@ -296,10 +294,9 @@ public class ProjectDao {
 
         String comment = this.jdbcTemplate.queryForObject(pjApplyRejectCheckQuery, String.class, postPjApplyReq.getPj_num(), postPjApplyReq.getUser_id());
 
-        if(comment.equals("거절")){
+        if (comment.equals("거절")) {
             return "거절";
-        }
-        else if (this.jdbcTemplate.queryForObject(pjApplyCoincideCheckQuery, int.class, postPjApplyReq.getPj_num(), postPjApplyReq.getUser_id()) == 1) {
+        } else if (this.jdbcTemplate.queryForObject(pjApplyCoincideCheckQuery, int.class, postPjApplyReq.getPj_num(), postPjApplyReq.getUser_id()) == 1) {
             return "중복";
         } else {
             String pjApplyQuery = "insert into Pj_request (user_id, pj_num, pj_inviteStatus) VALUES (?,?,'신청')";
@@ -311,15 +308,15 @@ public class ProjectDao {
     /**
      * 프로젝트 신청한 유저 승인
      *
-     * @param patchPjApproveReq
+     * @param patchPjMemberReq
      * @return PatchPjApproveRes 완료 메시지
      * @author 윤성식
      */
-    public String pjApprove(PatchPjApproveReq patchPjApproveReq) {
+    public String pjApprove(PatchPjMemberReq patchPjMemberReq) {
         String pjApproveQuery = "update Pj_request set pj_inviteStatus = '승인완료' where user_id = ? and pj_num = ? and pj_inviteStatus = '신청'";
         Object[] pjApproveParams = new Object[]{
-                patchPjApproveReq.getUser_id(),
-                patchPjApproveReq.getPj_num()
+                patchPjMemberReq.getUser_id(),
+                patchPjMemberReq.getPj_num()
         };
         this.jdbcTemplate.update(pjApproveQuery, pjApproveParams);
 
@@ -329,15 +326,15 @@ public class ProjectDao {
     /**
      * 프로젝트 신청한 유저 거절
      *
-     * @param patchPjApproveReq
+     * @param patchPjMemberReq
      * @return PatchPjApproveRes 완료 메시지
      * @author shinhyeon
      */
-    public String pjReject(PatchPjApproveReq patchPjApproveReq) {
+    public String pjReject(PatchPjMemberReq patchPjMemberReq) {
         String pjRejectQuery = "update Pj_request set pj_inviteStatus = '거절' where user_id = ? and pj_num = ? and pj_inviteStatus = '신청'";
         Object[] pjRejectParams = new Object[]{
-                patchPjApproveReq.getUser_id(),
-                patchPjApproveReq.getPj_num()
+                patchPjMemberReq.getUser_id(),
+                patchPjMemberReq.getPj_num()
         };
         this.jdbcTemplate.update(pjRejectQuery, pjRejectParams);
 
@@ -347,15 +344,15 @@ public class ProjectDao {
     /**
      * 프로젝트 팀원 강퇴
      *
-     * @param patchPjApproveReq
+     * @param patchPjMemberReq
      * @return PatchPjApproveRes 완료 메시지
      * @author shinhyeon
      */
-    public String pjKickOut(PatchPjApproveReq patchPjApproveReq) {
+    public String pjKickOut(PatchPjMemberReq patchPjMemberReq) {
         String pjRejectQuery = "update Pj_request set pj_inviteStatus = '강퇴' where user_id = ? and pj_num = ? and pj_inviteStatus = '승인완료'";
         Object[] pjRejectParams = new Object[]{
-                patchPjApproveReq.getUser_id(),
-                patchPjApproveReq.getPj_num()
+                patchPjMemberReq.getUser_id(),
+                patchPjMemberReq.getPj_num()
         };
         this.jdbcTemplate.update(pjRejectQuery, pjRejectParams);
 
@@ -405,6 +402,7 @@ public class ProjectDao {
 
     /**
      * 프로젝트 찜 등록
+     *
      * @param postLikeRegisterReq
      * @return 등록 완료된 메세지
      * @author 윤성식
@@ -418,6 +416,7 @@ public class ProjectDao {
 
     /**
      * 프로젝트 찜 삭제
+     *
      * @param postLikeRegisterReq
      * @return 찜 삭제된 메세지
      * @author 윤성식
@@ -428,6 +427,7 @@ public class ProjectDao {
 
         return "찜 삭제";
     }
+
     /**
      * 팀원 평가 조회
      *
@@ -517,7 +517,7 @@ public class ProjectDao {
                 user_id
         };
 
-        this.jdbcTemplate.update(uploadGradeQuery,uploadGradeParams);
+        this.jdbcTemplate.update(uploadGradeQuery, uploadGradeParams);
     }
 
     /**
@@ -585,17 +585,19 @@ public class ProjectDao {
 
     /**
      * 프로젝트 팀장 조회
+     *
      * @param pj_num
      * @return String
      * @author shinhyeon
      */
     public String getTeamLeader(Integer pj_num) {
         String getTeamLeaderQuery = "SELECT user_id FROM Project WHERE pj_num=?";
-        return this.jdbcTemplate.queryForObject(getTeamLeaderQuery, new Integer[]{pj_num},String.class);
+        return this.jdbcTemplate.queryForObject(getTeamLeaderQuery, new Integer[]{pj_num}, String.class);
     }
 
     /**
      * 카테고리 이름을 통한 번호 반환
+     *
      * @param pj_categoryName
      * @return
      * @throws BaseException
@@ -608,6 +610,7 @@ public class ProjectDao {
 
     /**
      * 세부 카테고리 이름을 통한 번호 반환
+     *
      * @param pj_subCategoryName
      * @return
      * @throws BaseException
@@ -620,6 +623,7 @@ public class ProjectDao {
 
     /**
      * 유저 등급 조회
+     *
      * @param user_id
      * @return float
      * @qathor shinhyeon

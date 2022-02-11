@@ -209,7 +209,7 @@ public class ProjectController {
     public BaseResponse<PostPjApplyRes> pjApply(@RequestBody PostPjApplyReq postPjApplyReq) {
         try {
             PostPjApplyRes postPjApplyRes = projectService.pjApply(postPjApplyReq);
-            if(postPjApplyRes.getComment().equals("거절"))
+            if (postPjApplyRes.getComment().equals("거절"))
                 throw new BaseException(POST_PROJECT_REJECT_RESTART);
             else if (postPjApplyRes.getComment().equals("중복"))
                 throw new BaseException(POST_PROJECT_COINCIDE_CHECK);
@@ -221,52 +221,29 @@ public class ProjectController {
     }
 
     /**
-     * 프로젝트신청한 유저 승인
-     *
-     * @param patchPjApproveReq
-     * @return PatchPjApproveRes 완료 메시지
-     * @author 윤성식 shinhyeon
-     */
-    @ResponseBody
-    @PatchMapping("/approve")
-    public BaseResponse<PatchPjApproveRes> pjApprove(@RequestBody PatchPjApproveReq patchPjApproveReq) {
-        if(patchPjApproveReq.getUser_id() == null || patchPjApproveReq.getPj_num() == null){
-            return new BaseResponse<>(REQUEST_EMPTY);
-        }
-        try {
-            // jwt
-            String userIdByJwt = jwtService.getUserId();
-
-            PatchPjApproveRes patchPjApproveRes = projectService.pjApprove(patchPjApproveReq, userIdByJwt);
-            return new BaseResponse<>(patchPjApproveRes);
-        } catch (BaseException exception) {
-            return new BaseResponse<>((exception.getStatus()));
-        }
-    }
-
-    /**
      * 프로젝트 신청한 유저 승인, 거절 / 팀원 강퇴
-     * @param patchPjApproveReq
+     *
+     * @param patchPjMemberReq
      * @return PatchPjApproveRes 완료 메시지
      * @author shinhyeon
      */
     @ResponseBody
     @PatchMapping("/member")
-    public BaseResponse<PatchPjApproveRes> pjAcceptRequest(@RequestBody PatchPjApproveReq patchPjApproveReq) {
-        if(patchPjApproveReq.getUser_id() == null || patchPjApproveReq.getPj_num() == null || patchPjApproveReq.getPj_inviteStatus() == null){
+    public BaseResponse<PatchPjMemberRes> pjAcceptRequest(@RequestBody PatchPjMemberReq patchPjMemberReq) {
+        if (patchPjMemberReq.getUser_id() == null || patchPjMemberReq.getPj_num() == null || patchPjMemberReq.getPj_inviteStatus() == null) {
             return new BaseResponse<>(REQUEST_EMPTY);
         }
         try {
             // jwt
             String userIdByJwt = jwtService.getUserId();
 
-            if(patchPjApproveReq.getPj_inviteStatus().equals("강퇴")){
-                PatchPjApproveRes patchPjApproveRes = projectService.pjKickOut(patchPjApproveReq, userIdByJwt);
-                return new BaseResponse<>(patchPjApproveRes);
+            if (patchPjMemberReq.getPj_inviteStatus().equals("강퇴")) {
+                PatchPjMemberRes patchPjMemberRes = projectService.pjKickOut(patchPjMemberReq, userIdByJwt);
+                return new BaseResponse<>(patchPjMemberRes);
             }
 
-            PatchPjApproveRes patchPjApproveRes = projectService.pjAcceptRequest(patchPjApproveReq, userIdByJwt);
-            return new BaseResponse<>(patchPjApproveRes);
+            PatchPjMemberRes patchPjMemberRes = projectService.pjAcceptRequest(patchPjMemberReq, userIdByJwt);
+            return new BaseResponse<>(patchPjMemberRes);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
@@ -311,6 +288,7 @@ public class ProjectController {
 
     /**
      * 프로젝트 찜 등록
+     *
      * @param postLikeRegisterReq
      * @return 등록 완료된 메세지
      * @author 윤성식
@@ -328,6 +306,7 @@ public class ProjectController {
 
     /**
      * 프로젝트 찜 삭제
+     *
      * @param postLikeRegisterReq
      * @return 찜 삭제된 메세지
      * @author 윤성식
@@ -461,7 +440,7 @@ public class ProjectController {
     @ResponseBody
     @PatchMapping("/evaluate/del")
     public BaseResponse<String> delEval(@RequestBody PatchEvalDelReq patchEvalDelReq) {
-        if(patchEvalDelReq.getUser_id() == null || patchEvalDelReq.getPassiveUser_id() == null || patchEvalDelReq.getPj_num() == null){
+        if (patchEvalDelReq.getUser_id() == null || patchEvalDelReq.getPassiveUser_id() == null || patchEvalDelReq.getPj_num() == null) {
             return new BaseResponse<>(POST_PROJECT_EVALUATE_EMPTY);
         }
         try {

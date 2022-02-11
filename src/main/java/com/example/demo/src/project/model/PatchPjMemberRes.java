@@ -7,8 +7,6 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class PatchPjApproveReq {
-    private String user_id;
-    private Integer pj_num;
+public class PatchPjMemberRes {
     private String pj_inviteStatus;
 }
