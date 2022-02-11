@@ -225,7 +225,7 @@ public class ProjectController {
      *
      * @param patchPjApproveReq
      * @return PatchPjApproveRes 완료 메시지
-     * @author 윤성식 강신현
+     * @author 윤성식 shinhyeon
      */
     @ResponseBody
     @PatchMapping("/approve")
@@ -238,6 +238,29 @@ public class ProjectController {
             String userIdByJwt = jwtService.getUserId();
 
             PatchPjApproveRes patchPjApproveRes = projectService.pjApprove(patchPjApproveReq, userIdByJwt);
+            return new BaseResponse<>(patchPjApproveRes);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    /**
+     * 프로젝트 신청한 유저 관리 (승인, 거절)
+     * @param patchPjApproveReq
+     * @return PatchPjApproveRes 완료 메시지
+     * @author shinhyeon
+     */
+    @ResponseBody
+    @PatchMapping("/accept")
+    public BaseResponse<PatchPjApproveRes> pjAcceptRequest(@RequestBody PatchPjApproveReq patchPjApproveReq) {
+        if(patchPjApproveReq.getUser_id() == null || patchPjApproveReq.getPj_num() == null || patchPjApproveReq.getPj_inviteStatus() == null){
+            return new BaseResponse<>(REQUEST_EMPTY);
+        }
+        try {
+            // jwt
+            String userIdByJwt = jwtService.getUserId();
+
+            PatchPjApproveRes patchPjApproveRes = projectService.pjAcceptRequest(patchPjApproveReq, userIdByJwt);
             return new BaseResponse<>(patchPjApproveRes);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
