@@ -281,7 +281,7 @@ public class ProjectService {
     /**
      * 팀원 평가 등록
      *
-     * @param PostEvalReq
+     * @param postEvalReq
      * @return x
      * @throws BaseException
      * @author shinhyeon
@@ -376,7 +376,7 @@ public class ProjectService {
     /**
      * 팀원 평가 수정
      *
-     * @param PatchEvalReq
+     * @param patchEvalReq
      * @return x
      * @throws BaseException
      * @author shinhyeon
@@ -400,7 +400,7 @@ public class ProjectService {
     /**
      * 팀원 평가 삭제
      *
-     * @param PatchEvalDelReq
+     * @param patchEvalDelReq
      * @return x
      * @throws BaseException
      * @author shinhyeon
@@ -459,5 +459,17 @@ public class ProjectService {
             return new BaseResponse<>(INVALID_USER_JWT);
         }
         return null;
+    }
+
+    public void rejectCheck(PostPjApplyRes postPjApplyRes) throws BaseException {
+        if(postPjApplyRes.getComment().equals("거절")){
+            throw new BaseException(POST_PROJECT_REJECT_RESTART);
+        }
+    }
+
+    public void coincideCheck(PostPjApplyRes postPjApplyRes) throws BaseException{
+        if(postPjApplyRes.getComment().equals("중복")){
+            throw new BaseException(POST_PROJECT_COINCIDE_CHECK);
+        }
     }
 }

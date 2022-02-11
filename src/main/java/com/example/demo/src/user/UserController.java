@@ -205,12 +205,36 @@ public class UserController {
     }
 
     /**
+     * 소개 페이지 작성 API
+     * [POST] /user/profile
+     *
+     * @param postProfileReq
+     * @return profile, photo, ability, link, keyword, request(project)
+     * @author yewon
+     */
+    @ResponseBody
+    @PostMapping("/profile/{user_id}")
+    public BaseResponse<PostProfileRes> createProfile(@PathVariable("user_id") String user_id, @RequestBody PostProfileReq postProfileReq) {
+        try {
+            String userIdByJwt = jwtService.getUserId();
+            if (!user_id.equals(userIdByJwt)) {
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
+            PostProfileRes postProfileRes = userService.createProfile(user_id, postProfileReq);
+            return new BaseResponse<>(postProfileRes);
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
+
+    /**
      * 소개 페이지 내용 조회 API
      * [GET] /user/profile/:userId
      *
      * @param userId
      * @return BaseResponse
-     * @author yunhee
+     * @author yunhee, yewon
      */
     @ResponseBody
     @GetMapping("/profile/{userId}")

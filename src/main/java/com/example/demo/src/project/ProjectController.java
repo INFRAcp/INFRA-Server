@@ -40,18 +40,32 @@ public class ProjectController {
      */
     @ResponseBody
     @GetMapping("/inquiry")
-    public BaseResponse<List<GetProjectRes>> getProjects(@RequestParam(required = false) String search) {
+    public BaseResponse<List<GetProjectRes>> getProjects(@RequestParam(required = false) String search, String user_id) {
         try {
             if (search == null) {
+                projectService.userIdJwt(user_id, jwtService.getUserId());
                 List<GetProjectRes> getProjectRes = projectProvider.getProjects();
                 projectService.recruit(getProjectRes);
                 return new BaseResponse<>(getProjectRes);
             }
+            projectService.userIdJwt(user_id, jwtService.getUserId());
             List<GetProjectRes> getProjectRes = projectProvider.getProjectsByKeyword(search);
             projectService.recruit(getProjectRes);
             return new BaseResponse<>(getProjectRes);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    /**
+     * @param getProjectRes
+     * @author 한규범
+     */
+    public void recruit(List<GetProjectRes> getProjectRes) {
+        for (int i = 0; i < getProjectRes.size(); i++) {
+            if (getProjectRes.get(i).getPj_daysub() <= 2 && getProjectRes.get(i).getPj_daysub() >= 0) {
+                getProjectRes.get(i).setPj_recruit("마감임박");
+            }
         }
     }
 
@@ -127,7 +141,12 @@ public class ProjectController {
     public BaseResponse<List<PostPjParticipateRes>> getTeam(@RequestBody PostPjParticipateReq postPj_participateReq) {
         try {
             List<PostPjParticipateRes> postPj_participateRes = projectProvider.getTeam(postPj_participateReq);
-            return new BaseResponse<>(postPj_participateRes);
+            if(postPj_participateRes == null){
+                throw new BaseException(POST_PROJECT_GETTEAM_NULL);
+            }
+            else {
+                return new BaseResponse<>(postPj_participateRes);
+            }
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
         }
@@ -144,6 +163,7 @@ public class ProjectController {
     @PostMapping("/registration")
     public BaseResponse<PostPjRegisterRes> pjRegistration(@RequestBody PostPjRegisterReq postPjRegisterReq) {
         try {
+            projectService.userIdJwt(postPjRegisterReq.getUser_id(), jwtService.getUserId());
             projectService.PjDateCheck(postPjRegisterReq.getPj_deadline(), postPjRegisterReq.getPj_startTerm(), postPjRegisterReq.getPj_endTerm());
             projectService.PjNullCheck(postPjRegisterReq.getPj_header(), postPjRegisterReq.getPj_categoryName(), postPjRegisterReq.getPj_content(), postPjRegisterReq.getPj_name(), postPjRegisterReq.getPj_subCategoryName(), postPjRegisterReq.getPj_progress(), postPjRegisterReq.getPj_endTerm(), postPjRegisterReq.getPj_startTerm(), postPjRegisterReq.getPj_deadline(), postPjRegisterReq.getPj_totalPerson());
             projectService.PjKeywordCheck(postPjRegisterReq.getHashtag());
@@ -209,12 +229,9 @@ public class ProjectController {
     public BaseResponse<PostPjApplyRes> pjApply(@RequestBody PostPjApplyReq postPjApplyReq) {
         try {
             PostPjApplyRes postPjApplyRes = projectService.pjApply(postPjApplyReq);
-            if (postPjApplyRes.getComment().equals("거절"))
-                throw new BaseException(POST_PROJECT_REJECT_RESTART);
-            else if (postPjApplyRes.getComment().equals("중복"))
-                throw new BaseException(POST_PROJECT_COINCIDE_CHECK);
-            else
-                return new BaseResponse<>(postPjApplyRes);
+            projectService.rejectCheck(postPjApplyRes);
+            projectService.coincideCheck(postPjApplyRes);
+            return new BaseResponse<>(postPjApplyRes);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
@@ -262,6 +279,9 @@ public class ProjectController {
     public BaseResponse<List<GetApplyListRes>> pjApplyList(@RequestParam(required = false) String pj_num) {
         try {
             List<GetApplyListRes> getApplyListRes = projectProvider.pjApplyList(pj_num);
+            if(getApplyListRes == null){
+                throw new BaseException(GET_PROJECT_APPLY_LIST_NULL);
+            }
             return new BaseResponse<>(getApplyListRes);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
