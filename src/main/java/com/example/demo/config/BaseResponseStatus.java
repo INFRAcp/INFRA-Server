@@ -31,9 +31,6 @@ public enum BaseResponseStatus {
     USERS_EMPTY_USER_ID(false, 2100, "유저 아이디 값을 확인해주세요."),
     REQUEST_EMPTY(false, 2004,"필수 정보가 비었습니다."),
 
-    // users
-    USERS_EMPTY_USER_ID(false, 2010, "유저 아이디 값을 확인해주세요."),
-
     // [POST] /users
     POST_USERS_EMPTY_EMAIL(false, 2101, "이메일을 입력해주세요."),
     POST_USERS_INVALID_EMAIL(false, 2102, "이메일 형식을 확인해주세요."),
