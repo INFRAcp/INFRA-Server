@@ -3,6 +3,7 @@ package com.example.demo.src.s3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.example.demo.src.project.ProjectDao;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,20 +19,22 @@ import java.util.UUID;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class S3Uploader {
+public class S3Service {
 
     private final AmazonS3Client amazonS3Client;
+    private final S3Dao s3Dao;
 
     @Value("${cloud.aws.s3.bucket}")
     public String bucket;
 
-    public String upload(MultipartFile multipartFile, String dirName) throws IOException{
+    public String uploadPrphoto(MultipartFile multipartFile, String dirName) throws IOException{
         File uploadFile = convert(multipartFile).orElseThrow(() -> new IllegalArgumentException("파일 전환 실패"));
 
-        return upload(uploadFile, dirName);
+        return uploadPrphoto(uploadFile, dirName);
     }
+
     // S3로 파일 업로드하기
-    private String upload(File uploadFile, String dirName) {
+    private String uploadPrphoto(File uploadFile, String dirName) {
         String fileName = dirName + "/" + UUID.randomUUID() + uploadFile.getName();   // S3에 저장된 파일 이름
         String uploadImageUrl = putS3(uploadFile, fileName); // s3로 업로드
         removeNewFile(uploadFile);
@@ -65,5 +68,10 @@ public class S3Uploader {
 
         return Optional.empty();
 
+    }
+
+
+    public void uploadPrphoto(String imgPath, String user_id){
+        s3Dao.uploadPrPhoto(imgPath, user_id);
     }
 }
