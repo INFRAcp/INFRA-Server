@@ -87,7 +87,7 @@ public class ProjectController {
      */
     @ResponseBody
     @GetMapping("/keyword")
-    public BaseResponse<List<GetPjKeywordRes>> getPj_keywords(@RequestParam(required = false) String search) {
+    public BaseResponse<List<GetPjKeywordRes>> getPj_keywords(@RequestParam(required = false) String user_id, String search) {
         try {
             projectService.userIdJwt(user_id, jwtService.getUserId());
             if (search == null) {
@@ -150,7 +150,7 @@ public class ProjectController {
      */
     @ResponseBody
     @PostMapping("/team")
-    public BaseResponse<List<PostPjParticipateRes>> getTeam(@RequestBody PostPjParticipateReq postPj_participateReq) {
+    public BaseResponse<List<PostPjParticipateRes>> getTeam(@RequestBody PostPjParticipateReq postPj_participateReq, String user_id) {
         try {
             projectService.userIdJwt(user_id, jwtService.getUserId());
 

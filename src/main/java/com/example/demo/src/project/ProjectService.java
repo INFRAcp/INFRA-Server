@@ -246,7 +246,7 @@ public class ProjectService {
      * @throws BaseException
      * @author 한규범
      */
-    public void PjNullCheck(String pj_header, String pj_field, String pj_content, String pj_name, String pj_subField, String pj_progress, LocalDate pj_endTerm, LocalDate pj_startTerm, LocalDate pj_deadline, int pj_totalPerson) throws BaseException {
+    public void PjNullCheck(String pj_header, String pj_field, String pj_content, String pj_name, String pj_subField, String pj_progress, String pj_endTerm, String pj_startTerm, String pj_deadline, int pj_totalPerson) throws BaseException {
         if (pj_header == null) {
             throw new BaseException(POST_PROJECT_EMPTY_HEADER);
         }
@@ -368,7 +368,7 @@ public class ProjectService {
     /**
      * 유저 등급 등록(or 최신화)
      *
-     * @param postEvalReq
+     * @param user_id, grade
      * @throws BaseException
      * @ahthor shinhyeon
      */
