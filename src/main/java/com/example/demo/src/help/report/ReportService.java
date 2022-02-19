@@ -10,7 +10,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import static com.example.demo.config.BaseResponseStatus.*;
+import javax.transaction.Transactional;
+
+import static com.example.demo.config.BaseResponseStatus.DATABASE_ERROR;
 
 
 @Service
@@ -32,10 +34,13 @@ public class ReportService {
 
     /**
      * 새로운 신고 등록 API
+     *
      * @param postReportReq
      * @return
      * @throws BaseException
+     * @author yewon
      */
+    @Transactional
     public PostReportRes createReport(PostReportReq postReportReq) throws BaseException {
         try {
             reportDao.createReport(postReportReq);
@@ -49,10 +54,13 @@ public class ReportService {
 
     /**
      * 특정 사용자의 특정 신고글 삭제 API
+     *
      * @param patchReportReq
      * @return
      * @throws BaseException
+     * @author yewon
      */
+    @Transactional
     public int deleteReport(PatchReportReq patchReportReq) throws BaseException {
         try {
             return reportDao.deleteReport(patchReportReq);

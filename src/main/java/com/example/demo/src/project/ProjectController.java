@@ -40,18 +40,41 @@ public class ProjectController {
      */
     @ResponseBody
     @GetMapping("/inquiry")
-    public BaseResponse<List<GetProjectRes>> getProjects(@RequestParam(required = false) String search) {
+    public BaseResponse<List<GetProjectRes>> getProjects(@RequestParam(required = false) String search, String user_id) {
         try {
+            projectService.userIdJwt(user_id, jwtService.getUserId());
             if (search == null) {
-                List<GetProjectRes> getProjectRes = projectProvider.getProjects();
+                List<GetProjectRes> getProjectRes = projectProvider.getProjects(user_id);
                 projectService.recruit(getProjectRes);
+
+                for(int i=0; i < getProjectRes.size(); i++){
+                    getProjectRes.get(i).setPj_like(projectProvider.checkPjLike(getProjectRes.get(i).getPj_num(), user_id));
+                }
+
                 return new BaseResponse<>(getProjectRes);
             }
-            List<GetProjectRes> getProjectRes = projectProvider.getProjectsByKeyword(search);
+            List<GetProjectRes> getProjectRes = projectProvider.getProjectsByKeyword(search, user_id);
             projectService.recruit(getProjectRes);
+
+            for(int i=0; i < getProjectRes.size(); i++){
+                getProjectRes.get(i).setPj_like(projectProvider.checkPjLike(getProjectRes.get(i).getPj_num(), user_id));
+            }
+
             return new BaseResponse<>(getProjectRes);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    /**
+     * @param getProjectRes
+     * @author 한규범
+     */
+    public void recruit(List<GetProjectRes> getProjectRes) {
+        for (int i = 0; i < getProjectRes.size(); i++) {
+            if (getProjectRes.get(i).getPj_daysub() <= 2 && getProjectRes.get(i).getPj_daysub() >= 0) {
+                getProjectRes.get(i).setPj_recruit("마감임박");
+            }
         }
     }
 
@@ -64,8 +87,9 @@ public class ProjectController {
      */
     @ResponseBody
     @GetMapping("/keyword")
-    public BaseResponse<List<GetPjKeywordRes>> getPj_keywords(@RequestParam(required = false) String search) {
+    public BaseResponse<List<GetPjKeywordRes>> getPj_keywords(@RequestParam(required = false) String user_id, String search) {
         try {
+            projectService.userIdJwt(user_id, jwtService.getUserId());
             if (search == null) {
                 List<GetPjKeywordRes> getPj_keywordRes = projectProvider.getPj_keywords();
                 return new BaseResponse<>(getPj_keywordRes);
@@ -108,6 +132,8 @@ public class ProjectController {
     @PostMapping("/project-inquiry")
     public BaseResponse<List<PostPjInquiryRes>> proInquiry(@RequestBody PostPjInquiryReq postPj_inquiryReq) {
         try {
+            projectService.userIdJwt(postPj_inquiryReq.getUser_id(), jwtService.getUserId());
+
             List<PostPjInquiryRes> postPj_inquiryRes = projectProvider.proInquiry(postPj_inquiryReq);
             return new BaseResponse<>(postPj_inquiryRes);
         } catch (BaseException exception) {
@@ -124,10 +150,17 @@ public class ProjectController {
      */
     @ResponseBody
     @PostMapping("/team")
-    public BaseResponse<List<PostPjParticipateRes>> getTeam(@RequestBody PostPjParticipateReq postPj_participateReq) {
+    public BaseResponse<List<PostPjParticipateRes>> getTeam(@RequestBody PostPjParticipateReq postPj_participateReq, String user_id) {
         try {
+            projectService.userIdJwt(user_id, jwtService.getUserId());
+
             List<PostPjParticipateRes> postPj_participateRes = projectProvider.getTeam(postPj_participateReq);
-            return new BaseResponse<>(postPj_participateRes);
+            if(postPj_participateRes == null){
+                throw new BaseException(POST_PROJECT_GETTEAM_NULL);
+            }
+            else {
+                return new BaseResponse<>(postPj_participateRes);
+            }
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
         }
@@ -144,9 +177,6 @@ public class ProjectController {
     @PostMapping("/registration")
     public BaseResponse<PostPjRegisterRes> pjRegistration(@RequestBody PostPjRegisterReq postPjRegisterReq) {
         try {
-            projectService.PjDateCheck(postPjRegisterReq.getPj_deadline(), postPjRegisterReq.getPj_startTerm(), postPjRegisterReq.getPj_endTerm());
-            projectService.PjNullCheck(postPjRegisterReq.getPj_header(), postPjRegisterReq.getPj_categoryNum(), postPjRegisterReq.getPj_content(), postPjRegisterReq.getPj_name(), postPjRegisterReq.getPj_subCategoryNum(), postPjRegisterReq.getPj_progress(), postPjRegisterReq.getPj_endTerm(), postPjRegisterReq.getPj_startTerm(), postPjRegisterReq.getPj_deadline(), postPjRegisterReq.getPj_totalPerson());
-            projectService.PjKeywordCheck(postPjRegisterReq.getHashtag());
             PostPjRegisterRes postPjRegisterRes = projectService.registrationPj(postPjRegisterReq);
             return new BaseResponse<>(postPjRegisterRes);
         } catch (BaseException exception) {
@@ -166,9 +196,6 @@ public class ProjectController {
     @PatchMapping("/modify")
     public BaseResponse<PatchPjModifyRes> pjModify(@RequestBody PatchPjModifyReq patchPjModifyReq) {
         try {
-            projectService.PjDateCheck(patchPjModifyReq.getPj_deadline(), patchPjModifyReq.getPj_startTerm(), patchPjModifyReq.getPj_endTerm());
-            projectService.PjNullCheck(patchPjModifyReq.getPj_header(), patchPjModifyReq.getPj_categoryNum(), patchPjModifyReq.getPj_content(), patchPjModifyReq.getPj_name(), patchPjModifyReq.getPj_subCategoryNum(), patchPjModifyReq.getPj_progress(), patchPjModifyReq.getPj_endTerm(), patchPjModifyReq.getPj_startTerm(), patchPjModifyReq.getPj_deadline(), patchPjModifyReq.getPj_totalPerson());
-            projectService.PjKeywordCheck(patchPjModifyReq.getHashtag());
             PatchPjModifyRes patchPjModifyRes = projectService.pjModify(patchPjModifyReq);
             return new BaseResponse<>(patchPjModifyRes);
         } catch (BaseException exception) {
@@ -207,30 +234,38 @@ public class ProjectController {
     public BaseResponse<PostPjApplyRes> pjApply(@RequestBody PostPjApplyReq postPjApplyReq) {
         try {
             PostPjApplyRes postPjApplyRes = projectService.pjApply(postPjApplyReq);
-            if(postPjApplyRes.getComment().equals("거절"))
-                throw new BaseException(POST_PROJECT_REJECT_RESTART);
-            else if (postPjApplyRes.getComment().equals("중복"))
-                throw new BaseException(POST_PROJECT_COINCIDE_CHECK);
-            else
-                return new BaseResponse<>(postPjApplyRes);
+            projectService.rejectCheck(postPjApplyRes);
+            projectService.coincideCheck(postPjApplyRes);
+            return new BaseResponse<>(postPjApplyRes);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
 
     /**
-     * 프로젝트신청한 유저 승인
+     * 프로젝트 신청한 유저 승인, 거절 / 팀원 강퇴
      *
-     * @param patchPjApproveReq
+     * @param patchPjMemberReq
      * @return PatchPjApproveRes 완료 메시지
-     * @author 윤성식
+     * @author shinhyeon
      */
     @ResponseBody
-    @PatchMapping("/approve")
-    public BaseResponse<PatchPjApproveRes> pjApprove(@RequestBody PatchPjApproveReq patchPjApproveReq) {
+    @PatchMapping("/member")
+    public BaseResponse<PatchPjMemberRes> pjAcceptRequest(@RequestBody PatchPjMemberReq patchPjMemberReq) {
+        if (patchPjMemberReq.getUser_id() == null || patchPjMemberReq.getPj_num() == null || patchPjMemberReq.getPj_inviteStatus() == null) {
+            return new BaseResponse<>(REQUEST_EMPTY);
+        }
         try {
-            PatchPjApproveRes patchPjApproveRes = projectService.pjApprove(patchPjApproveReq);
-            return new BaseResponse<>(patchPjApproveRes);
+            // jwt
+            String userIdByJwt = jwtService.getUserId();
+
+            if (patchPjMemberReq.getPj_inviteStatus().equals("강퇴")) {
+                PatchPjMemberRes patchPjMemberRes = projectService.pjKickOut(patchPjMemberReq, userIdByJwt);
+                return new BaseResponse<>(patchPjMemberRes);
+            }
+
+            PatchPjMemberRes patchPjMemberRes = projectService.pjAcceptRequest(patchPjMemberReq, userIdByJwt);
+            return new BaseResponse<>(patchPjMemberRes);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
@@ -246,9 +281,13 @@ public class ProjectController {
      */
     @ResponseBody
     @GetMapping("/apply-list")
-    public BaseResponse<List<GetApplyListRes>> pjApplyList(@RequestParam(required = false) String pj_num) {
+    public BaseResponse<List<GetApplyListRes>> pjApplyList(@RequestParam(required = false) String pj_num, String user_id) {
         try {
+            projectService.userIdJwt(user_id, jwtService.getUserId());
             List<GetApplyListRes> getApplyListRes = projectProvider.pjApplyList(pj_num);
+            if(getApplyListRes == null){
+                throw new BaseException(GET_PROJECT_APPLY_LIST_NULL);
+            }
             return new BaseResponse<>(getApplyListRes);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
@@ -266,6 +305,8 @@ public class ProjectController {
     @PostMapping("/apply-mylist")
     public BaseResponse<List<PostUserApplyRes>> userApply(@RequestBody PostUserApplyReq postUserApplyReq) {
         try {
+            projectService.userIdJwt(postUserApplyReq.getUser_id(), jwtService.getUserId());
+
             List<PostUserApplyRes> postUserApplyRes = projectProvider.getUserApply(postUserApplyReq);
             return new BaseResponse<>(postUserApplyRes);
         } catch (BaseException exception) {
@@ -312,7 +353,7 @@ public class ProjectController {
      * [GET] /project/evaluate?passiveUser_id=
      * 팀원 평가 조회 API
      *
-     * @param user_id
+     * @param passiveUser_id
      * @return List <평가한 id, 평가 받은 id, 프로젝트 num, 의견, 책임감, 역량, 팀워크, 리더쉽>
      * @author shinhyeon
      */
@@ -339,7 +380,7 @@ public class ProjectController {
      * [POST] /project/evaluate
      * 팀원 평가 등록 API
      *
-     * @param PostEvalReq
+     * @param postEvalReq
      * @return String
      * @author shinhyeon
      */
@@ -360,7 +401,12 @@ public class ProjectController {
                 return new BaseResponse<>(INVALID_USER_JWT);
             }
 
+            // 팀원 평가 등록
             projectService.uploadEval(postEvalReq);
+
+            // 팀원 등급 등록(or 최신화)
+            float grade = (float) ((postEvalReq.getResponsibility() + postEvalReq.getAbility() + postEvalReq.getTeamwork() + postEvalReq.getLeadership()) / 4.0);
+            projectService.uploadGrade(postEvalReq.getPassiveUser_id(), grade);
 
             return new BaseResponse<>(SUCCESS);
 
@@ -373,7 +419,7 @@ public class ProjectController {
      * [POST] /project/evaluate/modify
      * 팀원 평가 수정 API
      *
-     * @param PatchEvalReq
+     * @param patchEvalReq
      * @return String
      * @author shinhyeon
      */
@@ -395,7 +441,12 @@ public class ProjectController {
                 return new BaseResponse<>(INVALID_USER_JWT);
             }
 
+            // 팀원 평가 수정
             projectService.modifyEval(patchEvalReq);
+
+            // 팀원 등급 등록(or 최신화)
+            float grade = (float) ((patchEvalReq.getResponsibility() + patchEvalReq.getAbility() + patchEvalReq.getTeamwork() + patchEvalReq.getLeadership()) / 4.0);
+            projectService.uploadGrade(patchEvalReq.getPassiveUser_id(), grade);
 
             return new BaseResponse<>(SUCCESS);
         } catch (BaseException exception) {
@@ -407,7 +458,7 @@ public class ProjectController {
      * [POST] /project/evaluate/del
      * 팀원 평가 삭제 API
      *
-     * @param PatchEvalDelReq
+     * @param patchEvalDelReq
      * @return String
      * @author shinhyeon
      */
@@ -415,6 +466,9 @@ public class ProjectController {
     @ResponseBody
     @PatchMapping("/evaluate/del")
     public BaseResponse<String> delEval(@RequestBody PatchEvalDelReq patchEvalDelReq) {
+        if (patchEvalDelReq.getUser_id() == null || patchEvalDelReq.getPassiveUser_id() == null || patchEvalDelReq.getPj_num() == null) {
+            return new BaseResponse<>(POST_PROJECT_EVALUATE_EMPTY);
+        }
         try {
             // jwt
             String userIdByJwt = jwtService.getUserId();
@@ -423,6 +477,7 @@ public class ProjectController {
                 return new BaseResponse<>(INVALID_USER_JWT);
             }
 
+            // 팀원 평가 삭제
             projectService.delEval(patchEvalDelReq);
 
             return new BaseResponse<>(SUCCESS);

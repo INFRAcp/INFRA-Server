@@ -2,7 +2,6 @@ package com.example.demo.src.project;
 
 import com.example.demo.config.BaseException;
 import com.example.demo.config.BaseResponse;
-import com.example.demo.src.help.qa.model.PostQaReq;
 import com.example.demo.src.project.model.*;
 import com.example.demo.utils.JwtService;
 import org.slf4j.Logger;
@@ -11,9 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.List;
-
-import javax.transaction.Transactional;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static com.example.demo.config.BaseResponseStatus.*;
@@ -42,6 +39,12 @@ public class ProjectService {
      */
     public PostPjRegisterRes registrationPj(PostPjRegisterReq postPjRegisterReq) throws BaseException {
         try {
+            userIdJwt(postPjRegisterReq.getUser_id(), jwtService.getUserId());
+            PjDateCheck(postPjRegisterReq.getPj_deadline(), postPjRegisterReq.getPj_startTerm(), postPjRegisterReq.getPj_endTerm());
+            PjNullCheck(postPjRegisterReq.getPj_header(), postPjRegisterReq.getPj_categoryName(), postPjRegisterReq.getPj_content(), postPjRegisterReq.getPj_name(), postPjRegisterReq.getPj_subCategoryName(), postPjRegisterReq.getPj_progress(), postPjRegisterReq.getPj_endTerm(), postPjRegisterReq.getPj_startTerm(), postPjRegisterReq.getPj_deadline(), postPjRegisterReq.getPj_totalPerson());
+            PjKeywordCheck(postPjRegisterReq.getHashtag());
+            postPjRegisterReq.setPj_categoryNum(projectProvider.getPjCategoryNum(postPjRegisterReq.getPj_categoryName()));
+            postPjRegisterReq.setPj_subCategoryNum(projectProvider.getPjSubCategoryNum(postPjRegisterReq.getPj_subCategoryName()));
             String pjRegisterSucese = projectDao.pjRegistration(postPjRegisterReq);
             return new PostPjRegisterRes(pjRegisterSucese);
         } catch (Exception exception) {
@@ -58,6 +61,11 @@ public class ProjectService {
      */
     public PatchPjModifyRes pjModify(PatchPjModifyReq patchPjModifyReq) throws BaseException {
         try {
+            userIdJwt(patchPjModifyReq.getUser_id(), jwtService.getUserId());
+            PjDateCheck(patchPjModifyReq.getPj_deadline(), patchPjModifyReq.getPj_startTerm(), patchPjModifyReq.getPj_endTerm());
+            PjNullCheck(patchPjModifyReq.getPj_header(), patchPjModifyReq.getPj_categoryNum(), patchPjModifyReq.getPj_content(), patchPjModifyReq.getPj_name(), patchPjModifyReq.getPj_subCategoryNum(), patchPjModifyReq.getPj_progress(), patchPjModifyReq.getPj_endTerm(), patchPjModifyReq.getPj_startTerm(), patchPjModifyReq.getPj_deadline(), patchPjModifyReq.getPj_totalPerson());
+            PjKeywordCheck(patchPjModifyReq.getHashtag());
+
             String PjModify = projectDao.pjModify(patchPjModifyReq);
             return new PatchPjModifyRes(PjModify);
         } catch (Exception exception) {
@@ -74,6 +82,7 @@ public class ProjectService {
      */
     public DelPjDelRes pjDel(DelPjDelReq delPjDelReq) throws BaseException {
         try {
+            userIdJwt(delPjDelReq.getUser_id(), jwtService.getUserId());
             String pjDel = projectDao.pjDel(delPjDelReq);
             return new DelPjDelRes(pjDel);
         } catch (Exception exception) {
@@ -90,6 +99,7 @@ public class ProjectService {
      */
     public PostPjApplyRes pjApply(PostPjApplyReq postPjApplyReq) throws BaseException {
         try {
+            userIdJwt(postPjApplyReq.getUser_id(), jwtService.getUserId());
             String pjApplyName = projectDao.pjApply(postPjApplyReq);
             return new PostPjApplyRes(pjApplyName);
         } catch (Exception exception) {
@@ -98,16 +108,68 @@ public class ProjectService {
     }
 
     /**
-     * 프로젝트신청한 유저 승인
+     * 프로젝트 신청한 유저 승인, 거절
      *
-     * @param patchPjApproveReq
+     * @param patchPjMemberReq
      * @return PatchPjApproveRes 완료 메시지
-     * @author 윤성식
+     * @author shinhyeon
      */
-    public PatchPjApproveRes pjApprove(PatchPjApproveReq patchPjApproveReq) throws BaseException {
+    public PatchPjMemberRes pjAcceptRequest(PatchPjMemberReq patchPjMemberReq, String userIdByJwt) throws BaseException {
+        // jwt id 가 해당 프로젝트의 팀장인지 확인
+        String teamLeader = projectProvider.getTeamLeader(patchPjMemberReq.getPj_num());
+        if (!userIdByJwt.equals(teamLeader)) {
+            throw new BaseException(PROJECT_APPROVE_AUTHORITY);
+        }
+
+        // 이미 승인한 유저인지, 거절한 유저인지 확인
+        String pj_inviteStatus = projectProvider.getPjInviteStatus1(patchPjMemberReq.getUser_id(), patchPjMemberReq.getPj_num());
+        if (pj_inviteStatus.equals("승인완료")) throw new BaseException(PROJECT_INVITESTATUS_ALREADY);
+        if (pj_inviteStatus.equals("거절")) throw new BaseException(PROJECT_INVITESTATUS_REJECT);
+
+        // 참여 요청 관리
         try {
-            String PjApprove = projectDao.pjApprove(patchPjApproveReq);
-            return new PatchPjApproveRes(PjApprove);
+            String res = null;
+
+            // 유저 승인
+            if (patchPjMemberReq.getPj_inviteStatus().equals("승인완료")) {
+                res = projectDao.pjApprove(patchPjMemberReq);
+            }
+
+            // 유저 거절
+            if (patchPjMemberReq.getPj_inviteStatus().equals("거절")) {
+                res = projectDao.pjReject(patchPjMemberReq);
+            }
+
+            return new PatchPjMemberRes(res);
+
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    /**
+     * 프로젝트 팀원 강퇴
+     *
+     * @param patchPjMemberReq
+     * @return PatchPjApproveRes 완료 메시지
+     * @author shinhyeon
+     */
+    public PatchPjMemberRes pjKickOut(PatchPjMemberReq patchPjMemberReq, String userIdByJwt) throws BaseException {
+        // jwt id 가 해당 프로젝트의 팀장인지 확인
+        String teamLeader = projectProvider.getTeamLeader(patchPjMemberReq.getPj_num());
+        if (!userIdByJwt.equals(teamLeader)) {
+            throw new BaseException(PROJECT_APPROVE_AUTHORITY);
+        }
+
+        // 팀원만 강퇴 가능
+        String pj_inviteStatus = projectProvider.getPjInviteStatus1(patchPjMemberReq.getUser_id(), patchPjMemberReq.getPj_num());
+        if (!pj_inviteStatus.equals("승인완료")) throw new BaseException(PROJECT_KICK_OUT);
+
+        try {
+            String res = projectDao.pjKickOut(patchPjMemberReq);
+
+            return new PatchPjMemberRes(res);
+
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }
@@ -121,6 +183,7 @@ public class ProjectService {
      */
     public PostLikeRegisterRes likeRegister(PostLikeRegisterReq postLikeRegisterReq) throws BaseException {
         try {
+            userIdJwt(postLikeRegisterReq.getUser_id(), jwtService.getUserId());
             String postLikeRegisterRes = projectDao.likeRegister(postLikeRegisterReq);
             return new PostLikeRegisterRes(postLikeRegisterRes);
         } catch (Exception exception) {
@@ -136,6 +199,8 @@ public class ProjectService {
      */
     public PostLikeRegisterRes likeDel(PostLikeRegisterReq postLikeRegisterReq) throws BaseException {
         try {
+            userIdJwt(postLikeRegisterReq.getUser_id(), jwtService.getUserId());
+
             String postLikeDelRes = projectDao.likeDel(postLikeRegisterReq);
             return new PostLikeRegisterRes(postLikeDelRes);
         } catch (Exception exception) {
@@ -152,11 +217,15 @@ public class ProjectService {
      * @throws BaseException
      * @author 한규범
      */
-    public void PjDateCheck(LocalDate pj_deadline, LocalDate pj_startTerm, LocalDate pj_endTerm) throws BaseException {
-        if (pj_deadline.isBefore(pj_startTerm)) {
+    public void PjDateCheck(String pj_deadline, String pj_startTerm, String pj_endTerm) throws BaseException {
+        LocalDate pj_deadlineLd = LocalDate.parse(pj_deadline, DateTimeFormatter.ISO_DATE);
+        LocalDate pj_startTermLd = LocalDate.parse(pj_startTerm, DateTimeFormatter.ISO_DATE);
+        LocalDate pj_endTermLd = LocalDate.parse(pj_endTerm, DateTimeFormatter.ISO_DATE);
+
+        if (pj_deadlineLd.isBefore(pj_startTermLd)) {
             throw new BaseException(POST_PROJECT_DEADLINE_BEFORE_START);
         }
-        if (pj_endTerm.isBefore(pj_startTerm)) {
+        if (pj_endTermLd.isBefore(pj_startTermLd)) {
             throw new BaseException(POST_PROJECT_END_BEFORE_START);
         }
     }
@@ -177,7 +246,7 @@ public class ProjectService {
      * @throws BaseException
      * @author 한규범
      */
-    public void PjNullCheck(String pj_header, String pj_field, String pj_content, String pj_name, String pj_subField, String pj_progress, LocalDate pj_endTerm, LocalDate pj_startTerm, LocalDate pj_deadline, int pj_totalPerson) throws BaseException {
+    public void PjNullCheck(String pj_header, String pj_field, String pj_content, String pj_name, String pj_subField, String pj_progress, String pj_endTerm, String pj_startTerm, String pj_deadline, int pj_totalPerson) throws BaseException {
         if (pj_header == null) {
             throw new BaseException(POST_PROJECT_EMPTY_HEADER);
         }
@@ -231,7 +300,7 @@ public class ProjectService {
     /**
      * 팀원 평가 등록
      *
-     * @param PostEvalReq
+     * @param postEvalReq
      * @return x
      * @throws BaseException
      * @author shinhyeon
@@ -297,9 +366,36 @@ public class ProjectService {
     }
 
     /**
+     * 유저 등급 등록(or 최신화)
+     *
+     * @param user_id, grade
+     * @throws BaseException
+     * @ahthor shinhyeon
+     */
+    public void uploadGrade(String user_id, float grade) throws BaseException {
+        try {
+            float current_grade, final_grade;
+            current_grade = projectProvider.getGrade(user_id);
+
+            if (current_grade != 0.0) { // 유저 등급 최신화
+                final_grade = (float) ((current_grade + grade) / 2.0);
+                final_grade = (float) (Math.round(final_grade * 10) / 10.0); // 소수점 아래 첫째자리까지만 사용
+
+            } else { // 유저 등급 등록 (아직 등록된 평가가 없어 등급이 없을 경우)
+                final_grade = (float) (Math.round(grade * 10) / 10.0); // 소수점 아래 첫째자리까지만 사용
+            }
+
+            projectDao.uploadGrade(user_id, final_grade);
+
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    /**
      * 팀원 평가 수정
      *
-     * @param PatchEvalReq
+     * @param patchEvalReq
      * @return x
      * @throws BaseException
      * @author shinhyeon
@@ -323,7 +419,7 @@ public class ProjectService {
     /**
      * 팀원 평가 삭제
      *
-     * @param PatchEvalDelReq
+     * @param patchEvalDelReq
      * @return x
      * @throws BaseException
      * @author shinhyeon
@@ -374,12 +470,35 @@ public class ProjectService {
      * @param userId
      * @param userIdByJwt
      * @return BaseResponse
-     * @author 한규범
+     * @author 한규범, 강윤희
      */
-    public BaseResponse<Object> userIdJwt(String userId, String userIdByJwt){
+    public void userIdJwt(String userId, String userIdByJwt) throws BaseException {
         if (!userId.equals(userIdByJwt)) {
-            return new BaseResponse<>(INVALID_USER_JWT);
+            throw new BaseException(INVALID_USER_JWT);
         }
-        return null;
+    }
+
+    /**
+     *
+     * @param postPjApplyRes
+     * @throws BaseException
+     * @author 윤성식
+     */
+    public void rejectCheck(PostPjApplyRes postPjApplyRes) throws BaseException {
+        if(postPjApplyRes.getComment().equals("거절")){
+            throw new BaseException(POST_PROJECT_REJECT_RESTART);
+        }
+    }
+
+    /**
+     *
+     * @param postPjApplyRes
+     * @throws BaseException
+     * @author 윤성식
+     */
+    public void coincideCheck(PostPjApplyRes postPjApplyRes) throws BaseException{
+        if(postPjApplyRes.getComment().equals("중복")){
+            throw new BaseException(POST_PROJECT_COINCIDE_CHECK);
+        }
     }
 }

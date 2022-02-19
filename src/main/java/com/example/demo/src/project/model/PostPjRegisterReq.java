@@ -14,16 +14,18 @@ public class PostPjRegisterReq {
     private String user_id;
     private int pj_views=0;
     private String pj_header=null;
-    private String pj_categoryNum =null;
+    private String pj_categoryName =null;
+    private String pj_categoryNum = null;
 
     private String pj_content=null;
     private String pj_name=null;
-    private String pj_subCategoryNum =null;
+    private String pj_subCategoryNum=null;
+    private String pj_subCategoryName=null;
     private String pj_progress=null;
-    private LocalDate pj_endTerm =null;
+    private String pj_endTerm =null;
 
-    private LocalDate pj_startTerm =null;
-    private LocalDate pj_deadline=null;
+    private String pj_startTerm =null;
+    private String pj_deadline=null;
     private int pj_totalPerson =0;
     private int pj_recruitPerson;
     private Timestamp pj_time;

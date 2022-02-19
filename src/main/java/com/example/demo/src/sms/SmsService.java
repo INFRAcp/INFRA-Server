@@ -27,9 +27,9 @@ import java.util.List;
 @Service
 public class SmsService {
 
-    private final String serviceId = "ncp:sms:kr:279523716943:sms-test";
-    private final String accessKey = "EQMuFM97557V6hkO2X1a";
-    private final String secretKey = "L1CTIwI2qkRS7PeTzWojZqPT1AnZFZf0XAJJLx5l";
+    private final String serviceId = "ncp:sms:kr:280044915694:infra-sms";
+    private final String accessKey = "JUARhMRAzpFrstZqd775";
+    private final String secretKey = "lgiOpHwGvTW5HjcIaCKkhATBHFB3qeRuWzaBOrZZ";
 
     private SmsDao smsDao;
 
@@ -45,7 +45,7 @@ public class SmsService {
         List<PostMessageModel> messages = new ArrayList<>();
         messages.add(new PostMessageModel(recipientPhoneNumber, content));
 
-        PostSmsRequest smsRequest = new PostSmsRequest("SMS", "COMM", "82", "01040286210", "인증", messages);
+        PostSmsRequest smsRequest = new PostSmsRequest("SMS", "COMM", "82", "0318488224", "인증", messages);
 
         smsRequest.setContent(Integer.toString((int)(Math.random() * (99999 - 10000 + 1)) + 10000));
 
