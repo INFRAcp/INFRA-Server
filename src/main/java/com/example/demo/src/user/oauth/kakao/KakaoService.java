@@ -1,17 +1,27 @@
-package com.example.demo.src.user.oauth;
+package com.example.demo.src.user.oauth.kakao;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
-
+@Component
 @Service
 public class KakaoService {
+//    // value annotaion
+//    @Value("${spring.kakao.client-id}")
+//    private String client_id;
+//    @Value("{spring.kakao.redirect-uri}")
+//    private String redirect_uri;
+//    @Value("{spring.kakao.client-secret}")
+//    private String client_secret;
+// value annotation으로 실행할시 크롬 화면으로는 잘 되는데 터미널 상의 에러가 많이 나서 일단은 주석처리 해놓음 ㅠㅠㅠ
+
     /**
      * 카카오 로그인 API
      * @param authorize_code
@@ -20,7 +30,7 @@ public class KakaoService {
      * @author yewon
      */
     // access_token 발급 받기
-    public static String getAccessToken(String authorize_code) throws UnsupportedEncodingException {
+    public String getAccessToken(String authorize_code) throws UnsupportedEncodingException {
         String access_Token = "";
         String refresh_Token = "";
         String reqURL = "https://kauth.kakao.com/oauth/token";  // api 요청 URL
@@ -109,15 +119,15 @@ public class KakaoService {
             JsonParser parser = new JsonParser();
             JsonElement element = parser.parse(result);
 
-            JsonObject properties = element.getAsJsonObject().get("properties").getAsJsonObject();
+//            JsonObject properties = element.getAsJsonObject().get("properties").getAsJsonObject();
             JsonObject kakao_account = element.getAsJsonObject().get("kakao_account").getAsJsonObject();
 
-            String nickname = properties.getAsJsonObject().get("nickname").getAsString();
+//            String nickname = properties.getAsJsonObject().get("nickname").getAsString();
             String email = kakao_account.getAsJsonObject().get("email").getAsString();
 
             //userInfo.put("nickname : ", nickname);
             //userInfo.put("email : ",email);
-            System.out.println("nickname : " + nickname);
+//            System.out.println("nickname : " + nickname);
             System.out.println("email : " + email);
 
         } catch (IOException e) {

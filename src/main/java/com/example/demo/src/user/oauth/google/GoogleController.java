@@ -1,9 +1,9 @@
-package com.example.demo.src.google;
+package com.example.demo.src.user.oauth.google;
 
-import com.example.demo.src.google.constants.ConfigUtils;
-import com.example.demo.src.google.dto.GoogleLoginDto;
-import com.example.demo.src.google.dto.GoogleLoginRequest;
-import com.example.demo.src.google.dto.GoogleLoginResponse;
+import com.example.demo.src.user.oauth.google.constants.ConfigUtils;
+import com.example.demo.src.user.oauth.google.dto.GoogleLoginDto;
+import com.example.demo.src.user.oauth.google.dto.GoogleLoginRequest;
+import com.example.demo.src.user.oauth.google.dto.GoogleLoginResponse;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;

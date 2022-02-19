@@ -1,4 +1,4 @@
-package com.example.demo.src.user.oauth;
+package com.example.demo.src.user.oauth.kakao;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,8 +36,8 @@ public class KakaoController {
         String access_Token = kakaoService.getAccessToken(code);     // access_token 가져오기
         //System.out.println("controller access_token : " + access_Token);
         kakaoService.getUserInfo(access_Token);
-        //HashMap<String, Object> userInfo = UserService.getUserInfo(access_Token);
-        //System.out.println(userInfo);   // 사용자 정보
+//        HashMap<String, Object> userInfo = UserService.getUserInfo(access_Token);
+//        System.out.println(userInfo);   // 사용자 정보
         return "로그인 되었습니다.";
     }
 
