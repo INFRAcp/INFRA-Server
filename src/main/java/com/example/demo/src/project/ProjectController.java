@@ -42,15 +42,24 @@ public class ProjectController {
     @GetMapping("/inquiry")
     public BaseResponse<List<GetProjectRes>> getProjects(@RequestParam(required = false) String search, String user_id) {
         try {
+            projectService.userIdJwt(user_id, jwtService.getUserId());
             if (search == null) {
-                projectService.userIdJwt(user_id, jwtService.getUserId());
-                List<GetProjectRes> getProjectRes = projectProvider.getProjects();
+                List<GetProjectRes> getProjectRes = projectProvider.getProjects(user_id);
                 projectService.recruit(getProjectRes);
+
+                for(int i=0; i < getProjectRes.size(); i++){
+                    getProjectRes.get(i).setPj_like(projectProvider.checkPjLike(getProjectRes.get(i).getPj_num(), user_id));
+                }
+
                 return new BaseResponse<>(getProjectRes);
             }
-            projectService.userIdJwt(user_id, jwtService.getUserId());
-            List<GetProjectRes> getProjectRes = projectProvider.getProjectsByKeyword(search);
+            List<GetProjectRes> getProjectRes = projectProvider.getProjectsByKeyword(search, user_id);
             projectService.recruit(getProjectRes);
+
+            for(int i=0; i < getProjectRes.size(); i++){
+                getProjectRes.get(i).setPj_like(projectProvider.checkPjLike(getProjectRes.get(i).getPj_num(), user_id));
+            }
+
             return new BaseResponse<>(getProjectRes);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
@@ -80,6 +89,7 @@ public class ProjectController {
     @GetMapping("/keyword")
     public BaseResponse<List<GetPjKeywordRes>> getPj_keywords(@RequestParam(required = false) String search) {
         try {
+            projectService.userIdJwt(user_id, jwtService.getUserId());
             if (search == null) {
                 List<GetPjKeywordRes> getPj_keywordRes = projectProvider.getPj_keywords();
                 return new BaseResponse<>(getPj_keywordRes);
@@ -122,6 +132,8 @@ public class ProjectController {
     @PostMapping("/project-inquiry")
     public BaseResponse<List<PostPjInquiryRes>> proInquiry(@RequestBody PostPjInquiryReq postPj_inquiryReq) {
         try {
+            projectService.userIdJwt(postPj_inquiryReq.getUser_id(), jwtService.getUserId());
+
             List<PostPjInquiryRes> postPj_inquiryRes = projectProvider.proInquiry(postPj_inquiryReq);
             return new BaseResponse<>(postPj_inquiryRes);
         } catch (BaseException exception) {
@@ -140,6 +152,8 @@ public class ProjectController {
     @PostMapping("/team")
     public BaseResponse<List<PostPjParticipateRes>> getTeam(@RequestBody PostPjParticipateReq postPj_participateReq) {
         try {
+            projectService.userIdJwt(user_id, jwtService.getUserId());
+
             List<PostPjParticipateRes> postPj_participateRes = projectProvider.getTeam(postPj_participateReq);
             if(postPj_participateRes == null){
                 throw new BaseException(POST_PROJECT_GETTEAM_NULL);
@@ -163,12 +177,6 @@ public class ProjectController {
     @PostMapping("/registration")
     public BaseResponse<PostPjRegisterRes> pjRegistration(@RequestBody PostPjRegisterReq postPjRegisterReq) {
         try {
-            projectService.userIdJwt(postPjRegisterReq.getUser_id(), jwtService.getUserId());
-            projectService.PjDateCheck(postPjRegisterReq.getPj_deadline(), postPjRegisterReq.getPj_startTerm(), postPjRegisterReq.getPj_endTerm());
-            projectService.PjNullCheck(postPjRegisterReq.getPj_header(), postPjRegisterReq.getPj_categoryName(), postPjRegisterReq.getPj_content(), postPjRegisterReq.getPj_name(), postPjRegisterReq.getPj_subCategoryName(), postPjRegisterReq.getPj_progress(), postPjRegisterReq.getPj_endTerm(), postPjRegisterReq.getPj_startTerm(), postPjRegisterReq.getPj_deadline(), postPjRegisterReq.getPj_totalPerson());
-            projectService.PjKeywordCheck(postPjRegisterReq.getHashtag());
-            postPjRegisterReq.setPj_categoryNum(projectProvider.getPjCategoryNum(postPjRegisterReq.getPj_categoryName()));
-            postPjRegisterReq.setPj_subCategoryNum(projectProvider.getPjSubCategoryNum(postPjRegisterReq.getPj_subCategoryName()));
             PostPjRegisterRes postPjRegisterRes = projectService.registrationPj(postPjRegisterReq);
             return new BaseResponse<>(postPjRegisterRes);
         } catch (BaseException exception) {
@@ -188,9 +196,6 @@ public class ProjectController {
     @PatchMapping("/modify")
     public BaseResponse<PatchPjModifyRes> pjModify(@RequestBody PatchPjModifyReq patchPjModifyReq) {
         try {
-            projectService.PjDateCheck(patchPjModifyReq.getPj_deadline(), patchPjModifyReq.getPj_startTerm(), patchPjModifyReq.getPj_endTerm());
-            projectService.PjNullCheck(patchPjModifyReq.getPj_header(), patchPjModifyReq.getPj_categoryNum(), patchPjModifyReq.getPj_content(), patchPjModifyReq.getPj_name(), patchPjModifyReq.getPj_subCategoryNum(), patchPjModifyReq.getPj_progress(), patchPjModifyReq.getPj_endTerm(), patchPjModifyReq.getPj_startTerm(), patchPjModifyReq.getPj_deadline(), patchPjModifyReq.getPj_totalPerson());
-            projectService.PjKeywordCheck(patchPjModifyReq.getHashtag());
             PatchPjModifyRes patchPjModifyRes = projectService.pjModify(patchPjModifyReq);
             return new BaseResponse<>(patchPjModifyRes);
         } catch (BaseException exception) {
@@ -276,8 +281,9 @@ public class ProjectController {
      */
     @ResponseBody
     @GetMapping("/apply-list")
-    public BaseResponse<List<GetApplyListRes>> pjApplyList(@RequestParam(required = false) String pj_num) {
+    public BaseResponse<List<GetApplyListRes>> pjApplyList(@RequestParam(required = false) String pj_num, String user_id) {
         try {
+            projectService.userIdJwt(user_id, jwtService.getUserId());
             List<GetApplyListRes> getApplyListRes = projectProvider.pjApplyList(pj_num);
             if(getApplyListRes == null){
                 throw new BaseException(GET_PROJECT_APPLY_LIST_NULL);
@@ -299,6 +305,8 @@ public class ProjectController {
     @PostMapping("/apply-mylist")
     public BaseResponse<List<PostUserApplyRes>> userApply(@RequestBody PostUserApplyReq postUserApplyReq) {
         try {
+            projectService.userIdJwt(postUserApplyReq.getUser_id(), jwtService.getUserId());
+
             List<PostUserApplyRes> postUserApplyRes = projectProvider.getUserApply(postUserApplyReq);
             return new BaseResponse<>(postUserApplyRes);
         } catch (BaseException exception) {
@@ -308,7 +316,6 @@ public class ProjectController {
 
     /**
      * 프로젝트 찜 등록
-     *
      * @param postLikeRegisterReq
      * @return 등록 완료된 메세지
      * @author 윤성식
@@ -326,7 +333,6 @@ public class ProjectController {
 
     /**
      * 프로젝트 찜 삭제
-     *
      * @param postLikeRegisterReq
      * @return 찜 삭제된 메세지
      * @author 윤성식

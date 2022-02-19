@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static com.example.demo.config.BaseResponseStatus.*;
@@ -38,6 +39,12 @@ public class ProjectService {
      */
     public PostPjRegisterRes registrationPj(PostPjRegisterReq postPjRegisterReq) throws BaseException {
         try {
+            userIdJwt(postPjRegisterReq.getUser_id(), jwtService.getUserId());
+            PjDateCheck(postPjRegisterReq.getPj_deadline(), postPjRegisterReq.getPj_startTerm(), postPjRegisterReq.getPj_endTerm());
+            PjNullCheck(postPjRegisterReq.getPj_header(), postPjRegisterReq.getPj_categoryName(), postPjRegisterReq.getPj_content(), postPjRegisterReq.getPj_name(), postPjRegisterReq.getPj_subCategoryName(), postPjRegisterReq.getPj_progress(), postPjRegisterReq.getPj_endTerm(), postPjRegisterReq.getPj_startTerm(), postPjRegisterReq.getPj_deadline(), postPjRegisterReq.getPj_totalPerson());
+            PjKeywordCheck(postPjRegisterReq.getHashtag());
+            postPjRegisterReq.setPj_categoryNum(projectProvider.getPjCategoryNum(postPjRegisterReq.getPj_categoryName()));
+            postPjRegisterReq.setPj_subCategoryNum(projectProvider.getPjSubCategoryNum(postPjRegisterReq.getPj_subCategoryName()));
             String pjRegisterSucese = projectDao.pjRegistration(postPjRegisterReq);
             return new PostPjRegisterRes(pjRegisterSucese);
         } catch (Exception exception) {
@@ -54,6 +61,11 @@ public class ProjectService {
      */
     public PatchPjModifyRes pjModify(PatchPjModifyReq patchPjModifyReq) throws BaseException {
         try {
+            userIdJwt(patchPjModifyReq.getUser_id(), jwtService.getUserId());
+            PjDateCheck(patchPjModifyReq.getPj_deadline(), patchPjModifyReq.getPj_startTerm(), patchPjModifyReq.getPj_endTerm());
+            PjNullCheck(patchPjModifyReq.getPj_header(), patchPjModifyReq.getPj_categoryNum(), patchPjModifyReq.getPj_content(), patchPjModifyReq.getPj_name(), patchPjModifyReq.getPj_subCategoryNum(), patchPjModifyReq.getPj_progress(), patchPjModifyReq.getPj_endTerm(), patchPjModifyReq.getPj_startTerm(), patchPjModifyReq.getPj_deadline(), patchPjModifyReq.getPj_totalPerson());
+            PjKeywordCheck(patchPjModifyReq.getHashtag());
+
             String PjModify = projectDao.pjModify(patchPjModifyReq);
             return new PatchPjModifyRes(PjModify);
         } catch (Exception exception) {
@@ -70,6 +82,7 @@ public class ProjectService {
      */
     public DelPjDelRes pjDel(DelPjDelReq delPjDelReq) throws BaseException {
         try {
+            userIdJwt(delPjDelReq.getUser_id(), jwtService.getUserId());
             String pjDel = projectDao.pjDel(delPjDelReq);
             return new DelPjDelRes(pjDel);
         } catch (Exception exception) {
@@ -86,6 +99,7 @@ public class ProjectService {
      */
     public PostPjApplyRes pjApply(PostPjApplyReq postPjApplyReq) throws BaseException {
         try {
+            userIdJwt(postPjApplyReq.getUser_id(), jwtService.getUserId());
             String pjApplyName = projectDao.pjApply(postPjApplyReq);
             return new PostPjApplyRes(pjApplyName);
         } catch (Exception exception) {
@@ -163,13 +177,13 @@ public class ProjectService {
 
     /**
      * 프로젝트 찜 등록
-     *
      * @param postLikeRegisterReq
      * @return 등록 완료된 메세지
      * @author 윤성식
      */
     public PostLikeRegisterRes likeRegister(PostLikeRegisterReq postLikeRegisterReq) throws BaseException {
         try {
+            userIdJwt(postLikeRegisterReq.getUser_id(), jwtService.getUserId());
             String postLikeRegisterRes = projectDao.likeRegister(postLikeRegisterReq);
             return new PostLikeRegisterRes(postLikeRegisterRes);
         } catch (Exception exception) {
@@ -179,13 +193,14 @@ public class ProjectService {
 
     /**
      * 프로젝트 찜 삭제
-     *
      * @param postLikeRegisterReq
      * @return 찜 삭제된 메세지
      * @author 윤성식
      */
     public PostLikeRegisterRes likeDel(PostLikeRegisterReq postLikeRegisterReq) throws BaseException {
         try {
+            userIdJwt(postLikeRegisterReq.getUser_id(), jwtService.getUserId());
+
             String postLikeDelRes = projectDao.likeDel(postLikeRegisterReq);
             return new PostLikeRegisterRes(postLikeDelRes);
         } catch (Exception exception) {
@@ -202,11 +217,15 @@ public class ProjectService {
      * @throws BaseException
      * @author 한규범
      */
-    public void PjDateCheck(LocalDate pj_deadline, LocalDate pj_startTerm, LocalDate pj_endTerm) throws BaseException {
-        if (pj_deadline.isBefore(pj_startTerm)) {
+    public void PjDateCheck(String pj_deadline, String pj_startTerm, String pj_endTerm) throws BaseException {
+        LocalDate pj_deadlineLd = LocalDate.parse(pj_deadline, DateTimeFormatter.ISO_DATE);
+        LocalDate pj_startTermLd = LocalDate.parse(pj_startTerm, DateTimeFormatter.ISO_DATE);
+        LocalDate pj_endTermLd = LocalDate.parse(pj_endTerm, DateTimeFormatter.ISO_DATE);
+
+        if (pj_deadlineLd.isBefore(pj_startTermLd)) {
             throw new BaseException(POST_PROJECT_DEADLINE_BEFORE_START);
         }
-        if (pj_endTerm.isBefore(pj_startTerm)) {
+        if (pj_endTermLd.isBefore(pj_startTermLd)) {
             throw new BaseException(POST_PROJECT_END_BEFORE_START);
         }
     }
@@ -448,17 +467,15 @@ public class ProjectService {
 
     /**
      * 유저 JWT 유효성 검사
-     *
      * @param userId
      * @param userIdByJwt
      * @return BaseResponse
-     * @author 한규범
+     * @author 한규범, 강윤희
      */
-    public BaseResponse<Object> userIdJwt(String userId, String userIdByJwt) {
+    public void userIdJwt(String userId, String userIdByJwt) throws BaseException {
         if (!userId.equals(userIdByJwt)) {
-            return new BaseResponse<>(INVALID_USER_JWT);
+            throw new BaseException(INVALID_USER_JWT);
         }
-        return null;
     }
 
     /**
