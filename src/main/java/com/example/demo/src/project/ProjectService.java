@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static com.example.demo.config.BaseResponseStatus.*;
@@ -165,11 +166,15 @@ public class ProjectService {
      * @throws BaseException
      * @author 한규범
      */
-    public void PjDateCheck(LocalDate pj_deadline, LocalDate pj_startTerm, LocalDate pj_endTerm) throws BaseException {
-        if (pj_deadline.isBefore(pj_startTerm)) {
+    public void PjDateCheck(String pj_deadline, String pj_startTerm, String pj_endTerm) throws BaseException {
+        LocalDate pj_deadlineLd = LocalDate.parse(pj_deadline, DateTimeFormatter.ISO_DATE);
+        LocalDate pj_startTermLd = LocalDate.parse(pj_startTerm, DateTimeFormatter.ISO_DATE);
+        LocalDate pj_endTermLd = LocalDate.parse(pj_endTerm, DateTimeFormatter.ISO_DATE);
+
+        if (pj_deadlineLd.isBefore(pj_startTermLd)) {
             throw new BaseException(POST_PROJECT_DEADLINE_BEFORE_START);
         }
-        if (pj_endTerm.isBefore(pj_startTerm)) {
+        if (pj_endTermLd.isBefore(pj_startTermLd)) {
             throw new BaseException(POST_PROJECT_END_BEFORE_START);
         }
     }
@@ -190,7 +195,7 @@ public class ProjectService {
      * @throws BaseException
      * @author 한규범
      */
-    public void PjNullCheck(String pj_header, String pj_field, String pj_content, String pj_name, String pj_subField, String pj_progress, LocalDate pj_endTerm, LocalDate pj_startTerm, LocalDate pj_deadline, int pj_totalPerson) throws BaseException {
+    public void PjNullCheck(String pj_header, String pj_field, String pj_content, String pj_name, String pj_subField, String pj_progress, String pj_endTerm, String pj_startTerm, String pj_deadline, int pj_totalPerson) throws BaseException {
         if (pj_header == null) {
             throw new BaseException(POST_PROJECT_EMPTY_HEADER);
         }
