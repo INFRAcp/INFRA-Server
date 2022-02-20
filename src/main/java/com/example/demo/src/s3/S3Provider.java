@@ -30,8 +30,12 @@ public class S3Provider {
      * @return String (이미지 경로)
      * @author shinhyeon
      */
-    public String getPrphoto(String user_id){
-        String imgPath = s3Dao.getPrphoto(user_id);
-        return imgPath;
+    public String getPrphoto(String user_id) throws BaseException {
+        try {
+            String imgPath = s3Dao.getPrphoto(user_id);
+            return imgPath;
+        } catch (Exception exception) {
+            throw new BaseException(RESPONSE_ERROR);
+        }
     }
 }

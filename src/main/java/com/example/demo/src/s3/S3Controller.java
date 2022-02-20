@@ -33,8 +33,8 @@ public class S3Controller {
      * @author shinhyeon
      */
     @ResponseBody
-    @PostMapping("/prphoto/{user_id}")
-    public BaseResponse<String> uploadPrphoto(@PathVariable("user_id") String user_id, @RequestParam("images") MultipartFile multipartFile) throws IOException {
+    @PostMapping("/prphoto")
+    public BaseResponse<String> uploadPrphoto(@RequestParam(required = false) String user_id, @RequestParam("images") MultipartFile multipartFile) throws IOException {
 
         try{
             // jwt
@@ -62,8 +62,8 @@ public class S3Controller {
      * @author shinhyeon
      */
     @ResponseBody
-    @GetMapping("/prphoto/{user_id}")
-    public BaseResponse<String> getPrphoto(@PathVariable("user_id") String user_id){
+    @GetMapping("/prphoto")
+    public BaseResponse<String> getPrphoto(@RequestParam(required = false) String user_id) throws BaseException {
         String imgPath = s3Provider.getPrphoto(user_id);
         return new BaseResponse<>(imgPath);
     }

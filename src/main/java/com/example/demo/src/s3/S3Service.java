@@ -3,6 +3,7 @@ package com.example.demo.src.s3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.example.demo.config.BaseException;
 import com.example.demo.src.project.ProjectDao;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +16,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.UUID;
+
+import static com.example.demo.config.BaseResponseStatus.DATABASE_ERROR;
+import static com.example.demo.config.BaseResponseStatus.MODIFY_FAIL_QA;
 
 @Slf4j
 @Component
@@ -70,7 +74,11 @@ public class S3Service {
      * @param user_id
      * @author shinhyeon
      */
-    public void uploadPrphoto(String imgPath, String user_id){
-        s3Dao.uploadPrPhoto(imgPath, user_id);
+    public void uploadPrphoto(String imgPath, String user_id) throws BaseException {
+        try {
+            s3Dao.uploadPrPhoto(imgPath, user_id);
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
     }
 }
