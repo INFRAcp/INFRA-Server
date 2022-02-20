@@ -20,19 +20,39 @@ import static com.example.demo.config.BaseResponseStatus.INVALID_JWT;
 @Service
 public class JwtService {
 
+    private final long ACCESS_TOKEN_VALID_TIME = 1 * 60 * 1000L;   // 1분
+    private final long REFRESH_TOKEN_VALID_TIME = 60 * 60 * 24 * 7 * 1000L;   // 1주
+
     /*
-    JWT 생성
+    Access JWT 생성
     @param userIdx
     @return String
      */
-    public String createJwt(String userId) {
+    public String createAccessJwt(String userId) {
         Date now = new Date();
         return Jwts.builder()
                 .setHeaderParam("type", "jwt")
                 .claim("userId", userId)
                 .setIssuedAt(now)
-                .setExpiration(new Date(System.currentTimeMillis() + 1 * (1000 * 60 * 60 * 24 * 365)))
-                .signWith(SignatureAlgorithm.HS256, Secret.JWT_SECRET_KEY)
+                .setExpiration(new Date(now.getTime() + ACCESS_TOKEN_VALID_TIME))
+                .signWith(SignatureAlgorithm.HS256, Secret.JWT_ACCESS_SECRET_KEY)
+                .compact();
+    }
+
+    /**
+     * Refresh JWT 생성
+     * @param userId
+     * @return
+     * @author 규범
+     */
+    public String createRefreshJwt(String userId){
+        Date now = new Date();
+        return Jwts.builder()
+                .setHeaderParam("type", "jwt")
+                .claim("userId", userId)
+                .setIssuedAt(now)
+                .setExpiration(new Date(now.getTime() + REFRESH_TOKEN_VALID_TIME))
+                .signWith(SignatureAlgorithm.HS256, Secret.JWT_REFRESH_SECRET_KEY)
                 .compact();
     }
 
@@ -40,9 +60,14 @@ public class JwtService {
     Header에서 X-ACCESS-TOKEN 으로 JWT 추출
     @return String
      */
-    public String getJwt() {
+    public String resolveAccessToken() {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
         return request.getHeader("X-ACCESS-TOKEN");
+    }
+
+    public String resolveRefreshToken(){
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+        return request.getHeader("X-REFRESH-TOKEN");
     }
 
     /*
@@ -51,8 +76,12 @@ public class JwtService {
     @throws BaseException
      */
     public String getUserId() throws BaseException {
+
+        //ACCESS 만료
+
+
         //1. JWT 추출
-        String accessToken = getJwt();
+        String accessToken = resolveAccessToken();
         if (accessToken == null || accessToken.length() == 0) {
             throw new BaseException(EMPTY_JWT);
         }
@@ -61,7 +90,7 @@ public class JwtService {
         Jws<Claims> claims;
         try {
             claims = Jwts.parser()
-                    .setSigningKey(Secret.JWT_SECRET_KEY)
+                    .setSigningKey(Secret.JWT_ACCESS_SECRET_KEY)
                     .parseClaimsJws(accessToken);
         } catch (Exception ignored) {
             throw new BaseException(INVALID_JWT);

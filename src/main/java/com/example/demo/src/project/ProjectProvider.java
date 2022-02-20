@@ -276,4 +276,12 @@ public class ProjectProvider {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
+    public String[] getHashtag(int pj_num) throws BaseException{
+        try {
+            return projectDao.getHashtag(pj_num);
+        }catch (Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 }

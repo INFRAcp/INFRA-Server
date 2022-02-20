@@ -36,7 +36,7 @@ public class UserProvider {
      * @param postLoginReq - user_id, user_pw
      * @return PostLoginRes - user_id, jwt
      * @throws BaseException
-     * @author yunhee
+     * @author yunhee, kyubeom
      */
     @Transactional(readOnly = true)
     public PostLoginRes logIn(PostLoginReq postLoginReq) throws BaseException {
@@ -55,10 +55,11 @@ public class UserProvider {
 
         if (postLoginReq.getUser_pw().equals(password)) { //비밀번호 일치하면 user_id, name, nickname 가져오기
             String userId = userDao.getPwd(postLoginReq).getUser_id();
-            String jwt = jwtService.createJwt(userId);
+            String jwtAccess = jwtService.createAccessJwt(userId);
+            String jwtRefresh = jwtService.createRefreshJwt(userId);
             String user_name = userDao.getPwd(postLoginReq).getUser_name();
             String user_nickname = userDao.getPwd(postLoginReq).getUser_nickname();
-            return new PostLoginRes(userId, jwt, user_name, user_nickname);
+            return new PostLoginRes(userId, jwtAccess, jwtRefresh,user_name, user_nickname);
         } else { // 비밀번호 불일치
             throw new BaseException(FAILED_TO_LOGIN);
         }
