@@ -1,4 +1,4 @@
-package com.example.demo.src.user.oauth.naver;
+package com.example.demo.src.user.oauth.naver.temp;
 
 public class NaverOauthParams {
     public String getAccess_token() {

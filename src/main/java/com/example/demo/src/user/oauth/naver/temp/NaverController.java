@@ -1,4 +1,4 @@
-package com.example.demo.src.user.oauth.naver;
+package com.example.demo.src.user.oauth.naver.temp;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

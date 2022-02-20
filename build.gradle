@@ -28,6 +28,10 @@ repositories {
 //스프링 부트 디펜던시 추가 하는곳
 dependencies {
 
+    // 네이버 로그인 API에 대한 의존성 추가
+    compile 'org.springframework.boot:spring-boot-starter-webflux'
+    compile 'org.projectreactor:reactor-spring:1.0.1.RELEASE'
+
     // 카카오 로그인 API에 대한 의존성 추가
     implementation 'com.google.code.gson:gson:2.8.9'
 
