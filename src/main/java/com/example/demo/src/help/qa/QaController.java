@@ -167,11 +167,6 @@ public class QaController {
         try {
             // jwt
             String userIdByJwt = jwtService.getUserId();
-            GetQaRes getQaRes = qaProvider.getQaByQaNum(qa_num);
-
-            if (!getQaRes.getUser_id().equals(userIdByJwt)) {
-                return new BaseResponse<>(INVALID_USER_JWT);
-            }
 
             // 관리자만 답변을 달 수 있음 (현재는 ye5ni로 판별을 하지만 추후 관리자 user_id가 정해지면 변경할 예정임)
             if (!userIdByJwt.equals("ye5ni")) {
