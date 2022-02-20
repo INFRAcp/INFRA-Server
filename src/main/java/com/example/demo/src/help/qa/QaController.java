@@ -44,7 +44,6 @@ public class QaController {
 
     @ResponseBody
     @GetMapping("")
-
     public BaseResponse<List<GetQaRes>> getQa(@RequestParam(required = false) String user_id) {
         try {
             // Query String (user_id) 가 없을 경우 -> 전체 질문을 가져옴
@@ -76,7 +75,6 @@ public class QaController {
 
     @ResponseBody
     @PatchMapping("/modify/{qa_num}")
-
     public BaseResponse<GetQaRes> modifyQa(@PathVariable("qa_num") int qa_num, @RequestBody PatchQaReq patchQaReq) {
         try {
             // jwt
@@ -108,7 +106,6 @@ public class QaController {
 
     @ResponseBody
     @PostMapping("")
-
     public BaseResponse<String> uploadQa(@RequestBody PostQaReq postQaReq) {
         try {
             // jwt
@@ -136,7 +133,6 @@ public class QaController {
 
     @ResponseBody
     @PatchMapping("/del/{qa_num}")
-
     public BaseResponse<GetQaRes> deleteQa2(@PathVariable("qa_num") int qa_num) {
         try {
             // jwt
@@ -165,10 +161,8 @@ public class QaController {
      * @param qa
      * @return GetQaRes
      */
-
     @ResponseBody
     @PatchMapping("/answer/{qa_num}")
-
     public BaseResponse<GetQaRes> answerQa(@PathVariable("qa_num") int qa_num, @RequestBody PatchAnswerReq patchAnswerReq) {
         try {
             // jwt

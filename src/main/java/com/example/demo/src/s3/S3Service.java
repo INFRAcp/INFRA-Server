@@ -32,7 +32,6 @@ public class S3Service {
 
         return uploadPrphoto(uploadFile, dirName);
     }
-
     // S3로 파일 업로드하기
     private String uploadPrphoto(File uploadFile, String dirName) {
         String fileName = dirName + "/" + UUID.randomUUID() + uploadFile.getName();   // S3에 저장된 파일 이름
@@ -40,13 +39,11 @@ public class S3Service {
         removeNewFile(uploadFile);
         return uploadImageUrl;
     }
-
     // S3로 업로드
     private String putS3(File uploadFile, String fileName) {
         amazonS3Client.putObject(new PutObjectRequest(bucket, fileName, uploadFile).withCannedAcl(CannedAccessControlList.PublicRead));
         return amazonS3Client.getUrl(bucket, fileName).toString();
     }
-
     // 로컬에 저장된 이미지 지우기
     private void removeNewFile(File targetFile) {
         if (targetFile.delete()) {
@@ -55,7 +52,6 @@ public class S3Service {
         }
         log.info("File delete fail");
     }
-
     private Optional<File> convert(MultipartFile multipartFile) throws IOException{
         File convertFile = new File(System.getProperty("user.dir") + "/" + multipartFile.getOriginalFilename());
         // 바로 위에서 지정한 경로에 File이 생성됨 (경로가 잘못되었다면 생성 불가능)
@@ -65,12 +61,15 @@ public class S3Service {
             }
             return Optional.of(convertFile);
         }
-
         return Optional.empty();
-
     }
 
-
+    /**
+     * 이미지 업로드
+     * @param imgPath
+     * @param user_id
+     * @author shinhyeon
+     */
     public void uploadPrphoto(String imgPath, String user_id){
         s3Dao.uploadPrPhoto(imgPath, user_id);
     }

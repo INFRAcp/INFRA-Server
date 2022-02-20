@@ -24,6 +24,12 @@ public class S3Provider {
         this.s3Dao = s3Dao;
     }
 
+    /**
+     * 이미지 불러오기
+     * @param user_id
+     * @return String (이미지 경로)
+     * @author shinhyeon
+     */
     public String getPrphoto(String user_id){
         String imgPath = s3Dao.getPrphoto(user_id);
         return imgPath;

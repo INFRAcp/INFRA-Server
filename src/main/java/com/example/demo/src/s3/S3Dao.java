@@ -15,6 +15,12 @@ public class S3Dao {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
+    /**
+     * 이미지 업로드
+     * @param imgPath
+     * @param user_id
+     * @author shinhyeon
+     */
     public void uploadPrPhoto(String imgPath, String user_id) {
         String uploadPrPhotoQuery = "UPDATE User set user_prPhoto = ? where user_id = ?";
         Object[] uploadPrPhotoParam = new Object[]{imgPath, user_id};
@@ -22,6 +28,12 @@ public class S3Dao {
         this.jdbcTemplate.update(uploadPrPhotoQuery, uploadPrPhotoParam);
     }
 
+    /**
+     * 이미지 불러오기
+     * @param user_id
+     * @return String (이미지 경로)
+     * @author shinhyeon
+     */
     public String getPrphoto(String user_id) {
         String getPrphotoQuery = "SELECT user_prPhoto from User Where user_id = ?";
 
