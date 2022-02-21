@@ -25,8 +25,8 @@ import static com.example.demo.config.BaseResponseStatus.MODIFY_FAIL_QA;
 @RequiredArgsConstructor
 public class S3Service {
 
-    private final AmazonS3Client amazonS3Client;
-    private final S3Dao s3Dao;
+    public final AmazonS3Client amazonS3Client;
+    public final S3Dao s3Dao;
 
     @Value("${cloud.aws.s3.bucket}")
     public String bucket;
@@ -37,26 +37,26 @@ public class S3Service {
         return uploadPrphoto(uploadFile, dirName);
     }
     // S3로 파일 업로드하기
-    private String uploadPrphoto(File uploadFile, String dirName) {
+    public String uploadPrphoto(File uploadFile, String dirName) {
         String fileName = dirName + "/" + UUID.randomUUID() + uploadFile.getName();   // S3에 저장된 파일 이름
         String uploadImageUrl = putS3(uploadFile, fileName); // s3로 업로드
         removeNewFile(uploadFile);
         return uploadImageUrl;
     }
     // S3로 업로드
-    private String putS3(File uploadFile, String fileName) {
+    public String putS3(File uploadFile, String fileName) {
         amazonS3Client.putObject(new PutObjectRequest(bucket, fileName, uploadFile).withCannedAcl(CannedAccessControlList.PublicRead));
         return amazonS3Client.getUrl(bucket, fileName).toString();
     }
     // 로컬에 저장된 이미지 지우기
-    private void removeNewFile(File targetFile) {
+    public void removeNewFile(File targetFile) {
         if (targetFile.delete()) {
             log.info("File delete success");
             return;
         }
         log.info("File delete fail");
     }
-    private Optional<File> convert(MultipartFile multipartFile) throws IOException{
+    public Optional<File> convert(MultipartFile multipartFile) throws IOException{
         File convertFile = new File(System.getProperty("user.dir") + "/" + multipartFile.getOriginalFilename());
         // 바로 위에서 지정한 경로에 File이 생성됨 (경로가 잘못되었다면 생성 불가능)
         if (convertFile.createNewFile()) {
@@ -69,7 +69,7 @@ public class S3Service {
     }
 
     /**
-     * 이미지 업로드
+     * 프로필 사진 업로드
      * @param imgPath
      * @param user_id
      * @author shinhyeon
@@ -77,6 +77,21 @@ public class S3Service {
     public void uploadPrphoto(String imgPath, String user_id) throws BaseException {
         try {
             s3Dao.uploadPrPhoto(imgPath, user_id);
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    /**
+     * 프로젝트 사진 업로드
+     * @param imgPath
+     * @param pj_num
+     * @throws BaseException
+     * @author shinhyeon
+     */
+    public void uploadPjPhoto(String imgPath, int pj_num) throws BaseException {
+        try {
+            s3Dao.uploadPjPhoto(imgPath, pj_num);
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }

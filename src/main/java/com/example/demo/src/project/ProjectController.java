@@ -3,12 +3,24 @@ package com.example.demo.src.project;
 import com.example.demo.config.BaseException;
 import com.example.demo.config.BaseResponse;
 import com.example.demo.src.project.model.*;
+import com.example.demo.src.s3.S3Service;
 import com.example.demo.utils.JwtService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static com.example.demo.config.BaseResponseStatus.*;
@@ -24,11 +36,14 @@ public class ProjectController {
     private final ProjectService projectService;
     @Autowired
     private final JwtService jwtService;
+    @Autowired
+    private final S3Service s3Service;
 
-    public ProjectController(ProjectProvider projectProvider, ProjectService projectService, JwtService jwtService) {
+    public ProjectController(ProjectProvider projectProvider, ProjectService projectService, JwtService jwtService, S3Service s3Service) {
         this.projectProvider = projectProvider;
         this.projectService = projectService;
         this.jwtService = jwtService;
+        this.s3Service = s3Service;
     }
 
     /**
@@ -159,10 +174,39 @@ public class ProjectController {
      * @return PostPjRegisterRes 프로젝트 이름
      * @author 한규범
      */
+//    @ResponseBody
+//    @PostMapping("/registration")
+//    public BaseResponse<PostPjRegisterRes> pjRegistration(@RequestBody PostPjRegisterReq postPjRegisterReq) {
+//        try {
+//            projectService.userIdJwt(postPjRegisterReq.getUser_id(), jwtService.getUserId());
+//            projectService.PjDateCheck(postPjRegisterReq.getPj_deadline(), postPjRegisterReq.getPj_startTerm(), postPjRegisterReq.getPj_endTerm());
+//            projectService.PjNullCheck(postPjRegisterReq.getPj_header(), postPjRegisterReq.getPj_categoryName(), postPjRegisterReq.getPj_content(), postPjRegisterReq.getPj_name(), postPjRegisterReq.getPj_subCategoryName(), postPjRegisterReq.getPj_progress(), postPjRegisterReq.getPj_endTerm(), postPjRegisterReq.getPj_startTerm(), postPjRegisterReq.getPj_deadline(), postPjRegisterReq.getPj_totalPerson());
+//            projectService.PjKeywordCheck(postPjRegisterReq.getHashtag());
+//            postPjRegisterReq.setPj_categoryNum(projectProvider.getPjCategoryNum(postPjRegisterReq.getPj_categoryName()));
+//            postPjRegisterReq.setPj_subCategoryNum(projectProvider.getPjSubCategoryNum(postPjRegisterReq.getPj_subCategoryName()));
+//            PostPjRegisterRes postPjRegisterRes = projectService.registrationPj(postPjRegisterReq);
+//            return new BaseResponse<>(postPjRegisterRes);
+//        } catch (BaseException exception) {
+//            return new BaseResponse<
+//                    >((exception.getStatus()));
+//        }
+//    }
+
+
+    /**
+     * 프로젝트 등록
+     * 다중 파일 업르드 (form-data<image, json>)
+     * @param postPjRegisterReq
+     * @return PostPjRegisterRes 프로젝트 이름
+     * @author 한규범 강신현(s3)
+     */
     @ResponseBody
     @PostMapping("/registration")
-    public BaseResponse<PostPjRegisterRes> pjRegistration(@RequestBody PostPjRegisterReq postPjRegisterReq) {
+    public BaseResponse<PostPjRegisterRes> pjRegistration(@RequestParam("jsonList") String jsonList, @RequestPart("images") MultipartFile[] MultipartFiles) throws IOException {
         try {
+            ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+            PostPjRegisterReq postPjRegisterReq = objectMapper.readValue(jsonList, new TypeReference<PostPjRegisterReq>() {});
+
             projectService.userIdJwt(postPjRegisterReq.getUser_id(), jwtService.getUserId());
             projectService.PjDateCheck(postPjRegisterReq.getPj_deadline(), postPjRegisterReq.getPj_startTerm(), postPjRegisterReq.getPj_endTerm());
             projectService.PjNullCheck(postPjRegisterReq.getPj_header(), postPjRegisterReq.getPj_categoryName(), postPjRegisterReq.getPj_content(), postPjRegisterReq.getPj_name(), postPjRegisterReq.getPj_subCategoryName(), postPjRegisterReq.getPj_progress(), postPjRegisterReq.getPj_endTerm(), postPjRegisterReq.getPj_startTerm(), postPjRegisterReq.getPj_deadline(), postPjRegisterReq.getPj_totalPerson());
@@ -170,10 +214,19 @@ public class ProjectController {
             postPjRegisterReq.setPj_categoryNum(projectProvider.getPjCategoryNum(postPjRegisterReq.getPj_categoryName()));
             postPjRegisterReq.setPj_subCategoryNum(projectProvider.getPjSubCategoryNum(postPjRegisterReq.getPj_subCategoryName()));
             PostPjRegisterRes postPjRegisterRes = projectService.registrationPj(postPjRegisterReq);
+
+            for(int i=0;i<MultipartFiles.length;i++){ // 다중 이미지 파일
+                // s3에 업로드
+                int pj_num = postPjRegisterReq.getPj_num();
+                String s3path = "pjphoto/pj_num : " + Integer.toString(pj_num);
+                String imgPath = s3Service.uploadPrphoto(MultipartFiles[i], s3path);
+                // db에 반영 (Pj_photo)
+                s3Service.uploadPjPhoto(imgPath, pj_num);
+            }
+
             return new BaseResponse<>(postPjRegisterRes);
         } catch (BaseException exception) {
-            return new BaseResponse<
-                    >((exception.getStatus()));
+            return new BaseResponse<>((exception.getStatus()));
         }
     }
 

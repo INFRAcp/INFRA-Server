@@ -25,7 +25,7 @@ public class S3Provider {
     }
 
     /**
-     * 이미지 불러오기
+     * 프로필 사진 불러오기
      * @param user_id
      * @return String (이미지 경로)
      * @author shinhyeon

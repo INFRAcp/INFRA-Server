@@ -16,7 +16,7 @@ public class S3Dao {
     }
 
     /**
-     * 이미지 업로드
+     * 프로필 사진 업로드
      * @param imgPath
      * @param user_id
      * @author shinhyeon
@@ -29,7 +29,7 @@ public class S3Dao {
     }
 
     /**
-     * 이미지 불러오기
+     * 프로필 사진 불러오기
      * @param user_id
      * @return String (이미지 경로)
      * @author shinhyeon
@@ -38,5 +38,18 @@ public class S3Dao {
         String getPrphotoQuery = "SELECT user_prPhoto from User Where user_id = ?";
 
         return this.jdbcTemplate.queryForObject(getPrphotoQuery, new String[]{user_id}, String.class);
+    }
+
+    /**
+     * 프로젝트 사진 업로드
+     * @param imgPath
+     * @param pj_num
+     * @author shinhyeon
+     */
+    public void uploadPjPhoto(String imgPath, int pj_num) {
+        String uploadPjPhotoQuery = "INSERT INTO Pj_photo (pj_num, pjPhoto) VALUES (?,?)";
+        Object[] uploadPjPhotoParam = new Object[]{pj_num, imgPath};
+
+        this.jdbcTemplate.update(uploadPjPhotoQuery, uploadPjPhotoParam);
     }
 }

@@ -25,7 +25,7 @@ public class S3Controller {
 
 
     /**
-     * 이미지 업로드
+     * 프로필 사진 업로드
      * @param user_id
      * @param multipartFile
      * @return  String
@@ -56,7 +56,7 @@ public class S3Controller {
     }
 
     /**
-     * 이미지 불러오기
+     * 프로필 사진 불러오기
      * @param user_id
      * @return String (이미지 경로)
      * @author shinhyeon
@@ -67,4 +67,6 @@ public class S3Controller {
         String imgPath = s3Provider.getPrphoto(user_id);
         return new BaseResponse<>(imgPath);
     }
+
+
 }
