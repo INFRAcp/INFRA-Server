@@ -395,10 +395,15 @@ public class ProjectService {
      * @author 한규범, 강윤희
      */
     public void userIdJwt(String userId, String userIdByJwt) throws BaseException {
-        if (!userId.equals(userIdByJwt)) {
+        if (userIdByJwt.equals("만료")) {
+            throw new BaseException(EXPIRATION_REFRESH_JWT);
+        }else if (userIdByJwt.equals("재발급")) {
+            throw new BaseException(EXPIRATION_ACCESS_JWT);
+        }else if(!userId.equals(userIdByJwt)){
             throw new BaseException(INVALID_USER_JWT);
+            }
         }
-    }
+
 
     public void rejectCheck(PostPjApplyRes postPjApplyRes) throws BaseException {
         if(postPjApplyRes.getComment().equals("거절")){

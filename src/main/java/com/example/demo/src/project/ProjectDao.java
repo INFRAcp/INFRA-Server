@@ -230,6 +230,11 @@ public class ProjectDao {
                         postPjRegisterReq.getPj_recruitPerson()};
         this.jdbcTemplate.update(registrationPjQuery, registrationParms);
 
+        String getPjNumQuery = "SELECT pj_num FROM Project ORDER BY pj_num DESC LIMIT 1";
+        postPjRegisterReq.setPj_num(this.jdbcTemplate.queryForObject(getPjNumQuery, int.class));
+
+
+
         for (int i = 0; i < postPjRegisterReq.getHashtag().length; i++) {
             String insertKeywordQuery = "INSERT INTO Pj_hashtag (pj_num, hashtag) VALUES(?,?)";
             this.jdbcTemplate.update(insertKeywordQuery, postPjRegisterReq.getPj_num(), postPjRegisterReq.getHashtag()[i]);

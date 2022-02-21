@@ -3,10 +3,12 @@ package com.example.demo.utils;
 
 import com.example.demo.config.BaseException;
 import com.example.demo.config.secret.Secret;
+import com.example.demo.src.user.UserDao;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -20,8 +22,16 @@ import static com.example.demo.config.BaseResponseStatus.INVALID_JWT;
 @Service
 public class JwtService {
 
-    private final long ACCESS_TOKEN_VALID_TIME = 1 * 60 * 1000L;   // 1분
-    private final long REFRESH_TOKEN_VALID_TIME = 60 * 60 * 24 * 7 * 1000L;   // 1주
+    private final long ACCESS_TOKEN_VALID_TIME = 1 * 60 * 500L;   // 30초
+    private final long REFRESH_TOKEN_VALID_TIME = 1 * 60 * 800L; // 50초
+//            = 60 * 60 * 24 * 7 * 1000L;   // 1주
+
+    private final JwtDao jwtDao;
+
+    @Autowired
+    public JwtService(JwtDao jwtDao){
+        this.jwtDao = jwtDao;
+    }
 
     /*
     Access JWT 생성
@@ -77,9 +87,6 @@ public class JwtService {
      */
     public String getUserId() throws BaseException {
 
-        //ACCESS 만료
-
-
         //1. JWT 추출
         String accessToken = resolveAccessToken();
         if (accessToken == null || accessToken.length() == 0) {
@@ -91,9 +98,26 @@ public class JwtService {
         try {
             claims = Jwts.parser()
                     .setSigningKey(Secret.JWT_ACCESS_SECRET_KEY)
-                    .parseClaimsJws(accessToken);
+                    .parseClaimsJws(accessToken); // 파싱 및 검증, 실패 시 에러
         } catch (Exception ignored) {
-            throw new BaseException(INVALID_JWT);
+            //엑세스 토큰 만료
+            try {
+                String refreshTokenIdx = resolveRefreshToken();
+                if(refreshTokenIdx == null || refreshTokenIdx.length() ==0){
+                    throw new BaseException(EMPTY_JWT);
+                }else{
+                    //리프레시토큰 가져오기
+                    String refreshToken = jwtDao.getRefreshToken(refreshTokenIdx);
+                    claims = Jwts.parser()
+                            .setSigningKey(Secret.JWT_REFRESH_SECRET_KEY)
+                            .parseClaimsJws(refreshToken);  // 파싱 및 검증, 실패 시 에러
+                    return "재발급";
+                }
+            }catch (Exception ignored2){
+                //리프레시 토큰 만료될 경우
+                return "만료";
+            }
+
         }
 
         // 3. userId 추출
