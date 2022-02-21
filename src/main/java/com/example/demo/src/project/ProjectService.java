@@ -1,7 +1,6 @@
 package com.example.demo.src.project;
 
 import com.example.demo.config.BaseException;
-import com.example.demo.config.BaseResponse;
 import com.example.demo.src.project.model.*;
 import com.example.demo.utils.JwtService;
 import org.slf4j.Logger;
@@ -11,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.List;
 
 import static com.example.demo.config.BaseResponseStatus.*;
@@ -38,13 +38,17 @@ public class ProjectService {
      * @author 한규범
      */
     public PostPjRegisterRes registrationPj(PostPjRegisterReq postPjRegisterReq) throws BaseException {
+        //유저 JWT 유효성 검사
+        userIdJwt(postPjRegisterReq.getUser_id(), jwtService.getUserId());
+        //날짜 관련 검사
+        PjDateCheck(postPjRegisterReq.getPj_deadline(), postPjRegisterReq.getPj_startTerm(), postPjRegisterReq.getPj_endTerm());
+        // NULL 값 검사
+        PjNullCheck(postPjRegisterReq.getPj_header(), postPjRegisterReq.getPj_categoryName(), postPjRegisterReq.getPj_content(), postPjRegisterReq.getPj_name(), postPjRegisterReq.getPj_subCategoryName(), postPjRegisterReq.getPj_progress(), postPjRegisterReq.getPj_endTerm(), postPjRegisterReq.getPj_startTerm(), postPjRegisterReq.getPj_deadline(), postPjRegisterReq.getPj_totalPerson());
+        //해시태그 관련 검사
+        PjHashTagCheck(postPjRegisterReq.getHashtag());
+        postPjRegisterReq.setPj_categoryNum(projectProvider.getPjCategoryNum(postPjRegisterReq.getPj_categoryName()));
+        postPjRegisterReq.setPj_subCategoryNum(projectProvider.getPjSubCategoryNum(postPjRegisterReq.getPj_subCategoryName()));
         try {
-            userIdJwt(postPjRegisterReq.getUser_id(), jwtService.getUserId());
-            PjDateCheck(postPjRegisterReq.getPj_deadline(), postPjRegisterReq.getPj_startTerm(), postPjRegisterReq.getPj_endTerm());
-            PjNullCheck(postPjRegisterReq.getPj_header(), postPjRegisterReq.getPj_categoryName(), postPjRegisterReq.getPj_content(), postPjRegisterReq.getPj_name(), postPjRegisterReq.getPj_subCategoryName(), postPjRegisterReq.getPj_progress(), postPjRegisterReq.getPj_endTerm(), postPjRegisterReq.getPj_startTerm(), postPjRegisterReq.getPj_deadline(), postPjRegisterReq.getPj_totalPerson());
-            PjKeywordCheck(postPjRegisterReq.getHashtag());
-            postPjRegisterReq.setPj_categoryNum(projectProvider.getPjCategoryNum(postPjRegisterReq.getPj_categoryName()));
-            postPjRegisterReq.setPj_subCategoryNum(projectProvider.getPjSubCategoryNum(postPjRegisterReq.getPj_subCategoryName()));
             String pjRegisterSucese = projectDao.pjRegistration(postPjRegisterReq);
             return new PostPjRegisterRes(pjRegisterSucese);
         } catch (Exception exception) {
@@ -60,12 +64,16 @@ public class ProjectService {
      * @author 한규범
      */
     public PatchPjModifyRes pjModify(PatchPjModifyReq patchPjModifyReq) throws BaseException {
-        try {
-            userIdJwt(patchPjModifyReq.getUser_id(), jwtService.getUserId());
-            PjDateCheck(patchPjModifyReq.getPj_deadline(), patchPjModifyReq.getPj_startTerm(), patchPjModifyReq.getPj_endTerm());
-            PjNullCheck(patchPjModifyReq.getPj_header(), patchPjModifyReq.getPj_categoryNum(), patchPjModifyReq.getPj_content(), patchPjModifyReq.getPj_name(), patchPjModifyReq.getPj_subCategoryNum(), patchPjModifyReq.getPj_progress(), patchPjModifyReq.getPj_endTerm(), patchPjModifyReq.getPj_startTerm(), patchPjModifyReq.getPj_deadline(), patchPjModifyReq.getPj_totalPerson());
-            PjKeywordCheck(patchPjModifyReq.getHashtag());
+        //유저 JWT 유효성 검사
+        userIdJwt(patchPjModifyReq.getUser_id(), jwtService.getUserId());
+        //날짜 관련 검사
+        PjDateCheck(patchPjModifyReq.getPj_deadline(), patchPjModifyReq.getPj_startTerm(), patchPjModifyReq.getPj_endTerm());
+        // NULL 값 검사
+        PjNullCheck(patchPjModifyReq.getPj_header(), patchPjModifyReq.getPj_categoryNum(), patchPjModifyReq.getPj_content(), patchPjModifyReq.getPj_name(), patchPjModifyReq.getPj_subCategoryNum(), patchPjModifyReq.getPj_progress(), patchPjModifyReq.getPj_endTerm(), patchPjModifyReq.getPj_startTerm(), patchPjModifyReq.getPj_deadline(), patchPjModifyReq.getPj_totalPerson());
+        //해시태그 관련 검사
+        PjHashTagCheck(patchPjModifyReq.getHashtag());
 
+        try {
             String PjModify = projectDao.pjModify(patchPjModifyReq);
             return new PatchPjModifyRes(PjModify);
         } catch (Exception exception) {
@@ -81,8 +89,8 @@ public class ProjectService {
      * @author 한규범
      */
     public DelPjDelRes pjDel(DelPjDelReq delPjDelReq) throws BaseException {
+        userIdJwt(delPjDelReq.getUser_id(), jwtService.getUserId());
         try {
-            userIdJwt(delPjDelReq.getUser_id(), jwtService.getUserId());
             String pjDel = projectDao.pjDel(delPjDelReq);
             return new DelPjDelRes(pjDel);
         } catch (Exception exception) {
@@ -98,8 +106,8 @@ public class ProjectService {
      * @author 한규범
      */
     public PostPjApplyRes pjApply(PostPjApplyReq postPjApplyReq) throws BaseException {
+        userIdJwt(postPjApplyReq.getUser_id(), jwtService.getUserId());
         try {
-            userIdJwt(postPjApplyReq.getUser_id(), jwtService.getUserId());
             String pjApplyName = projectDao.pjApply(postPjApplyReq);
             return new PostPjApplyRes(pjApplyName);
         } catch (Exception exception) {
@@ -115,8 +123,8 @@ public class ProjectService {
      * @author 윤성식
      */
     public PatchPjApproveRes pjApprove(PatchPjApproveReq patchPjApproveReq) throws BaseException {
+        userIdJwt(patchPjApproveReq.getUser_id(), jwtService.getUserId());
         try {
-            userIdJwt(patchPjApproveReq.getUser_id(), jwtService.getUserId());
             String PjApprove = projectDao.pjApprove(patchPjApproveReq);
             return new PatchPjApproveRes(PjApprove);
         } catch (Exception exception) {
@@ -131,8 +139,8 @@ public class ProjectService {
      * @author 윤성식
      */
     public PostLikeRegisterRes likeRegister(PostLikeRegisterReq postLikeRegisterReq) throws BaseException {
+        userIdJwt(postLikeRegisterReq.getUser_id(), jwtService.getUserId());
         try {
-            userIdJwt(postLikeRegisterReq.getUser_id(), jwtService.getUserId());
             String postLikeRegisterRes = projectDao.likeRegister(postLikeRegisterReq);
             return new PostLikeRegisterRes(postLikeRegisterRes);
         } catch (Exception exception) {
@@ -147,9 +155,8 @@ public class ProjectService {
      * @author 윤성식
      */
     public PostLikeRegisterRes likeDel(PostLikeRegisterReq postLikeRegisterReq) throws BaseException {
+        userIdJwt(postLikeRegisterReq.getUser_id(), jwtService.getUserId());
         try {
-            userIdJwt(postLikeRegisterReq.getUser_id(), jwtService.getUserId());
-
             String postLikeDelRes = projectDao.likeDel(postLikeRegisterReq);
             return new PostLikeRegisterRes(postLikeDelRes);
         } catch (Exception exception) {
@@ -234,14 +241,25 @@ public class ProjectService {
      * @param hashtag
      * @throws BaseException
      * @author 한규범
+     * @return
      */
-    public void PjKeywordCheck(String[] hashtag) throws BaseException {
+    public void PjHashTagCheck(String[] hashtag) throws BaseException {
+        String hashtagExtraction;
         if (hashtag.length > 7) {
             throw new BaseException(POST_PROJECT_KEYWORD_CNT_EXCEED);
         }
-        for (int j = 0; j < hashtag.length; j++) {
-            if (hashtag[j].length() > 6) {
+        for (int i = 0; i < hashtag.length; i++) {
+            if (hashtag[i].length() > 6) {
                 throw new BaseException(POST_PROJECT_KEYWORD_EXCEED);
+            }
+        }
+        for(int j = 0; j < hashtag.length; j++){
+            hashtagExtraction = hashtag[j];
+            hashtag[j]=null;
+            if(Arrays.asList(hashtag).contains(hashtagExtraction)==false){
+                hashtag[j]=hashtagExtraction;
+            }else{
+                throw new BaseException(POST_PROJECT_HASHTAG_DUPLICATION);
             }
         }
     }
