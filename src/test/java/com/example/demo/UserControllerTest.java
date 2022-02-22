@@ -3,7 +3,7 @@ package com.example.demo;
 import com.example.demo.src.user.UserProvider;
 import com.example.demo.src.user.UserService;
 import com.example.demo.src.user.model.PostLoginReq;
-import com.example.demo.utils.JwtService;
+import com.example.demo.utils.jwt.JwtService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

@@ -1,4 +1,4 @@
-package com.example.demo.utils;
+package com.example.demo.utils.jwt;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -17,7 +17,6 @@ public class JwtDao {
 
 
     public String getRefreshToken(String refreshTokenIdx) {
-        System.out.println("리프레시 토큰 가져올게요");
         String getRefreshTokenQuery = "SELECT refreshToken FROM User_refreshToken WHERE idx = ?";
         return this.jdbcTemplate.queryForObject(getRefreshTokenQuery, String.class, refreshTokenIdx);
     }

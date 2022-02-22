@@ -3,7 +3,7 @@ package com.example.demo.src.project;
 import com.example.demo.config.BaseException;
 import com.example.demo.config.BaseResponse;
 import com.example.demo.src.project.model.*;
-import com.example.demo.utils.JwtService;
+import com.example.demo.utils.jwt.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -100,7 +100,7 @@ public class ProjectController {
      * @author 한규범
      */
     @ResponseBody
-    @PostMapping("/likePj")
+    @PostMapping("/like-pj")
     public BaseResponse<List<PostPjLikeRes>> like(@RequestBody PostPjLikeReq postPj_likeReq) {
         try {
             projectService.userIdJwt(postPj_likeReq.getUser_id(), jwtService.getUserId());

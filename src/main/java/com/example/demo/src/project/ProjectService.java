@@ -2,7 +2,7 @@ package com.example.demo.src.project;
 
 import com.example.demo.config.BaseException;
 import com.example.demo.src.project.model.*;
-import com.example.demo.utils.JwtService;
+import com.example.demo.utils.jwt.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +46,9 @@ public class ProjectService {
         PjNullCheck(postPjRegisterReq.getPj_header(), postPjRegisterReq.getPj_categoryName(), postPjRegisterReq.getPj_content(), postPjRegisterReq.getPj_name(), postPjRegisterReq.getPj_subCategoryName(), postPjRegisterReq.getPj_progress(), postPjRegisterReq.getPj_endTerm(), postPjRegisterReq.getPj_startTerm(), postPjRegisterReq.getPj_deadline(), postPjRegisterReq.getPj_totalPerson());
         //해시태그 관련 검사
         PjHashTagCheck(postPjRegisterReq.getHashtag());
+        //카테고리 번호, 이름
         postPjRegisterReq.setPj_categoryNum(projectProvider.getPjCategoryNum(postPjRegisterReq.getPj_categoryName()));
+        //세부 카테고리 번호, 이름
         postPjRegisterReq.setPj_subCategoryNum(projectProvider.getPjSubCategoryNum(postPjRegisterReq.getPj_subCategoryName()));
         try {
             String pjRegisterSucese = projectDao.pjRegistration(postPjRegisterReq);
@@ -241,18 +243,20 @@ public class ProjectService {
      * @param hashtag
      * @throws BaseException
      * @author 한규범
-     * @return
      */
     public void PjHashTagCheck(String[] hashtag) throws BaseException {
         String hashtagExtraction;
+
         if (hashtag.length > 7) {
             throw new BaseException(POST_PROJECT_KEYWORD_CNT_EXCEED);
         }
+
         for (int i = 0; i < hashtag.length; i++) {
             if (hashtag[i].length() > 6) {
                 throw new BaseException(POST_PROJECT_KEYWORD_EXCEED);
             }
         }
+
         for(int j = 0; j < hashtag.length; j++){
             hashtagExtraction = hashtag[j];
             hashtag[j]=null;

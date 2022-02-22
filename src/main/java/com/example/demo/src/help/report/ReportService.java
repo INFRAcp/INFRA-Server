@@ -4,7 +4,7 @@ import com.example.demo.config.BaseException;
 import com.example.demo.src.help.report.model.PatchReportReq;
 import com.example.demo.src.help.report.model.PostReportReq;
 import com.example.demo.src.help.report.model.PostReportRes;
-import com.example.demo.utils.JwtService;
+import com.example.demo.utils.jwt.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

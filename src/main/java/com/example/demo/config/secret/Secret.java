@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 
 public class Secret {
 
-    public static String JWT_ACCESS_SECRET_KEY = "UwKYibQQgkW7g-*k.ap9kje-wxBHb9wdXoBT4vnt4P3sJWt-Nu";
+    public static String JWT_ACCESS_SECRET_KEY = "dPdnjstlsgusrbqjatjdtlrghkdlxld98sustod";
 
     public static String JWT_REFRESH_SECRET_KEY = "anjfmfgkfrk-ahfmrpTek";
 

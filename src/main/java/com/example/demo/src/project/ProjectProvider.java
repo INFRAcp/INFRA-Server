@@ -2,7 +2,7 @@ package com.example.demo.src.project;
 
 import com.example.demo.config.BaseException;
 import com.example.demo.src.project.model.*;
-import com.example.demo.utils.JwtService;
+import com.example.demo.utils.jwt.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,9 +1,8 @@
-package com.example.demo.utils;
+package com.example.demo.utils.jwt;
 
 
 import com.example.demo.config.BaseException;
 import com.example.demo.config.secret.Secret;
-import com.example.demo.src.user.UserDao;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -17,14 +16,12 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 
 import static com.example.demo.config.BaseResponseStatus.EMPTY_JWT;
-import static com.example.demo.config.BaseResponseStatus.INVALID_JWT;
 
 @Service
 public class JwtService {
 
-    private final long ACCESS_TOKEN_VALID_TIME = 1 * 60 * 500L;   // 30초
-    private final long REFRESH_TOKEN_VALID_TIME = 1 * 60 * 800L; // 50초
-//            = 60 * 60 * 24 * 7 * 1000L;   // 1주
+    private final long ACCESS_TOKEN_VALID_TIME = 1 * 60 * 1000L;   // 1분
+    private final long REFRESH_TOKEN_VALID_TIME = 60 * 60 * 24 * 7 * 1000L;   // 1주
 
     private final JwtDao jwtDao;
 
@@ -106,7 +103,7 @@ public class JwtService {
                 if(refreshTokenIdx == null || refreshTokenIdx.length() ==0){
                     throw new BaseException(EMPTY_JWT);
                 }else{
-                    //리프레시토큰 가져오기
+                    //리프레시토큰 DB에서 가져오기
                     String refreshToken = jwtDao.getRefreshToken(refreshTokenIdx);
                     claims = Jwts.parser()
                             .setSigningKey(Secret.JWT_REFRESH_SECRET_KEY)
