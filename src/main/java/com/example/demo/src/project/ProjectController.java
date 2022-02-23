@@ -50,8 +50,8 @@ public class ProjectController {
      * 프로젝트 전체, 검색 조회
      *
      * @param search
-     * @return List 제목, 분야, 이름, 진행, 모집마감일, 전체인원, 모집인원, (모집, 마감임박), 마감 남은 일수
-     * @author 한규범, 윤성식
+     * @return List 제목, 분야, 이름, 진행, 모집마감일, 전체인원, 모집인원, (모집, 마감임박), 마감 남은 일수, 사진
+     * @author 한규범, 윤성식, shinhyeon
      */
     @ResponseBody
     @GetMapping("/inquiry")
@@ -61,11 +61,23 @@ public class ProjectController {
                 projectService.userIdJwt(user_id, jwtService.getUserId());
                 List<GetProjectRes> getProjectRes = projectProvider.getProjects();
                 projectService.recruit(getProjectRes);
+                // 프로젝트 사진 조회
+                for(int i=0;i<getProjectRes.size();i++)
+                {
+                    List<String> photos = projectProvider.getPjPhoto(getProjectRes.get(i).getPj_num());
+                    getProjectRes.get(i).setPj_photo(photos);
+                }
                 return new BaseResponse<>(getProjectRes);
             }
             projectService.userIdJwt(user_id, jwtService.getUserId());
             List<GetProjectRes> getProjectRes = projectProvider.getProjectsByKeyword(search);
             projectService.recruit(getProjectRes);
+            // 프로젝트 사진 조회
+            for(int i=0;i<getProjectRes.size();i++)
+            {
+                List<String> photos = projectProvider.getPjPhoto(getProjectRes.get(i).getPj_num());
+                getProjectRes.get(i).setPj_photo(photos);
+            }
             return new BaseResponse<>(getProjectRes);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
@@ -107,7 +119,7 @@ public class ProjectController {
     }
 
     /**
-     * 유저가 한 프로젝트 조회
+     * 유저가 찜한 프로젝트 조회
      *
      * @param postPj_likeReq
      * @return List 프로젝트 번호, 제목, 조회수, 분야, 이름, 세부분야, 진행상황, 모집마감일, 총 모집인원, 현재 모집인원, 게시일
@@ -120,6 +132,7 @@ public class ProjectController {
             projectService.userIdJwt(postPj_likeReq.getUser_id(), jwtService.getUserId());
 
             List<PostPjLikeRes> postPj_likeRes = projectProvider.like(postPj_likeReq);
+            // projectProvider.getPjPhoto(postPj_likeRes); // 프로젝트 사진 조회
             return new BaseResponse<>(postPj_likeRes);
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
@@ -166,32 +179,6 @@ public class ProjectController {
             return new BaseResponse<>(exception.getStatus());
         }
     }
-
-    /**
-     * 프로젝트 등록
-     *
-     * @param postPjRegisterReq
-     * @return PostPjRegisterRes 프로젝트 이름
-     * @author 한규범
-     */
-//    @ResponseBody
-//    @PostMapping("/registration")
-//    public BaseResponse<PostPjRegisterRes> pjRegistration(@RequestBody PostPjRegisterReq postPjRegisterReq) {
-//        try {
-//            projectService.userIdJwt(postPjRegisterReq.getUser_id(), jwtService.getUserId());
-//            projectService.PjDateCheck(postPjRegisterReq.getPj_deadline(), postPjRegisterReq.getPj_startTerm(), postPjRegisterReq.getPj_endTerm());
-//            projectService.PjNullCheck(postPjRegisterReq.getPj_header(), postPjRegisterReq.getPj_categoryName(), postPjRegisterReq.getPj_content(), postPjRegisterReq.getPj_name(), postPjRegisterReq.getPj_subCategoryName(), postPjRegisterReq.getPj_progress(), postPjRegisterReq.getPj_endTerm(), postPjRegisterReq.getPj_startTerm(), postPjRegisterReq.getPj_deadline(), postPjRegisterReq.getPj_totalPerson());
-//            projectService.PjKeywordCheck(postPjRegisterReq.getHashtag());
-//            postPjRegisterReq.setPj_categoryNum(projectProvider.getPjCategoryNum(postPjRegisterReq.getPj_categoryName()));
-//            postPjRegisterReq.setPj_subCategoryNum(projectProvider.getPjSubCategoryNum(postPjRegisterReq.getPj_subCategoryName()));
-//            PostPjRegisterRes postPjRegisterRes = projectService.registrationPj(postPjRegisterReq);
-//            return new BaseResponse<>(postPjRegisterRes);
-//        } catch (BaseException exception) {
-//            return new BaseResponse<
-//                    >((exception.getStatus()));
-//        }
-//    }
-
 
     /**
      * 프로젝트 등록

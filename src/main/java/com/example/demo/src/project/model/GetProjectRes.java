@@ -9,6 +9,8 @@ import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
 
 @Getter
 @Setter
@@ -24,4 +26,5 @@ public class GetProjectRes {
     private int pj_recruitPerson;
     private String pj_recruit;
     private int pj_daysub;
+    List<String> pj_photo;
 }
