@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -19,4 +21,5 @@ public class PostPjInquiryRes {
     private int pj_totalPerson;
     private int pj_recruitPerson;
     private String pj_time;
+    List<String> pj_photo;
 }

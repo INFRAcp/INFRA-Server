@@ -132,7 +132,12 @@ public class ProjectController {
             projectService.userIdJwt(postPj_likeReq.getUser_id(), jwtService.getUserId());
 
             List<PostPjLikeRes> postPj_likeRes = projectProvider.like(postPj_likeReq);
-            // projectProvider.getPjPhoto(postPj_likeRes); // 프로젝트 사진 조회
+            // 프로젝트 사진 조회
+            for(int i=0;i<postPj_likeRes.size();i++)
+            {
+                List<String> photos = projectProvider.getPjPhoto(postPj_likeRes.get(i).getPj_num());
+                postPj_likeRes.get(i).setPj_photo(photos);
+            }
             return new BaseResponse<>(postPj_likeRes);
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
@@ -151,6 +156,12 @@ public class ProjectController {
     public BaseResponse<List<PostPjInquiryRes>> proInquiry(@RequestBody PostPjInquiryReq postPj_inquiryReq) {
         try {
             List<PostPjInquiryRes> postPj_inquiryRes = projectProvider.proInquiry(postPj_inquiryReq);
+            // 프로젝트 사진 조회
+            for(int i=0;i<postPj_inquiryRes.size();i++)
+            {
+                List<String> photos = projectProvider.getPjPhoto(postPj_inquiryRes.get(i).getPj_num());
+                postPj_inquiryRes.get(i).setPj_photo(photos);
+            }
             return new BaseResponse<>(postPj_inquiryRes);
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());

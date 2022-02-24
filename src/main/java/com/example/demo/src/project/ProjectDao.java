@@ -146,7 +146,8 @@ public class ProjectDao {
                         rs.getString("pj_deadline"),
                         rs.getInt("pj_totalPerson"),
                         rs.getInt("pj_recruitPerson"),
-                        rs.getString("pj_time")),
+                        rs.getString("pj_time"),
+                        null),
                 getParams
         );
     }
@@ -200,7 +201,8 @@ public class ProjectDao {
                         rs.getString("pj_deadline"),
                         rs.getInt("pj_totalPerson"),
                         rs.getInt("pj_recruitPerson"),
-                        rs.getString("pj_time")),
+                        rs.getString("pj_time"),
+                        null),
                 Pj_inquiryParams
         );
     }

@@ -23,4 +23,5 @@ public class PostPjLikeRes {
     private int pj_totalPerson;
     private int pj_recruitPerson;
     private String pj_time;
+    List<String> pj_photo;
 }
