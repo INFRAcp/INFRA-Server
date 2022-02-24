@@ -1,26 +1,37 @@
 package com.example.demo.src.user.oauth.kakao;
 
+import com.example.demo.config.BaseException;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
+
+import static com.example.demo.config.BaseResponseStatus.DATABASE_ERROR;
+
 @Component
 @Service
 public class KakaoService {
-//    // value annotaion
-//    @Value("${spring.kakao.client-id}")
-//    private String client_id;
-//    @Value("{spring.kakao.redirect-uri}")
-//    private String redirect_uri;
-//    @Value("{spring.kakao.client-secret}")
-//    private String client_secret;
-// value annotation으로 실행할시 크롬 화면으로는 잘 되는데 터미널 상의 에러가 많이 나서 일단은 주석처리 해놓음 ㅠㅠㅠ
+    // value annotaion
+    @Value("${spring.kakao.client_id}")
+    private String client_id;
+    @Value("${spring.kakao.redirect_uri}")
+    private String redirect_uri;
+    @Value("${spring.kakao.client_secret}")
+    private String client_secret;
+
+    private final KakaoDao kakaoDao;
+
+    public KakaoService(KakaoDao kakaoDao){
+        this.kakaoDao = kakaoDao;
+    }
 
     /**
      * 카카오 로그인 API
@@ -45,9 +56,9 @@ public class KakaoService {
             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(conn.getOutputStream()));
             StringBuilder sb = new StringBuilder();
             sb.append("grant_type=authorization_code"); // string으로 고정되어있는 grant_type
-            sb.append("&client_id=4ece394ff9dd3c53efd96b3935050922");  // TODO REST_API_KEY 입력
-            sb.append("&redirect_uri=http://localhost:9000/user/kakao"); // TODO 인가코드 받은 redirect_uri 입력
-            sb.append("&client_secret=cEnkgL6bt8tR72dNJ6DFVIEmDYJxH6Vp"); // TODO client_secret 키 입력
+            sb.append("&client_id=" + this.client_id);  // TODO REST_API_KEY 입력
+            sb.append("&redirect_uri=" + this.redirect_uri); // TODO 인가코드 받은 redirect_uri 입력
+            sb.append("&client_secret=" + this.client_secret); // TODO client_secret 키 입력
             sb.append("&code=" + authorize_code);
             bw.write(sb.toString());
             bw.flush();
@@ -88,7 +99,7 @@ public class KakaoService {
     }
 
     // 사용자 정보 가져오기
-    public static HashMap<String, Object> getUserInfo(String access_Token) {
+    public HashMap<String, Object> getUserInfo(String access_Token) {
 
         HashMap<String, Object> userInfo = new HashMap<>();
         String reqURL = "https://kapi.kakao.com/v2/user/me";
@@ -129,6 +140,8 @@ public class KakaoService {
             //userInfo.put("email : ",email);
 //            System.out.println("nickname : " + nickname);
             System.out.println("email : " + email);
+
+            kakaoDao.insertInfo(email);
 
         } catch (IOException e) {
             // TODO Auto-generated catch block
@@ -197,6 +210,23 @@ public class KakaoService {
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+        }
+    }
+
+    /**
+     * 카카오 회원탈퇴 API
+     *
+     * @param user_email
+     * @return
+     * @throws BaseException
+     * @author yewon
+     */
+    @Transactional
+    public void delUser(String user_email) throws BaseException {
+        try {
+            kakaoDao.delUser(user_email);
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
         }
     }
 }

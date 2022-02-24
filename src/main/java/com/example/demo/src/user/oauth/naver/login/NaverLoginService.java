@@ -9,18 +9,21 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import javax.transaction.Transactional;
 import java.util.Map;
 
+
 @Service
+@Transactional
 public class NaverLoginService {
 
     @Autowired
     private WebClient webClient;
 
-    @Value("${api.naver.client_id}")
+    @Value("${spring.naver.client_id}")
     private String client_id;
 
-    @Value("${api.naver.client_secret}")
+    @Value("${spring.naver.client_secret}")
     private String client_secret;
 
     /**

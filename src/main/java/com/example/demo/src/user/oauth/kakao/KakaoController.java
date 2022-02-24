@@ -1,10 +1,9 @@
 package com.example.demo.src.user.oauth.kakao;
 
+import com.example.demo.config.BaseException;
+import com.example.demo.config.BaseResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import java.io.UnsupportedEncodingException;
@@ -72,5 +71,25 @@ public class KakaoController {
             return "redirect:/";
         }
         return "연결이 끊어졌습니다.";
+    }
+
+    /**
+     * 카카오 회원탈퇴  API
+     * [PATCH] /{user_email}
+     *
+     * @param user_email
+     * @return
+     * @author yewon
+     */
+    @ResponseBody
+    @PatchMapping("/{user_email}")
+    public BaseResponse<String> delUser(@PathVariable("user_email") String user_email) {
+        try {
+            kakaoService.delUser(user_email);
+            String result = "탈퇴가 정상적으로 처리되었습니다.";
+            return new BaseResponse<>(result);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
     }
 }

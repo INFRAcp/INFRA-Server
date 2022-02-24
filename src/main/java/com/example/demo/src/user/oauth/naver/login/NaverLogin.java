@@ -3,14 +3,14 @@ package com.example.demo.src.user.oauth.naver.login;
 import com.example.demo.src.user.oauth.naver.login.vo.NaverLoginProfile;
 import com.example.demo.src.user.oauth.naver.login.vo.NaverLoginVo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
 
-@Controller
+@RestController
 public class NaverLogin {
 
     @Autowired
@@ -21,7 +21,7 @@ public class NaverLogin {
         return "index";
     }
 
-    @GetMapping("/NaverLoginCallback")
+    @GetMapping("/user/naver")
     public @ResponseBody String NaverLoginCallback(@RequestParam Map<String, String> resValue){
 
         // code 를 받아오면 code 를 사용하여 access_token를 발급받는다.
