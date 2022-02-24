@@ -52,4 +52,16 @@ public class S3Dao {
 
         this.jdbcTemplate.update(uploadPjPhotoQuery, uploadPjPhotoParam);
     }
+
+    /**
+     * 프로젝트 사진 삭제
+     * @param user_id
+     * @author shinhyeon
+     */
+    public void delProphoto(String user_id) {
+        String delProphotoQuery = "UPDATE User set user_prPhoto = ? where user_id = ?";
+        Object[] delProphotoParam = new Object[]{null, user_id};
+
+        this.jdbcTemplate.update(delProphotoQuery, delProphotoParam);
+    }
 }

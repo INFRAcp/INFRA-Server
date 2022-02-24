@@ -62,8 +62,7 @@ public class ProjectController {
                 List<GetProjectRes> getProjectRes = projectProvider.getProjects();
                 projectService.recruit(getProjectRes);
                 // 프로젝트 사진 조회
-                for(int i=0;i<getProjectRes.size();i++)
-                {
+                for (int i = 0; i < getProjectRes.size(); i++) {
                     List<String> photos = projectProvider.getPjPhoto(getProjectRes.get(i).getPj_num());
                     getProjectRes.get(i).setPj_photo(photos);
                 }
@@ -73,8 +72,7 @@ public class ProjectController {
             List<GetProjectRes> getProjectRes = projectProvider.getProjectsByKeyword(search);
             projectService.recruit(getProjectRes);
             // 프로젝트 사진 조회
-            for(int i=0;i<getProjectRes.size();i++)
-            {
+            for (int i = 0; i < getProjectRes.size(); i++) {
                 List<String> photos = projectProvider.getPjPhoto(getProjectRes.get(i).getPj_num());
                 getProjectRes.get(i).setPj_photo(photos);
             }
@@ -133,8 +131,7 @@ public class ProjectController {
 
             List<PostPjLikeRes> postPj_likeRes = projectProvider.like(postPj_likeReq);
             // 프로젝트 사진 조회
-            for(int i=0;i<postPj_likeRes.size();i++)
-            {
+            for (int i = 0; i < postPj_likeRes.size(); i++) {
                 List<String> photos = projectProvider.getPjPhoto(postPj_likeRes.get(i).getPj_num());
                 postPj_likeRes.get(i).setPj_photo(photos);
             }
@@ -157,8 +154,7 @@ public class ProjectController {
         try {
             List<PostPjInquiryRes> postPj_inquiryRes = projectProvider.proInquiry(postPj_inquiryReq);
             // 프로젝트 사진 조회
-            for(int i=0;i<postPj_inquiryRes.size();i++)
-            {
+            for (int i = 0; i < postPj_inquiryRes.size(); i++) {
                 List<String> photos = projectProvider.getPjPhoto(postPj_inquiryRes.get(i).getPj_num());
                 postPj_inquiryRes.get(i).setPj_photo(photos);
             }
@@ -180,10 +176,9 @@ public class ProjectController {
     public BaseResponse<List<PostPjParticipateRes>> getTeam(@RequestBody PostPjParticipateReq postPj_participateReq) {
         try {
             List<PostPjParticipateRes> postPj_participateRes = projectProvider.getTeam(postPj_participateReq);
-            if(postPj_participateRes == null){
+            if (postPj_participateRes == null) {
                 throw new BaseException(POST_PROJECT_GETTEAM_NULL);
-            }
-            else {
+            } else {
                 return new BaseResponse<>(postPj_participateRes);
             }
         } catch (BaseException exception) {
@@ -194,6 +189,7 @@ public class ProjectController {
     /**
      * 프로젝트 등록
      * 다중 파일 업르드 (form-data<image, json>)
+     *
      * @param postPjRegisterReq
      * @return PostPjRegisterRes 프로젝트 이름
      * @author 한규범 강신현(s3)
@@ -203,7 +199,8 @@ public class ProjectController {
     public BaseResponse<PostPjRegisterRes> pjRegistration(@RequestParam("jsonList") String jsonList, @RequestPart("images") MultipartFile[] MultipartFiles) throws IOException {
         try {
             ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
-            PostPjRegisterReq postPjRegisterReq = objectMapper.readValue(jsonList, new TypeReference<PostPjRegisterReq>() {});
+            PostPjRegisterReq postPjRegisterReq = objectMapper.readValue(jsonList, new TypeReference<PostPjRegisterReq>() {
+            });
 
             projectService.userIdJwt(postPjRegisterReq.getUser_id(), jwtService.getUserId());
             projectService.PjDateCheck(postPjRegisterReq.getPj_deadline(), postPjRegisterReq.getPj_startTerm(), postPjRegisterReq.getPj_endTerm());
@@ -213,7 +210,7 @@ public class ProjectController {
             postPjRegisterReq.setPj_subCategoryNum(projectProvider.getPjSubCategoryNum(postPjRegisterReq.getPj_subCategoryName()));
             PostPjRegisterRes postPjRegisterRes = projectService.registrationPj(postPjRegisterReq);
 
-            for(int i=0;i<MultipartFiles.length;i++){ // 다중 이미지 파일
+            for(int i = 0; i < MultipartFiles.length; i++) { // 다중 이미지 파일
                 // s3에 업로드
                 int pj_num = postPjRegisterReq.getPj_num();
                 String s3path = "pjphoto/pj_num : " + Integer.toString(pj_num);
@@ -330,7 +327,7 @@ public class ProjectController {
     public BaseResponse<List<GetApplyListRes>> pjApplyList(@RequestParam(required = false) String pj_num) {
         try {
             List<GetApplyListRes> getApplyListRes = projectProvider.pjApplyList(pj_num);
-            if(getApplyListRes == null){
+            if (getApplyListRes == null) {
                 throw new BaseException(GET_PROJECT_APPLY_LIST_NULL);
             }
             return new BaseResponse<>(getApplyListRes);

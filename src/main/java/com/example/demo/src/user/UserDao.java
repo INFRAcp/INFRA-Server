@@ -276,4 +276,10 @@ public class UserDao {
                     "where Pj_request.user_id = ? and Pj_request.pj_inviteStatus = '승인완료'";
         return this.jdbcTemplate.queryForList(getUserProjectQuery, String.class, userId);
     }
+
+    public String getPrphoto(String user_nickname) {
+        String getPrphotoQuery = "SELECT user_prPhoto from User Where user_nickname = ?";
+
+        return this.jdbcTemplate.queryForObject(getPrphotoQuery, new String[]{user_nickname}, String.class);
+    }
 }

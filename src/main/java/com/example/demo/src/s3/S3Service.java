@@ -96,4 +96,13 @@ public class S3Service {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
+    /**
+     * 프로젝트 사진 삭제
+     * @param user_id
+     * @author shinhyeon
+     */
+    public void delPrphoto(String user_id) {
+        s3Dao.delProphoto(user_id);
+    }
 }

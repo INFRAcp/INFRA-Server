@@ -68,5 +68,16 @@ public class S3Controller {
         return new BaseResponse<>(imgPath);
     }
 
+    /**
+     * 프로젝트 사진 삭제
+     * @param user_id
+     * @author shinhyeon
+     */
+    @ResponseBody
+    @PatchMapping("/prphoto")
+    public BaseResponse<String> delPrphoto(@RequestParam(required = false) String user_id) {
+        s3Service.delPrphoto(user_id);
+        return new BaseResponse<>("삭제 완료 (기본 프로필로 변경됨)");
+    }
 
 }

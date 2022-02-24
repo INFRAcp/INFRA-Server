@@ -32,7 +32,9 @@ public class S3Provider {
      */
     public String getPrphoto(String user_id) throws BaseException {
         try {
-            String imgPath = s3Dao.getPrphoto(user_id);
+            String imgPath = null;
+            imgPath = s3Dao.getPrphoto(user_id);
+            if(imgPath == null) imgPath = "https://infra-infra-bucket.s3.ap-northeast-2.amazonaws.com/prphoto/infra_profile.png";
             return imgPath;
         } catch (Exception exception) {
             throw new BaseException(RESPONSE_ERROR);
