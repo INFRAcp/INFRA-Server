@@ -42,7 +42,7 @@ public class ProjectController {
     @GetMapping("/inquiry")
     public BaseResponse<List<GetProjectRes>> getProjects(@RequestParam(required = false) String search, String user_id) {
         try {
-            jwtService.userIdJwt(user_id, jwtService.getUserId());
+            jwtService.JwtEffectiveness(user_id, jwtService.getUserId());
             if (search == null) {
                 List<GetProjectRes> getProjectRes = projectProvider.getProjects(user_id);
                 projectService.recruit(getProjectRes);
@@ -80,7 +80,7 @@ public class ProjectController {
     @GetMapping("/keyword")
     public BaseResponse<List<GetPjKeywordRes>> getPj_keywords(@RequestParam(required = false) String search, String user_id) {
         try {
-            jwtService.userIdJwt(user_id, jwtService.getUserId());
+            jwtService.JwtEffectiveness(user_id, jwtService.getUserId());
             if (search == null) {
                 List<GetPjKeywordRes> getPj_keywordRes = projectProvider.getPj_keywords();
                 return new BaseResponse<>(getPj_keywordRes);
@@ -103,7 +103,7 @@ public class ProjectController {
     @PostMapping("/like-pj")
     public BaseResponse<List<PostPjLikeRes>> like(@RequestBody PostPjLikeReq postPj_likeReq) {
         try {
-            jwtService.userIdJwt(postPj_likeReq.getUser_id(), jwtService.getUserId());
+            jwtService.JwtEffectiveness(postPj_likeReq.getUser_id(), jwtService.getUserId());
 
             List<PostPjLikeRes> postPj_likeRes = projectProvider.like(postPj_likeReq);
             return new BaseResponse<>(postPj_likeRes);
@@ -123,7 +123,7 @@ public class ProjectController {
     @PostMapping("/project-inquiry")
     public BaseResponse<List<PostPjInquiryRes>> proInquiry(@RequestBody PostPjInquiryReq postPj_inquiryReq) {
         try {
-            jwtService.userIdJwt(postPj_inquiryReq.getUser_id(), jwtService.getUserId());
+            jwtService.JwtEffectiveness(postPj_inquiryReq.getUser_id(), jwtService.getUserId());
 
             List<PostPjInquiryRes> postPj_inquiryRes = projectProvider.proInquiry(postPj_inquiryReq);
             return new BaseResponse<>(postPj_inquiryRes);
@@ -143,7 +143,7 @@ public class ProjectController {
     @PostMapping("/team")
     public BaseResponse<List<PostPjParticipateRes>> getTeam(@RequestBody PostPjParticipateReq postPj_participateReq, String user_id) {
         try {
-            jwtService.userIdJwt(user_id, jwtService.getUserId());
+            jwtService.JwtEffectiveness(user_id, jwtService.getUserId());
 
             List<PostPjParticipateRes> postPj_participateRes = projectProvider.getTeam(postPj_participateReq);
             if (postPj_participateRes == null) {
@@ -167,7 +167,7 @@ public class ProjectController {
     @PostMapping("/registration")
     public BaseResponse<PostPjRegisterRes> pjRegistration(@RequestBody PostPjRegisterReq postPjRegisterReq) {
         try {
-            jwtService.userIdJwt(postPjRegisterReq.getUser_id(), jwtService.getUserId());
+            jwtService.JwtEffectiveness(postPjRegisterReq.getUser_id(), jwtService.getUserId());
             PostPjRegisterRes postPjRegisterRes = projectService.registrationPj(postPjRegisterReq);
             return new BaseResponse<>(postPjRegisterRes);
         } catch (BaseException exception) {
@@ -187,7 +187,7 @@ public class ProjectController {
     @PatchMapping("/modify")
     public BaseResponse<PatchPjModifyRes> pjModify(@RequestBody PatchPjModifyReq patchPjModifyReq) {
         try {
-            jwtService.userIdJwt(patchPjModifyReq.getUser_id(), jwtService.getUserId());
+            jwtService.JwtEffectiveness(patchPjModifyReq.getUser_id(), jwtService.getUserId());
             PatchPjModifyRes patchPjModifyRes = projectService.pjModify(patchPjModifyReq);
             return new BaseResponse<>(patchPjModifyRes);
         } catch (BaseException exception) {
@@ -206,7 +206,7 @@ public class ProjectController {
     @DeleteMapping("/del")
     public BaseResponse<DelPjDelRes> pjDel(@RequestBody DelPjDelReq delPjDelReq) {
         try {
-            jwtService.userIdJwt(delPjDelReq.getUser_id(), jwtService.getUserId());
+            jwtService.JwtEffectiveness(delPjDelReq.getUser_id(), jwtService.getUserId());
             DelPjDelRes delpjDelRes = projectService.pjDel(delPjDelReq);
             return new BaseResponse<>(delpjDelRes);
         } catch (BaseException exception) {
@@ -246,7 +246,7 @@ public class ProjectController {
     @PatchMapping("/approve")
     public BaseResponse<PatchPjApproveRes> pjApprove(@RequestBody PatchPjApproveReq patchPjApproveReq) {
         try {
-            jwtService.userIdJwt(patchPjApproveReq.getUser_id(), jwtService.getUserId());
+            jwtService.JwtEffectiveness(patchPjApproveReq.getUser_id(), jwtService.getUserId());
             PatchPjApproveRes patchPjApproveRes = projectService.pjApprove(patchPjApproveReq);
             return new BaseResponse<>(patchPjApproveRes);
         } catch (BaseException exception) {
@@ -266,7 +266,7 @@ public class ProjectController {
     @GetMapping("/apply-list")
     public BaseResponse<List<GetApplyListRes>> pjApplyList(@RequestParam(required = false) String pj_num, String user_id) {
         try {
-            jwtService.userIdJwt(user_id, jwtService.getUserId());
+            jwtService.JwtEffectiveness(user_id, jwtService.getUserId());
             List<GetApplyListRes> getApplyListRes = projectProvider.pjApplyList(pj_num);
             if (getApplyListRes == null) {
                 throw new BaseException(GET_PROJECT_APPLY_LIST_NULL);
@@ -288,7 +288,7 @@ public class ProjectController {
     @PostMapping("/apply-mylist")
     public BaseResponse<List<PostUserApplyRes>> userApply(@RequestBody PostUserApplyReq postUserApplyReq) {
         try {
-            jwtService.userIdJwt(postUserApplyReq.getUser_id(), jwtService.getUserId());
+            jwtService.JwtEffectiveness(postUserApplyReq.getUser_id(), jwtService.getUserId());
 
             List<PostUserApplyRes> postUserApplyRes = projectProvider.getUserApply(postUserApplyReq);
             return new BaseResponse<>(postUserApplyRes);
@@ -308,7 +308,7 @@ public class ProjectController {
     @PostMapping("/like")
     public BaseResponse<PostLikeRegisterRes> likeRegister(@RequestBody PostLikeRegisterReq postLikeRegisterReq) {
         try {
-            jwtService.userIdJwt(postLikeRegisterReq.getUser_id(), jwtService.getUserId());
+            jwtService.JwtEffectiveness(postLikeRegisterReq.getUser_id(), jwtService.getUserId());
             PostLikeRegisterRes postLikeRegisterRes = projectService.likeRegister(postLikeRegisterReq);
             return new BaseResponse<>(postLikeRegisterRes);
         } catch (BaseException exception) {
@@ -327,7 +327,7 @@ public class ProjectController {
     @DeleteMapping("/like-del")
     public BaseResponse<PostLikeRegisterRes> likeDel(@RequestBody PostLikeRegisterReq postLikeRegisterReq) {
         try {
-            jwtService.userIdJwt(postLikeRegisterReq.getUser_id(), jwtService.getUserId());
+            jwtService.JwtEffectiveness(postLikeRegisterReq.getUser_id(), jwtService.getUserId());
             PostLikeRegisterRes postLikeRegisterRes = projectService.likeDel(postLikeRegisterReq);
             return new BaseResponse<>(postLikeRegisterRes);
         } catch (BaseException exception) {

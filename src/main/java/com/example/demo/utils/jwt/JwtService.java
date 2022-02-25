@@ -131,7 +131,7 @@ public class JwtService {
      * @return BaseResponse
      * @author 한규범, 강윤희
      */
-    public void userIdJwt(String userId, String userIdByJwt) throws BaseException {
+    public void JwtEffectiveness(String userId, String userIdByJwt) throws BaseException {
         if (userIdByJwt.equals("만료")) {
             throw new BaseException(EXPIRATION_REFRESH_JWT);
         }else if (userIdByJwt.equals("재발급")) {

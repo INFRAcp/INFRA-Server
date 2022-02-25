@@ -87,7 +87,7 @@ public class ProjectService {
      * @author 한규범
      */
     public DelPjDelRes pjDel(DelPjDelReq delPjDelReq) throws BaseException {
-        jwtService.userIdJwt(delPjDelReq.getUser_id(), jwtService.getUserId());
+        jwtService.JwtEffectiveness(delPjDelReq.getUser_id(), jwtService.getUserId());
         try {
             String pjDel = projectDao.pjDel(delPjDelReq);
             return new DelPjDelRes(pjDel);
