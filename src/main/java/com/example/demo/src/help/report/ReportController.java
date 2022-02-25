@@ -3,7 +3,7 @@ package com.example.demo.src.help.report;
 import com.example.demo.config.BaseException;
 import com.example.demo.config.BaseResponse;
 import com.example.demo.src.help.report.model.*;
-import com.example.demo.utils.JwtService;
+import com.example.demo.utils.jwt.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

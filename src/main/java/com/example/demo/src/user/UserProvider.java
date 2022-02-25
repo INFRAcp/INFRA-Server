@@ -4,7 +4,7 @@ import com.example.demo.config.BaseException;
 import com.example.demo.config.secret.Secret;
 import com.example.demo.src.user.model.*;
 import com.example.demo.utils.AES128;
-import com.example.demo.utils.JwtService;
+import com.example.demo.utils.jwt.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,9 +36,9 @@ public class UserProvider {
      * @param postLoginReq - user_id, user_pw
      * @return PostLoginRes - user_id, jwt
      * @throws BaseException
-     * @author yunhee
+     * @author yunhee, kyubeom
      */
-    @Transactional(readOnly = true)
+    @Transactional
     public PostLoginRes logIn(PostLoginReq postLoginReq) throws BaseException {
         if (checkId(postLoginReq.getUser_id()) == 0) {
             throw new BaseException(FAILED_TO_LOGIN);
@@ -53,12 +53,17 @@ public class UserProvider {
             throw new BaseException(PASSWORD_DECRYPTION_ERROR);
         }
 
+        //로그인 성공
         if (postLoginReq.getUser_pw().equals(password)) { //비밀번호 일치하면 user_id, name, nickname 가져오기
             String userId = userDao.getPwd(postLoginReq).getUser_id();
-            String jwt = jwtService.createJwt(userId);
+            String jwtAccess = jwtService.createAccessJwt(userId);
+            String jwtRefresh = jwtService.createRefreshJwt(userId);
             String user_name = userDao.getPwd(postLoginReq).getUser_name();
             String user_nickname = userDao.getPwd(postLoginReq).getUser_nickname();
-            return new PostLoginRes(userId, jwt, user_name, user_nickname);
+
+            int jwtRefreshIdx = userDao.pushRefreshToken(userId, jwtRefresh);
+
+            return new PostLoginRes(userId, jwtAccess, user_name, user_nickname, jwtRefreshIdx);
         } else { // 비밀번호 불일치
             throw new BaseException(FAILED_TO_LOGIN);
         }

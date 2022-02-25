@@ -5,6 +5,7 @@ import com.example.demo.src.project.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
@@ -42,7 +43,8 @@ public class ProjectDao {
                         rs.getInt("pj_recruitPerson"),
                         "모집중",
                         rs.getInt("DATEDIFF(pj_deadline,now())"),
-                        0
+                        0,
+                        null
                 ));
     }
 
@@ -78,7 +80,8 @@ public class ProjectDao {
                         rs.getInt("pj_recruitPerson"),
                         "모집중",
                         rs.getInt("DATEDIFF(pj_deadline,now())"),
-                        0),
+                        0,
+                        null),
                 getProjectsBySearchParams,
                 getProjectsBySearchParams,
                 getProjectsBySearchParams,
@@ -226,6 +229,11 @@ public class ProjectDao {
                         postPjRegisterReq.getPj_totalPerson(),
                         postPjRegisterReq.getPj_recruitPerson()};
         this.jdbcTemplate.update(registrationPjQuery, registrationParms);
+
+        String getPjNumQuery = "SELECT pj_num FROM Project ORDER BY pj_num DESC LIMIT 1";
+        postPjRegisterReq.setPj_num(this.jdbcTemplate.queryForObject(getPjNumQuery, int.class));
+
+
 
         for (int i = 0; i < postPjRegisterReq.getHashtag().length; i++) {
             String insertKeywordQuery = "INSERT INTO Pj_hashtag (pj_num, hashtag) VALUES(?,?)";
@@ -638,6 +646,17 @@ public class ProjectDao {
         return this.jdbcTemplate.queryForObject(checkPjLikeQuery,int.class, pj_num, user_id);
     }
 
+    public String[] getHashtag(int pj_num) {
+        String nullcheckHashtag = "SELECT count(*) FROM Pj_hashtag WHERE pj_num = ?";
+        int cnt = this.jdbcTemplate.queryForObject(nullcheckHashtag, int.class, pj_num);
+        if(cnt > 0){
+                String getHashtagQuery = "SELECT hashtag FROM Pj_hashtag WHERE pj_num = ?";
+                List<String> hashTag = this.jdbcTemplate.queryForList(getHashtagQuery,String.class,pj_num);
+                String hashtag[] = hashTag.toArray(new String[hashTag.size()]); //형변환
+
+                return hashtag;
+        }
+        return null;
     /**
      * 유저 등급 조회
      *

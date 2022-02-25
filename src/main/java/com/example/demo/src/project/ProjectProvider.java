@@ -2,7 +2,7 @@ package com.example.demo.src.project;
 
 import com.example.demo.config.BaseException;
 import com.example.demo.src.project.model.*;
-import com.example.demo.utils.JwtService;
+import com.example.demo.utils.jwt.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -298,6 +298,14 @@ public class ProjectProvider {
     public int checkPjLike(int pj_num, String user_id) throws BaseException{
         try{
             return projectDao.checkPjLike(pj_num, user_id);
+        }catch (Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    public String[] getHashtag(int pj_num) throws BaseException{
+        try {
+            return projectDao.getHashtag(pj_num);
         }catch (Exception exception){
             throw new BaseException(DATABASE_ERROR);
         }

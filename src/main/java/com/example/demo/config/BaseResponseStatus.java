@@ -26,6 +26,8 @@ public enum BaseResponseStatus {
     EMPTY_JWT(false, 2001, "JWT를 입력해주세요."),
     INVALID_JWT(false, 2002, "유효하지 않은 JWT입니다."),
     INVALID_USER_JWT(false, 2003, "권한이 없는 유저의 접근입니다."),
+    EXPIRATION_REFRESH_JWT(false, 2004, "리프레시 토큰이 만료되었습니다."),
+    EXPIRATION_ACCESS_JWT(false, 2005, "엑세스 토큰이 만료되었습니다."),
 
     // users (2100~)
     USERS_EMPTY_USER_ID(false, 2100, "유저 아이디 값을 확인해주세요."),
@@ -67,6 +69,7 @@ public enum BaseResponseStatus {
     //프로젝트 등록시 키워드 글자수 초과
     POST_PROJECT_KEYWORD_EXCEED(false, 2321, "키워드 5글자를 초과하였습니다."),
     POST_PROJECT_KEYWORD_CNT_EXCEED(false, 2322, "키워드 6개를 초과하였습니다."),
+    POST_PROJECT_HASHTAG_DUPLICATION(false, 2323, "중복 키워드가 존재합니다."),
 
     //프로젝트 날짜 오류
     POST_PROJECT_DEADLINE_BEFORE_START(false, 2323, "예상 시작일이 마감일 이전에 있습니다."),
