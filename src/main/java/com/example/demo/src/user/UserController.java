@@ -38,15 +38,15 @@ public class UserController {
      * 회원가입 API
      * [POST] /user/sign-up
      *
-     * @param postUserReq - id, pw, name, email, phone, nickname
+     * @param postUserReq - id, pw, email, phone, nickname
      * @return BaseResponse
-     * @author yunhee
+     * @author yunhee, yewon
      */
     @ResponseBody
     @PostMapping("/sign-up")
     public BaseResponse<PostUserRes> createUser(@RequestBody PostUserReq postUserReq) {
         if (postUserReq.getUser_id() == null || postUserReq.getUser_pw() == null || postUserReq.getUser_nickname() == null
-                || postUserReq.getUser_email() == null || postUserReq.getUser_name() == null || postUserReq.getUser_phone() == null) {
+                || postUserReq.getUser_email() == null || postUserReq.getUser_phone() == null) {
             return new BaseResponse<>(POST_USERS_EMPTY_INFO);
         }
 
