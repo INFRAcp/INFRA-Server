@@ -26,4 +26,5 @@ public class GetProjectRes {
     private String pj_recruit;
     private int pj_daysub;
     private int pj_like;
+    private String [] hashtag;
 }
