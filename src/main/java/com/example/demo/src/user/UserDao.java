@@ -120,12 +120,12 @@ public class UserDao {
      * @author yunhee
      */
     public User getPwd(PostLoginReq postLoginReq) {
-        String getPwdQuery = "select user_id, user_pw, user_name, user_nickname from User where user_id = ?";
+        String getPwdQuery = "select user_id, user_pw, user_nickname from User where user_id = ?";
         String getPwdParams = postLoginReq.getUser_id();
 
         return this.jdbcTemplate.queryForObject(getPwdQuery,
                 (rs, rowNum) -> User.builder().user_id(rs.getString("user_id")).
-                        user_pw(rs.getString("user_pw")).user_name(rs.getString("user_name")).
+                        user_pw(rs.getString("user_pw")).
                         user_nickname(rs.getString("user_nickname")).build(), getPwdParams);
     }
 
