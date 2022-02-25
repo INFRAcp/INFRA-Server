@@ -232,6 +232,17 @@ public class ProjectProvider {
     }
 
     /**
+     * 프로젝트 팀장 조회
+     * @param pj_num
+     * @return String
+     * @author shinhyeon
+     */
+    public String getTeamLeader(Integer pj_num){
+        String teamLeader = projectDao.getTeamLeader(pj_num);
+        return teamLeader;
+    }
+
+    /**
      * 카테고리 이름을 통한 번호 반환
      * @param pj_categoryName
      * @return
@@ -256,6 +267,21 @@ public class ProjectProvider {
     public String getPjSubCategoryNum(String pj_subCategoryName) throws BaseException {
         try {
             return projectDao.getPjsubCategoryNum(pj_subCategoryName);
+        }catch (Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    /**
+     * 유저 등급 조회
+     * @param user_id
+     * @return float
+     * @throws BaseException
+     * @author shinhyeon
+     */
+    public float getGrade(String user_id) throws BaseException {
+        try{
+            return projectDao.getGrade(user_id);
         }catch (Exception exception){
             throw new BaseException(DATABASE_ERROR);
         }
