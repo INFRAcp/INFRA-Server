@@ -21,7 +21,7 @@ public class ProjectService {
 
     private final ProjectDao projectDao;
     private final ProjectProvider projectProvider;
-    private final JwtService jwtService;
+    final JwtService jwtService;
 
     @Autowired
     public ProjectService(ProjectDao projectDao, ProjectProvider projectProvider, JwtService jwtService) {
@@ -38,8 +38,6 @@ public class ProjectService {
      * @author 한규범
      */
     public PostPjRegisterRes registrationPj(PostPjRegisterReq postPjRegisterReq) throws BaseException {
-        //유저 JWT 유효성 검사
-        userIdJwt(postPjRegisterReq.getUser_id(), jwtService.getUserId());
         //날짜 관련 검사
         PjDateCheck(postPjRegisterReq.getPj_deadline(), postPjRegisterReq.getPj_startTerm(), postPjRegisterReq.getPj_endTerm());
         // NULL 값 검사
@@ -66,8 +64,6 @@ public class ProjectService {
      * @author 한규범
      */
     public PatchPjModifyRes pjModify(PatchPjModifyReq patchPjModifyReq) throws BaseException {
-        //유저 JWT 유효성 검사
-        userIdJwt(patchPjModifyReq.getUser_id(), jwtService.getUserId());
         //날짜 관련 검사
         PjDateCheck(patchPjModifyReq.getPj_deadline(), patchPjModifyReq.getPj_startTerm(), patchPjModifyReq.getPj_endTerm());
         // NULL 값 검사
@@ -91,7 +87,7 @@ public class ProjectService {
      * @author 한규범
      */
     public DelPjDelRes pjDel(DelPjDelReq delPjDelReq) throws BaseException {
-        userIdJwt(delPjDelReq.getUser_id(), jwtService.getUserId());
+        jwtService.userIdJwt(delPjDelReq.getUser_id(), jwtService.getUserId());
         try {
             String pjDel = projectDao.pjDel(delPjDelReq);
             return new DelPjDelRes(pjDel);
@@ -108,7 +104,6 @@ public class ProjectService {
      * @author 한규범
      */
     public PostPjApplyRes pjApply(PostPjApplyReq postPjApplyReq) throws BaseException {
-        userIdJwt(postPjApplyReq.getUser_id(), jwtService.getUserId());
         try {
             String pjApplyName = projectDao.pjApply(postPjApplyReq);
             return new PostPjApplyRes(pjApplyName);
@@ -125,7 +120,6 @@ public class ProjectService {
      * @author 윤성식
      */
     public PatchPjApproveRes pjApprove(PatchPjApproveReq patchPjApproveReq) throws BaseException {
-        userIdJwt(patchPjApproveReq.getUser_id(), jwtService.getUserId());
         try {
             String PjApprove = projectDao.pjApprove(patchPjApproveReq);
             return new PatchPjApproveRes(PjApprove);
@@ -141,7 +135,6 @@ public class ProjectService {
      * @author 윤성식
      */
     public PostLikeRegisterRes likeRegister(PostLikeRegisterReq postLikeRegisterReq) throws BaseException {
-        userIdJwt(postLikeRegisterReq.getUser_id(), jwtService.getUserId());
         try {
             String postLikeRegisterRes = projectDao.likeRegister(postLikeRegisterReq);
             return new PostLikeRegisterRes(postLikeRegisterRes);
@@ -157,7 +150,6 @@ public class ProjectService {
      * @author 윤성식
      */
     public PostLikeRegisterRes likeDel(PostLikeRegisterReq postLikeRegisterReq) throws BaseException {
-        userIdJwt(postLikeRegisterReq.getUser_id(), jwtService.getUserId());
         try {
             String postLikeDelRes = projectDao.likeDel(postLikeRegisterReq);
             return new PostLikeRegisterRes(postLikeDelRes);
@@ -408,23 +400,6 @@ public class ProjectService {
             }
         }
     }
-
-    /**
-     * 유저 JWT 유효성 검사
-     * @param userId
-     * @param userIdByJwt
-     * @return BaseResponse
-     * @author 한규범, 강윤희
-     */
-    public void userIdJwt(String userId, String userIdByJwt) throws BaseException {
-        if (userIdByJwt.equals("만료")) {
-            throw new BaseException(EXPIRATION_REFRESH_JWT);
-        }else if (userIdByJwt.equals("재발급")) {
-            throw new BaseException(EXPIRATION_ACCESS_JWT);
-        }else if(!userId.equals(userIdByJwt)){
-            throw new BaseException(INVALID_USER_JWT);
-            }
-        }
 
 
     public void rejectCheck(PostPjApplyRes postPjApplyRes) throws BaseException {

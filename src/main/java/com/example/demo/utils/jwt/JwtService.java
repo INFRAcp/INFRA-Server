@@ -13,15 +13,17 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Calendar;
 import java.util.Date;
 
-import static com.example.demo.config.BaseResponseStatus.EMPTY_JWT;
+import static com.example.demo.config.BaseResponseStatus.*;
+import static com.example.demo.config.BaseResponseStatus.INVALID_USER_JWT;
 
 @Service
 public class JwtService {
 
-    private final long ACCESS_TOKEN_VALID_TIME = 1 * 60 * 1000L;   // 1분
-    private final long REFRESH_TOKEN_VALID_TIME = 60 * 60 * 24 * 7 * 1000L;   // 1주
+    private final long ACCESS_TOKEN_VALID_TIME = 1000 * 60L * 60L * 2L;   // 2시간
+    private final long REFRESH_TOKEN_VALID_TIME = 60 * 60 * 24 * 7 * 1000L;   // 1 달
 
     private final JwtDao jwtDao;
 
@@ -121,4 +123,21 @@ public class JwtService {
         return claims.getBody().get("userId", String.class);  // jwt 에서 userId를 추출
     }
 
+
+    /**
+     * 유저 JWT 유효성 검사
+     * @param userId
+     * @param userIdByJwt
+     * @return BaseResponse
+     * @author 한규범, 강윤희
+     */
+    public void userIdJwt(String userId, String userIdByJwt) throws BaseException {
+        if (userIdByJwt.equals("만료")) {
+            throw new BaseException(EXPIRATION_REFRESH_JWT);
+        }else if (userIdByJwt.equals("재발급")) {
+            throw new BaseException(EXPIRATION_ACCESS_JWT);
+        }else if(!userId.equals(userIdByJwt)){
+            throw new BaseException(INVALID_USER_JWT);
+            }
+        }
 }
