@@ -70,6 +70,18 @@ public class ProjectController {
     }
 
     /**
+     * @param getProjectRes
+     * @author 한규범
+     */
+    public void recruit(List<GetProjectRes> getProjectRes) {
+        for (int i = 0; i < getProjectRes.size(); i++) {
+            if (getProjectRes.get(i).getPj_daysub() <= 2 && getProjectRes.get(i).getPj_daysub() >= 0) {
+                getProjectRes.get(i).setPj_recruit("마감임박");
+            }
+        }
+    }
+
+    /**
      * 프로젝트 키워드 조회
      *
      * @param search
@@ -78,7 +90,7 @@ public class ProjectController {
      */
     @ResponseBody
     @GetMapping("/keyword")
-    public BaseResponse<List<GetPjKeywordRes>> getPj_keywords(@RequestParam(required = false) String search, String user_id) {
+    public BaseResponse<List<GetPjKeywordRes>> getPj_keywords(@RequestParam(required = false) String user_id, String search) {
         try {
             jwtService.JwtEffectiveness(user_id, jwtService.getUserId());
             if (search == null) {
@@ -236,19 +248,25 @@ public class ProjectController {
     }
 
     /**
-     * 프로젝트신청한 유저 승인
+     * 프로젝트 신청한 유저 승인, 거절 / 팀원 강퇴
      *
-     * @param patchPjApproveReq
+     * @param patchPjMemberReq
      * @return PatchPjApproveRes 완료 메시지
-     * @author 윤성식
+     * @author shinhyeon
      */
     @ResponseBody
-    @PatchMapping("/approve")
-    public BaseResponse<PatchPjApproveRes> pjApprove(@RequestBody PatchPjApproveReq patchPjApproveReq) {
+    @PatchMapping("/member")
+    public BaseResponse<PatchPjMemberRes> pjAcceptRequest(@RequestBody PatchPjMemberReq patchPjMemberReq) {
+        if (patchPjMemberReq.getUser_id() == null || patchPjMemberReq.getPj_num() == null || patchPjMemberReq.getPj_inviteStatus() == null) {
+            return new BaseResponse<>(REQUEST_EMPTY);
+        }
         try {
             jwtService.JwtEffectiveness(patchPjApproveReq.getUser_id(), jwtService.getUserId());
             PatchPjApproveRes patchPjApproveRes = projectService.pjApprove(patchPjApproveReq);
-            return new BaseResponse<>(patchPjApproveRes);
+
+
+            PatchPjMemberRes patchPjMemberRes = projectService.pjAcceptRequest(patchPjMemberReq, userIdByJwt);
+            return new BaseResponse<>(patchPjMemberRes);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
@@ -388,7 +406,12 @@ public class ProjectController {
                 return new BaseResponse<>(INVALID_USER_JWT);
             }
 
+            // 팀원 평가 등록
             projectService.uploadEval(postEvalReq);
+
+            // 팀원 등급 등록(or 최신화)
+            float grade = (float) ((postEvalReq.getResponsibility() + postEvalReq.getAbility() + postEvalReq.getTeamwork() + postEvalReq.getLeadership()) / 4.0);
+            projectService.uploadGrade(postEvalReq.getPassiveUser_id(), grade);
 
             return new BaseResponse<>(SUCCESS);
 
@@ -423,7 +446,12 @@ public class ProjectController {
                 return new BaseResponse<>(INVALID_USER_JWT);
             }
 
+            // 팀원 평가 수정
             projectService.modifyEval(patchEvalReq);
+
+            // 팀원 등급 등록(or 최신화)
+            float grade = (float) ((patchEvalReq.getResponsibility() + patchEvalReq.getAbility() + patchEvalReq.getTeamwork() + patchEvalReq.getLeadership()) / 4.0);
+            projectService.uploadGrade(patchEvalReq.getPassiveUser_id(), grade);
 
             return new BaseResponse<>(SUCCESS);
         } catch (BaseException exception) {
@@ -443,6 +471,9 @@ public class ProjectController {
     @ResponseBody
     @PatchMapping("/evaluate/del")
     public BaseResponse<String> delEval(@RequestBody PatchEvalDelReq patchEvalDelReq) {
+        if (patchEvalDelReq.getUser_id() == null || patchEvalDelReq.getPassiveUser_id() == null || patchEvalDelReq.getPj_num() == null) {
+            return new BaseResponse<>(POST_PROJECT_EVALUATE_EMPTY);
+        }
         try {
             // jwt
             String userIdByJwt = jwtService.getUserId();
@@ -451,6 +482,7 @@ public class ProjectController {
                 return new BaseResponse<>(INVALID_USER_JWT);
             }
 
+            // 팀원 평가 삭제
             projectService.delEval(patchEvalDelReq);
 
             return new BaseResponse<>(SUCCESS);

@@ -31,6 +31,7 @@ public enum BaseResponseStatus {
 
     // users (2100~)
     USERS_EMPTY_USER_ID(false, 2100, "유저 아이디 값을 확인해주세요."),
+    REQUEST_EMPTY(false, 2004,"필수 정보가 비었습니다."),
 
     // [POST] /users
     POST_USERS_EMPTY_EMAIL(false, 2101, "이메일을 입력해주세요."),
@@ -135,6 +136,12 @@ public enum BaseResponseStatus {
     //SMS 관련 (3600~)
     DUPLICATED_PHONE(false, 3601, "해당번호로 이미 가입하였습니다."),
 
+
+    // 프로젝트 신청 유저 승인 관련
+    PROJECT_APPROVE_AUTHORITY(false, 3360, "승인 권한이 없습니다. (프로젝트 팀장 권한)"),
+    PROJECT_INVITESTATUS_ALREADY(false, 3361, "이미 승인한 유저입니다."),
+    PROJECT_INVITESTATUS_REJECT(false, 3362, "이미 거절한 유저입니다."),
+    PROJECT_KICK_OUT(false,3363,"팀원이 아닙니다. (팀원만 강퇴가 가능합니다.)"),
 
     /**
      * 4000 : Database, Server 오류
