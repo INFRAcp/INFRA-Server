@@ -44,7 +44,6 @@ public class QaController {
 
     @ResponseBody
     @GetMapping("")
-
     public BaseResponse<List<GetQaRes>> getQa(@RequestParam(required = false) String user_id) {
         try {
             // Query String (user_id) 가 없을 경우 -> 전체 질문을 가져옴
@@ -76,7 +75,6 @@ public class QaController {
 
     @ResponseBody
     @PatchMapping("/modify/{qa_num}")
-
     public BaseResponse<GetQaRes> modifyQa(@PathVariable("qa_num") int qa_num, @RequestBody PatchQaReq patchQaReq) {
         try {
             // jwt
@@ -108,7 +106,6 @@ public class QaController {
 
     @ResponseBody
     @PostMapping("")
-
     public BaseResponse<String> uploadQa(@RequestBody PostQaReq postQaReq) {
         try {
             // jwt
@@ -136,7 +133,6 @@ public class QaController {
 
     @ResponseBody
     @PatchMapping("/del/{qa_num}")
-
     public BaseResponse<GetQaRes> deleteQa2(@PathVariable("qa_num") int qa_num) {
         try {
             // jwt
@@ -165,19 +161,12 @@ public class QaController {
      * @param qa
      * @return GetQaRes
      */
-
     @ResponseBody
     @PatchMapping("/answer/{qa_num}")
-
     public BaseResponse<GetQaRes> answerQa(@PathVariable("qa_num") int qa_num, @RequestBody PatchAnswerReq patchAnswerReq) {
         try {
             // jwt
             String userIdByJwt = jwtService.getUserId();
-            GetQaRes getQaRes = qaProvider.getQaByQaNum(qa_num);
-
-            if (!getQaRes.getUser_id().equals(userIdByJwt)) {
-                return new BaseResponse<>(INVALID_USER_JWT);
-            }
 
             // 관리자만 답변을 달 수 있음 (현재는 ye5ni로 판별을 하지만 추후 관리자 user_id가 정해지면 변경할 예정임)
             if (!userIdByJwt.equals("ye5ni")) {

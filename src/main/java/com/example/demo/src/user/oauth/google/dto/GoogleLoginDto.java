@@ -1,4 +1,4 @@
-package com.example.demo.src.google.dto;
+package com.example.demo.src.user.oauth.google.dto;
 
 // AccessToken을 활용해 JWT의 Payload 부분인 사용자 정보를 Response받는 VO
 
