@@ -3,12 +3,25 @@ package com.example.demo.src.project;
 import com.example.demo.config.BaseException;
 import com.example.demo.config.BaseResponse;
 import com.example.demo.src.project.model.*;
+import com.example.demo.src.s3.S3Service;
+import com.example.demo.utils.JwtService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.example.demo.utils.jwt.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static com.example.demo.config.BaseResponseStatus.*;
@@ -24,19 +37,22 @@ public class ProjectController {
     private final ProjectService projectService;
     @Autowired
     private final JwtService jwtService;
+    @Autowired
+    private final S3Service s3Service;
 
-    public ProjectController(ProjectProvider projectProvider, ProjectService projectService, JwtService jwtService) {
+    public ProjectController(ProjectProvider projectProvider, ProjectService projectService, JwtService jwtService, S3Service s3Service) {
         this.projectProvider = projectProvider;
         this.projectService = projectService;
         this.jwtService = jwtService;
+        this.s3Service = s3Service;
     }
 
     /**
      * 프로젝트 전체, 검색 조회
      *
      * @param search
-     * @return List 제목, 분야, 이름, 진행, 모집마감일, 전체인원, 모집인원, (모집, 마감임박), 마감 남은 일수
-     * @author 한규범, 윤성식
+     * @return List 제목, 분야, 이름, 진행, 모집마감일, 전체인원, 모집인원, (모집, 마감임박), 마감 남은 일수, 사진
+     * @author 한규범, 윤성식, shinhyeon
      */
     @ResponseBody
     @GetMapping("/inquiry")
@@ -52,6 +68,11 @@ public class ProjectController {
                     getProjectRes.get(i).setHashtag(projectProvider.getHashtag(getProjectRes.get(i).getPj_num()));
                 }
 
+                // 프로젝트 사진 조회
+                for (int i = 0; i < getProjectRes.size(); i++) {
+                    List<String> photos = projectProvider.getPjPhoto(getProjectRes.get(i).getPj_num());
+                    getProjectRes.get(i).setPj_photo(photos);
+                }
                 return new BaseResponse<>(getProjectRes);
             }
             // 키워드 있는 검색
@@ -63,6 +84,11 @@ public class ProjectController {
                 getProjectRes.get(i).setHashtag(projectProvider.getHashtag(getProjectRes.get(i).getPj_num()));
             }
 
+            // 프로젝트 사진 조회
+            for (int i = 0; i < getProjectRes.size(); i++) {
+                List<String> photos = projectProvider.getPjPhoto(getProjectRes.get(i).getPj_num());
+                getProjectRes.get(i).setPj_photo(photos);
+            }
             return new BaseResponse<>(getProjectRes);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
@@ -105,7 +131,7 @@ public class ProjectController {
     }
 
     /**
-     * 유저가 한 프로젝트 조회
+     * 유저가 찜한 프로젝트 조회
      *
      * @param postPj_likeReq
      * @return List 프로젝트 번호, 제목, 조회수, 분야, 이름, 세부분야, 진행상황, 모집마감일, 총 모집인원, 현재 모집인원, 게시일
@@ -118,6 +144,11 @@ public class ProjectController {
             jwtService.JwtEffectiveness(postPj_likeReq.getUser_id(), jwtService.getUserId());
 
             List<PostPjLikeRes> postPj_likeRes = projectProvider.like(postPj_likeReq);
+            // 프로젝트 사진 조회
+            for (int i = 0; i < postPj_likeRes.size(); i++) {
+                List<String> photos = projectProvider.getPjPhoto(postPj_likeRes.get(i).getPj_num());
+                postPj_likeRes.get(i).setPj_photo(photos);
+            }
             return new BaseResponse<>(postPj_likeRes);
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
@@ -138,6 +169,11 @@ public class ProjectController {
             jwtService.JwtEffectiveness(postPj_inquiryReq.getUser_id(), jwtService.getUserId());
 
             List<PostPjInquiryRes> postPj_inquiryRes = projectProvider.proInquiry(postPj_inquiryReq);
+            // 프로젝트 사진 조회
+            for (int i = 0; i < postPj_inquiryRes.size(); i++) {
+                List<String> photos = projectProvider.getPjPhoto(postPj_inquiryRes.get(i).getPj_num());
+                postPj_inquiryRes.get(i).setPj_photo(photos);
+            }
             return new BaseResponse<>(postPj_inquiryRes);
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
@@ -170,21 +206,31 @@ public class ProjectController {
 
     /**
      * 프로젝트 등록
+     * 다중 파일 업르드 (form-data<image, json>)
      *
      * @param postPjRegisterReq
      * @return PostPjRegisterRes 프로젝트 이름
-     * @author 한규범
+     * @author 한규범 강신현(s3)
      */
     @ResponseBody
     @PostMapping("/registration")
-    public BaseResponse<PostPjRegisterRes> pjRegistration(@RequestBody PostPjRegisterReq postPjRegisterReq) {
+    public BaseResponse<PostPjRegisterRes> pjRegistration(@RequestParam("jsonList") String jsonList, @RequestPart("images") MultipartFile[] MultipartFiles) throws IOException {
         try {
             jwtService.JwtEffectiveness(postPjRegisterReq.getUser_id(), jwtService.getUserId());
             PostPjRegisterRes postPjRegisterRes = projectService.registrationPj(postPjRegisterReq);
+
+            for(int i = 0; i < MultipartFiles.length; i++) { // 다중 이미지 파일
+                // s3에 업로드
+                int pj_num = postPjRegisterReq.getPj_num();
+                String s3path = "pjphoto/pj_num : " + Integer.toString(pj_num);
+                String imgPath = s3Service.uploadPrphoto(MultipartFiles[i], s3path);
+                // db에 반영 (Pj_photo)
+                s3Service.uploadPjPhoto(imgPath, pj_num);
+            }
+
             return new BaseResponse<>(postPjRegisterRes);
         } catch (BaseException exception) {
-            return new BaseResponse<
-                    >((exception.getStatus()));
+            return new BaseResponse<>((exception.getStatus()));
         }
     }
 

@@ -145,7 +145,8 @@ public class ProjectDao {
                         rs.getString("pj_deadline"),
                         rs.getInt("pj_totalPerson"),
                         rs.getInt("pj_recruitPerson"),
-                        rs.getString("pj_time")),
+                        rs.getString("pj_time"),
+                        null),
                 getParams
         );
     }
@@ -197,7 +198,8 @@ public class ProjectDao {
                         rs.getString("pj_deadline"),
                         rs.getInt("pj_totalPerson"),
                         rs.getInt("pj_recruitPerson"),
-                        rs.getString("pj_time")),
+                        rs.getString("pj_time"),
+                        null),
                 Pj_inquiryParams
         );
     }
@@ -666,5 +668,16 @@ public class ProjectDao {
     public float getGrade(String user_id) {
         String getGradeQuery = "SELECT user_grade FROM User WHERE user_id = ?";
         return this.jdbcTemplate.queryForObject(getGradeQuery, Float.class, user_id);
+    }
+
+    /**
+     * 프로젝트 사진 경로 조회
+     * @param pj_num
+     * @return List<String>
+     * @qathor shinhyeon
+     */
+    public List<String> getPjPhoto(int pj_num) {
+        String getPjPhotoQuery = "SELECT pjPhoto FROM Pj_photo WHERE pj_num = ?";
+        return this.jdbcTemplate.queryForList(getPjPhotoQuery, String.class, pj_num);
     }
 }

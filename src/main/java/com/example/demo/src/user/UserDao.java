@@ -315,4 +315,10 @@ public class UserDao {
 
 
 
+
+    public String getPrphoto(String user_nickname) {
+        String getPrphotoQuery = "SELECT user_prPhoto from User Where user_nickname = ?";
+
+        return this.jdbcTemplate.queryForObject(getPrphotoQuery, new String[]{user_nickname}, String.class);
+    }
 }

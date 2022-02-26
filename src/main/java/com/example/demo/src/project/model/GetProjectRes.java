@@ -9,6 +9,8 @@ import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
 
 @Getter
 @Setter
@@ -27,4 +29,5 @@ public class GetProjectRes {
     private int pj_daysub;
     private int pj_like;
     private String [] hashtag;
+    List<String> pj_photo;
 }

@@ -310,4 +310,15 @@ public class ProjectProvider {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+    /**
+     * 프로젝트 사진 경로 조회
+     * @param pj_num
+     * @author shinhyeon
+     * @return List<String>
+     */
+    public List<String> getPjPhoto(int pj_num) {
+        List<String> photos = projectDao.getPjPhoto(pj_num);
+        if(photos.isEmpty()) photos.add("https://infra-infra-bucket.s3.ap-northeast-2.amazonaws.com/pjphoto/infra_project.png");
+        return photos;
+    }
 }

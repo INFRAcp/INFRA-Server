@@ -6,6 +6,7 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -22,5 +23,5 @@ public class PostPjLikeRes {
     private int pj_totalPerson;
     private int pj_recruitPerson;
     private String pj_time;
-
+    List<String> pj_photo;
 }
