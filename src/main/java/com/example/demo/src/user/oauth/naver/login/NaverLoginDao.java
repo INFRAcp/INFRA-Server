@@ -1,5 +1,6 @@
-package com.example.demo.src.user.oauth.kakao;
+package com.example.demo.src.user.oauth.naver.login;
 
+import com.example.demo.config.BaseException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -9,7 +10,8 @@ import javax.sql.DataSource;
 import java.util.Random;
 
 @Repository
-public class KakaoDao {
+public class NaverLoginDao {
+
     private JdbcTemplate jdbcTemplate;
 
     @Autowired
@@ -18,11 +20,12 @@ public class KakaoDao {
     }
 
     /**
-     * 카카오 로그인 - 사용자 정보 DB 저장
+     * 네이버 로그인 사용자 정보 저장 API
      * @param email
-     * @author 데뷔초 태연(yewon), 최우식(seongsik)
+     * @throws BaseException
+     * @author 예원, 성식
      */
-    public void insertInfo(String email) {
+    public void insertInfo(String email) throws BaseException {
         /* 이미 회원가입 된 사용자일 경우 함수를 실행하지 않고 나가기(로그인 시) - ACTIVE인 회원들 중 조회 가능 */
         String loginQuery = "select COUNT(*) from User where user_email = ? and user_status = 'ACTIVE'";
         if (this.jdbcTemplate.queryForObject(loginQuery, int.class, email) >= 1) {
@@ -31,7 +34,7 @@ public class KakaoDao {
         }
         // 아이디, 닉네임 등 난수 발생을 위한 random 클래스 생성
         Random random = new Random();
-        String randomStr = String.valueOf(random.nextInt(100));
+        String randomStr = String.valueOf(random.nextInt(1000));
 
         /* 이메일 주소(골뱅이 앞부분)를 nickname으로 넣어주기(처음 가입시 임의로 insert) */
         String[] emailArr = StringUtils.split(email, '@');
@@ -44,27 +47,16 @@ public class KakaoDao {
         String inexistQuery = "select COUNT(*) from User where user_nickname = ? and user_status = 'ACTIVE'";
         if (this.jdbcTemplate.queryForObject(inexistQuery, int.class, nickname) == 0) {
             // 만약 COUNT가 0이라면(=중복된 닉네임이 없다면) 위에서 split 해준 값을 아이디, 닉네임에 모두 넣어주기
-            String insertQuery = "insert into User (user_id, user_nickname, user_email, user_type) values (?, ?, ?, 'kakao')";  // user_type 컬럼에 어떤 소셜 로그인인지 명시
+            String insertQuery = "insert into User (user_id, user_nickname, user_email, user_type) values (?, ?, ?, 'naver')";
             this.jdbcTemplate.update(insertQuery, userId, nickname, email);
         }
         // 2. 존재할 경우
         else {
             // 0~99까지의 랜덤 숫자를 발생시켜 난수를 뒤에다가 덧붙여서 저장해주기
             nickname += randomStr;
-            String existQuery = "insert into User (user_id, user_nickname, user_email, user_type) values (?, ?, ?, 'kakao')";
+            String existQuery = "insert into User (user_id, user_nickname, user_email, user_type) values (?, ?, ?, 'naver')";
             this.jdbcTemplate.update(existQuery, userId, nickname, email);
         }
     }
 
-    /**
-     * 카카오 회원탈퇴 API
-     *
-     * @param user_email
-     * @author yewon
-     */
-    public void delUser(String user_email) {
-        String delUserQuery = "update User set user_status = 'DEL', user_leaveTime = now() where user_email = ?";
-        String delUserParams = user_email;
-        this.jdbcTemplate.update(delUserQuery, delUserParams);
-    }
 }

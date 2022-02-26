@@ -247,30 +247,30 @@ public class ProjectController {
         }
     }
 
-    /**
-     * 프로젝트 신청한 유저 승인, 거절 / 팀원 강퇴
-     *
-     * @param patchPjMemberReq
-     * @return PatchPjApproveRes 완료 메시지
-     * @author shinhyeon
-     */
-    @ResponseBody
-    @PatchMapping("/member")
-    public BaseResponse<PatchPjMemberRes> pjAcceptRequest(@RequestBody PatchPjMemberReq patchPjMemberReq) {
-        if (patchPjMemberReq.getUser_id() == null || patchPjMemberReq.getPj_num() == null || patchPjMemberReq.getPj_inviteStatus() == null) {
-            return new BaseResponse<>(REQUEST_EMPTY);
-        }
-        try {
-            jwtService.JwtEffectiveness(patchPjApproveReq.getUser_id(), jwtService.getUserId());
-            PatchPjApproveRes patchPjApproveRes = projectService.pjApprove(patchPjApproveReq);
-
-
-            PatchPjMemberRes patchPjMemberRes = projectService.pjAcceptRequest(patchPjMemberReq, userIdByJwt);
-            return new BaseResponse<>(patchPjMemberRes);
-        } catch (BaseException exception) {
-            return new BaseResponse<>((exception.getStatus()));
-        }
-    }
+//    /**
+//     * 프로젝트 신청한 유저 승인, 거절 / 팀원 강퇴
+//     *
+//     * @param patchPjMemberReq
+//     * @return PatchPjApproveRes 완료 메시지
+//     * @author shinhyeon
+//     */
+//    @ResponseBody
+//    @PatchMapping("/member")
+//    public BaseResponse<PatchPjMemberRes> pjAcceptRequest(@RequestBody PatchPjMemberReq patchPjMemberReq) {
+//        if (patchPjMemberReq.getUser_id() == null || patchPjMemberReq.getPj_num() == null || patchPjMemberReq.getPj_inviteStatus() == null) {
+//            return new BaseResponse<>(REQUEST_EMPTY);
+//        }
+//        try {
+//            jwtService.JwtEffectiveness(patchPjApproveReq.getUser_id(), jwtService.getUserId());
+//            PatchPjApproveRes patchPjApproveRes = projectService.pjApprove(patchPjApproveReq);
+//
+//
+//            PatchPjMemberRes patchPjMemberRes = projectService.pjAcceptRequest(patchPjMemberReq, userIdByJwt);
+//            return new BaseResponse<>(patchPjMemberRes);
+//        } catch (BaseException exception) {
+//            return new BaseResponse<>((exception.getStatus()));
+//        }
+//    }
 
 
     /**

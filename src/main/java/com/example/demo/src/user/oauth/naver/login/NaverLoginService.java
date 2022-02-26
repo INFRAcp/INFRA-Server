@@ -1,5 +1,6 @@
 package com.example.demo.src.user.oauth.naver.login;
 
+import com.example.demo.config.BaseException;
 import com.example.demo.src.user.oauth.naver.login.vo.NaverLoginProfile;
 import com.example.demo.src.user.oauth.naver.login.vo.NaverLoginProfileResponse;
 import com.example.demo.src.user.oauth.naver.login.vo.NaverLoginVo;
@@ -11,6 +12,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.transaction.Transactional;
 import java.util.Map;
+import static com.example.demo.config.BaseResponseStatus.*;
 
 
 @Service
@@ -26,6 +28,12 @@ public class NaverLoginService {
     @Value("${spring.naver.client_secret}")
     private String client_secret;
 
+    private final NaverLoginDao naverLoginDao;
+
+    public NaverLoginService(NaverLoginDao naverLoginDao){
+        this.naverLoginDao = naverLoginDao;
+    }
+
     /**
      * @description Naver 로그인을 위하여 Access_token을 발급받음
      * @param resValue
@@ -36,6 +44,7 @@ public class NaverLoginService {
      *          2) 갱신:'refresh_token'
      *          3) 삭제: 'delete'
      * @return
+     * @author 예원, 성식
      */
     public NaverLoginVo requestNaverLoginAcceccToken(Map<String, String> resValue, String grant_type){
         final String uri = UriComponentsBuilder
@@ -78,4 +87,11 @@ public class NaverLoginService {
                 .getResponse(); // NaverLoginProfile 은 건네준다.
     }
 
+    public void insertInfo(String email) throws BaseException {
+        try {
+            naverLoginDao.insertInfo(email);
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 }

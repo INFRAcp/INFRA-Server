@@ -3,13 +3,10 @@ package com.example.demo.src.project;
 import com.example.demo.config.BaseException;
 import com.example.demo.src.project.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
-import java.sql.ResultSet;
 import java.util.List;
 
 @Repository
@@ -649,14 +646,16 @@ public class ProjectDao {
     public String[] getHashtag(int pj_num) {
         String nullcheckHashtag = "SELECT count(*) FROM Pj_hashtag WHERE pj_num = ?";
         int cnt = this.jdbcTemplate.queryForObject(nullcheckHashtag, int.class, pj_num);
-        if(cnt > 0){
-                String getHashtagQuery = "SELECT hashtag FROM Pj_hashtag WHERE pj_num = ?";
-                List<String> hashTag = this.jdbcTemplate.queryForList(getHashtagQuery,String.class,pj_num);
-                String hashtag[] = hashTag.toArray(new String[hashTag.size()]); //형변환
+        if (cnt > 0) {
+            String getHashtagQuery = "SELECT hashtag FROM Pj_hashtag WHERE pj_num = ?";
+            List<String> hashTag = this.jdbcTemplate.queryForList(getHashtagQuery, String.class, pj_num);
+            String hashtag[] = hashTag.toArray(new String[hashTag.size()]); //형변환
 
-                return hashtag;
+            return hashtag;
         }
         return null;
+    }
+
     /**
      * 유저 등급 조회
      *
