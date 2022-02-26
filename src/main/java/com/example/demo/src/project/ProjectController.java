@@ -4,15 +4,10 @@ import com.example.demo.config.BaseException;
 import com.example.demo.config.BaseResponse;
 import com.example.demo.src.project.model.*;
 import com.example.demo.src.s3.S3Service;
-import com.example.demo.utils.JwtService;
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.example.demo.utils.jwt.JwtService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
-import com.example.demo.utils.jwt.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +15,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static com.example.demo.config.BaseResponseStatus.*;
@@ -216,6 +209,10 @@ public class ProjectController {
     @PostMapping("/registration")
     public BaseResponse<PostPjRegisterRes> pjRegistration(@RequestParam("jsonList") String jsonList, @RequestPart("images") MultipartFile[] MultipartFiles) throws IOException {
         try {
+            ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+            PostPjRegisterReq postPjRegisterReq = objectMapper.readValue(jsonList, new TypeReference<PostPjRegisterReq>() {
+            });
+
             jwtService.JwtEffectiveness(postPjRegisterReq.getUser_id(), jwtService.getUserId());
             PostPjRegisterRes postPjRegisterRes = projectService.registrationPj(postPjRegisterReq);
 
@@ -307,11 +304,14 @@ public class ProjectController {
             return new BaseResponse<>(REQUEST_EMPTY);
         }
         try {
-            jwtService.JwtEffectiveness(patchPjApproveReq.getUser_id(), jwtService.getUserId());
-            PatchPjApproveRes patchPjApproveRes = projectService.pjApprove(patchPjApproveReq);
+            jwtService.JwtEffectiveness(patchPjMemberReq.getUser_id(), jwtService.getUserId());
 
+            if (patchPjMemberReq.getPj_inviteStatus().equals("강퇴")) {
+                PatchPjMemberRes patchPjMemberRes = projectService.pjKickOut(patchPjMemberReq, jwtService.getUserId());
+                return new BaseResponse<>(patchPjMemberRes);
+            }
 
-            PatchPjMemberRes patchPjMemberRes = projectService.pjAcceptRequest(patchPjMemberReq, userIdByJwt);
+            PatchPjMemberRes patchPjMemberRes = projectService.pjAcceptRequest(patchPjMemberReq, jwtService.getUserId());
             return new BaseResponse<>(patchPjMemberRes);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
