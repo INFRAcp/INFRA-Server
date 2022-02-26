@@ -41,6 +41,7 @@ public class ProjectDao {
                         "모집중",
                         rs.getInt("DATEDIFF(pj_deadline,now())"),
                         0,
+                        null,
                         null
                 ));
     }
@@ -78,6 +79,7 @@ public class ProjectDao {
                         "모집중",
                         rs.getInt("DATEDIFF(pj_deadline,now())"),
                         0,
+                        null,
                         null),
                 getProjectsBySearchParams,
                 getProjectsBySearchParams,
