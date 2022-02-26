@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.example.demo.utils.jwt.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,10 +58,16 @@ public class ProjectController {
     @GetMapping("/inquiry")
     public BaseResponse<List<GetProjectRes>> getProjects(@RequestParam(required = false) String search, String user_id) {
         try {
+            jwtService.JwtEffectiveness(user_id, jwtService.getUserId());
             if (search == null) {
-                projectService.userIdJwt(user_id, jwtService.getUserId());
-                List<GetProjectRes> getProjectRes = projectProvider.getProjects();
+                List<GetProjectRes> getProjectRes = projectProvider.getProjects(user_id);
                 projectService.recruit(getProjectRes);
+
+                for (int i = 0; i < getProjectRes.size(); i++) {
+                    getProjectRes.get(i).setPj_like(projectProvider.checkPjLike(getProjectRes.get(i).getPj_num(), user_id));
+                    getProjectRes.get(i).setHashtag(projectProvider.getHashtag(getProjectRes.get(i).getPj_num()));
+                }
+
                 // 프로젝트 사진 조회
                 for (int i = 0; i < getProjectRes.size(); i++) {
                     List<String> photos = projectProvider.getPjPhoto(getProjectRes.get(i).getPj_num());
@@ -68,9 +75,15 @@ public class ProjectController {
                 }
                 return new BaseResponse<>(getProjectRes);
             }
-            projectService.userIdJwt(user_id, jwtService.getUserId());
-            List<GetProjectRes> getProjectRes = projectProvider.getProjectsByKeyword(search);
+            // 키워드 있는 검색
+            List<GetProjectRes> getProjectRes = projectProvider.getProjectsByKeyword(search, user_id);
             projectService.recruit(getProjectRes);
+
+            for (int i = 0; i < getProjectRes.size(); i++) {
+                getProjectRes.get(i).setPj_like(projectProvider.checkPjLike(getProjectRes.get(i).getPj_num(), user_id));
+                getProjectRes.get(i).setHashtag(projectProvider.getHashtag(getProjectRes.get(i).getPj_num()));
+            }
+
             // 프로젝트 사진 조회
             for (int i = 0; i < getProjectRes.size(); i++) {
                 List<String> photos = projectProvider.getPjPhoto(getProjectRes.get(i).getPj_num());
@@ -103,8 +116,9 @@ public class ProjectController {
      */
     @ResponseBody
     @GetMapping("/keyword")
-    public BaseResponse<List<GetPjKeywordRes>> getPj_keywords(@RequestParam(required = false) String search) {
+    public BaseResponse<List<GetPjKeywordRes>> getPj_keywords(@RequestParam(required = false) String user_id, String search) {
         try {
+            jwtService.JwtEffectiveness(user_id, jwtService.getUserId());
             if (search == null) {
                 List<GetPjKeywordRes> getPj_keywordRes = projectProvider.getPj_keywords();
                 return new BaseResponse<>(getPj_keywordRes);
@@ -124,10 +138,10 @@ public class ProjectController {
      * @author 한규범
      */
     @ResponseBody
-    @PostMapping("/likePj")
+    @PostMapping("/like-pj")
     public BaseResponse<List<PostPjLikeRes>> like(@RequestBody PostPjLikeReq postPj_likeReq) {
         try {
-            projectService.userIdJwt(postPj_likeReq.getUser_id(), jwtService.getUserId());
+            jwtService.JwtEffectiveness(postPj_likeReq.getUser_id(), jwtService.getUserId());
 
             List<PostPjLikeRes> postPj_likeRes = projectProvider.like(postPj_likeReq);
             // 프로젝트 사진 조회
@@ -152,6 +166,8 @@ public class ProjectController {
     @PostMapping("/project-inquiry")
     public BaseResponse<List<PostPjInquiryRes>> proInquiry(@RequestBody PostPjInquiryReq postPj_inquiryReq) {
         try {
+            jwtService.JwtEffectiveness(postPj_inquiryReq.getUser_id(), jwtService.getUserId());
+
             List<PostPjInquiryRes> postPj_inquiryRes = projectProvider.proInquiry(postPj_inquiryReq);
             // 프로젝트 사진 조회
             for (int i = 0; i < postPj_inquiryRes.size(); i++) {
@@ -173,8 +189,10 @@ public class ProjectController {
      */
     @ResponseBody
     @PostMapping("/team")
-    public BaseResponse<List<PostPjParticipateRes>> getTeam(@RequestBody PostPjParticipateReq postPj_participateReq) {
+    public BaseResponse<List<PostPjParticipateRes>> getTeam(@RequestBody PostPjParticipateReq postPj_participateReq, String user_id) {
         try {
+            jwtService.JwtEffectiveness(user_id, jwtService.getUserId());
+
             List<PostPjParticipateRes> postPj_participateRes = projectProvider.getTeam(postPj_participateReq);
             if (postPj_participateRes == null) {
                 throw new BaseException(POST_PROJECT_GETTEAM_NULL);
@@ -198,16 +216,7 @@ public class ProjectController {
     @PostMapping("/registration")
     public BaseResponse<PostPjRegisterRes> pjRegistration(@RequestParam("jsonList") String jsonList, @RequestPart("images") MultipartFile[] MultipartFiles) throws IOException {
         try {
-            ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
-            PostPjRegisterReq postPjRegisterReq = objectMapper.readValue(jsonList, new TypeReference<PostPjRegisterReq>() {
-            });
-
-            projectService.userIdJwt(postPjRegisterReq.getUser_id(), jwtService.getUserId());
-            projectService.PjDateCheck(postPjRegisterReq.getPj_deadline(), postPjRegisterReq.getPj_startTerm(), postPjRegisterReq.getPj_endTerm());
-            projectService.PjNullCheck(postPjRegisterReq.getPj_header(), postPjRegisterReq.getPj_categoryName(), postPjRegisterReq.getPj_content(), postPjRegisterReq.getPj_name(), postPjRegisterReq.getPj_subCategoryName(), postPjRegisterReq.getPj_progress(), postPjRegisterReq.getPj_endTerm(), postPjRegisterReq.getPj_startTerm(), postPjRegisterReq.getPj_deadline(), postPjRegisterReq.getPj_totalPerson());
-            projectService.PjKeywordCheck(postPjRegisterReq.getHashtag());
-            postPjRegisterReq.setPj_categoryNum(projectProvider.getPjCategoryNum(postPjRegisterReq.getPj_categoryName()));
-            postPjRegisterReq.setPj_subCategoryNum(projectProvider.getPjSubCategoryNum(postPjRegisterReq.getPj_subCategoryName()));
+            jwtService.JwtEffectiveness(postPjRegisterReq.getUser_id(), jwtService.getUserId());
             PostPjRegisterRes postPjRegisterRes = projectService.registrationPj(postPjRegisterReq);
 
             for(int i = 0; i < MultipartFiles.length; i++) { // 다중 이미지 파일
@@ -236,9 +245,7 @@ public class ProjectController {
     @PatchMapping("/modify")
     public BaseResponse<PatchPjModifyRes> pjModify(@RequestBody PatchPjModifyReq patchPjModifyReq) {
         try {
-            projectService.PjDateCheck(patchPjModifyReq.getPj_deadline(), patchPjModifyReq.getPj_startTerm(), patchPjModifyReq.getPj_endTerm());
-            projectService.PjNullCheck(patchPjModifyReq.getPj_header(), patchPjModifyReq.getPj_categoryNum(), patchPjModifyReq.getPj_content(), patchPjModifyReq.getPj_name(), patchPjModifyReq.getPj_subCategoryNum(), patchPjModifyReq.getPj_progress(), patchPjModifyReq.getPj_endTerm(), patchPjModifyReq.getPj_startTerm(), patchPjModifyReq.getPj_deadline(), patchPjModifyReq.getPj_totalPerson());
-            projectService.PjKeywordCheck(patchPjModifyReq.getHashtag());
+            jwtService.JwtEffectiveness(patchPjModifyReq.getUser_id(), jwtService.getUserId());
             PatchPjModifyRes patchPjModifyRes = projectService.pjModify(patchPjModifyReq);
             return new BaseResponse<>(patchPjModifyRes);
         } catch (BaseException exception) {
@@ -257,6 +264,7 @@ public class ProjectController {
     @DeleteMapping("/del")
     public BaseResponse<DelPjDelRes> pjDel(@RequestBody DelPjDelReq delPjDelReq) {
         try {
+            jwtService.JwtEffectiveness(delPjDelReq.getUser_id(), jwtService.getUserId());
             DelPjDelRes delpjDelRes = projectService.pjDel(delPjDelReq);
             return new BaseResponse<>(delpjDelRes);
         } catch (BaseException exception) {
@@ -299,13 +307,9 @@ public class ProjectController {
             return new BaseResponse<>(REQUEST_EMPTY);
         }
         try {
-            // jwt
-            String userIdByJwt = jwtService.getUserId();
+            jwtService.JwtEffectiveness(patchPjApproveReq.getUser_id(), jwtService.getUserId());
+            PatchPjApproveRes patchPjApproveRes = projectService.pjApprove(patchPjApproveReq);
 
-            if (patchPjMemberReq.getPj_inviteStatus().equals("강퇴")) {
-                PatchPjMemberRes patchPjMemberRes = projectService.pjKickOut(patchPjMemberReq, userIdByJwt);
-                return new BaseResponse<>(patchPjMemberRes);
-            }
 
             PatchPjMemberRes patchPjMemberRes = projectService.pjAcceptRequest(patchPjMemberReq, userIdByJwt);
             return new BaseResponse<>(patchPjMemberRes);
@@ -324,8 +328,9 @@ public class ProjectController {
      */
     @ResponseBody
     @GetMapping("/apply-list")
-    public BaseResponse<List<GetApplyListRes>> pjApplyList(@RequestParam(required = false) String pj_num) {
+    public BaseResponse<List<GetApplyListRes>> pjApplyList(@RequestParam(required = false) String pj_num, String user_id) {
         try {
+            jwtService.JwtEffectiveness(user_id, jwtService.getUserId());
             List<GetApplyListRes> getApplyListRes = projectProvider.pjApplyList(pj_num);
             if (getApplyListRes == null) {
                 throw new BaseException(GET_PROJECT_APPLY_LIST_NULL);
@@ -347,6 +352,8 @@ public class ProjectController {
     @PostMapping("/apply-mylist")
     public BaseResponse<List<PostUserApplyRes>> userApply(@RequestBody PostUserApplyReq postUserApplyReq) {
         try {
+            jwtService.JwtEffectiveness(postUserApplyReq.getUser_id(), jwtService.getUserId());
+
             List<PostUserApplyRes> postUserApplyRes = projectProvider.getUserApply(postUserApplyReq);
             return new BaseResponse<>(postUserApplyRes);
         } catch (BaseException exception) {
@@ -365,6 +372,7 @@ public class ProjectController {
     @PostMapping("/like")
     public BaseResponse<PostLikeRegisterRes> likeRegister(@RequestBody PostLikeRegisterReq postLikeRegisterReq) {
         try {
+            jwtService.JwtEffectiveness(postLikeRegisterReq.getUser_id(), jwtService.getUserId());
             PostLikeRegisterRes postLikeRegisterRes = projectService.likeRegister(postLikeRegisterReq);
             return new BaseResponse<>(postLikeRegisterRes);
         } catch (BaseException exception) {
@@ -383,6 +391,7 @@ public class ProjectController {
     @DeleteMapping("/like-del")
     public BaseResponse<PostLikeRegisterRes> likeDel(@RequestBody PostLikeRegisterReq postLikeRegisterReq) {
         try {
+            jwtService.JwtEffectiveness(postLikeRegisterReq.getUser_id(), jwtService.getUserId());
             PostLikeRegisterRes postLikeRegisterRes = projectService.likeDel(postLikeRegisterReq);
             return new BaseResponse<>(postLikeRegisterRes);
         } catch (BaseException exception) {

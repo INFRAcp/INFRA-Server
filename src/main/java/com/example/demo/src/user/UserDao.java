@@ -5,6 +5,7 @@ import com.example.demo.src.user.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
 import java.util.List;
@@ -276,6 +277,44 @@ public class UserDao {
                     "where Pj_request.user_id = ? and Pj_request.pj_inviteStatus = '승인완료'";
         return this.jdbcTemplate.queryForList(getUserProjectQuery, String.class, userId);
     }
+
+    /**
+     * 로그인 리프레시 토큰 저장
+     * @param userId
+     * @param refreshToken
+     * @author kyubeom
+     */
+    public int pushRefreshToken(String userId, String refreshToken) {
+        String userTokenNullCheckQuery = "SELECT refresh_idx FROM User WHERE user_id = ?";
+        String userToken = this.jdbcTemplate.queryForObject(userTokenNullCheckQuery,String.class, userId);
+
+        int TokenIdx;
+        //첫 로그인을 할 경우
+        if (userToken==null){
+            String refreshTokenInsertQuery = "INSERT INTO User_refreshToken (idx, refreshToken) VALUES (default, ?)";
+            this.jdbcTemplate.update(refreshTokenInsertQuery, refreshToken);
+
+            String refreshTokenSelectQuery = "SELECT idx FROM User_refreshToken WHERE refreshToken = ?";
+            TokenIdx =  this.jdbcTemplate.queryForObject(refreshTokenSelectQuery, int.class, refreshToken);
+
+            String refreshTokenUserInsertQuery = "UPDATE User SET refresh_idx = ? WHERE user_id = ?";
+            this.jdbcTemplate.update(refreshTokenUserInsertQuery, TokenIdx, userId);
+
+            return TokenIdx;
+        }else //두번 이상 로그인을 할 경우
+        {
+            String refreshTokenSelctQuery = "SELECT refresh_idx FROM User WHERE user_id = ?";
+            TokenIdx = this.jdbcTemplate.queryForObject(refreshTokenSelctQuery, int.class, userId);
+
+            String refreshTokenUpdateQuery = "UPDATE User_refreshToken SET refreshToken = ? WHERE idx = ?";
+            this.jdbcTemplate.update(refreshTokenUpdateQuery, refreshToken, TokenIdx);
+
+            return TokenIdx;
+        }
+    }
+
+
+
 
     public String getPrphoto(String user_nickname) {
         String getPrphotoQuery = "SELECT user_prPhoto from User Where user_nickname = ?";

@@ -5,7 +5,7 @@ import com.example.demo.config.secret.Secret;
 import com.example.demo.src.mail.MailService;
 import com.example.demo.src.user.model.*;
 import com.example.demo.utils.AES128;
-import com.example.demo.utils.JwtService;
+import com.example.demo.utils.jwt.JwtService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,7 +83,7 @@ public class UserService {
         try {
             userDao.createUser(postUserReq);
             String userId = postUserReq.getUser_id();
-            String jwt = jwtService.createJwt(userId);
+            String jwt = jwtService.createAccessJwt(userId);
             return new PostUserRes(userId, jwt);
         } catch (Exception exception) { // DB에 이상이 있는 경우
             throw new BaseException(DATABASE_ERROR);

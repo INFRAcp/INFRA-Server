@@ -1,15 +1,16 @@
 package com.example.demo.src.project;
 
 import com.example.demo.config.BaseException;
-import com.example.demo.config.BaseResponse;
 import com.example.demo.src.project.model.*;
-import com.example.demo.utils.JwtService;
+import com.example.demo.utils.jwt.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.List;
 
 import static com.example.demo.config.BaseResponseStatus.*;
@@ -20,7 +21,7 @@ public class ProjectService {
 
     private final ProjectDao projectDao;
     private final ProjectProvider projectProvider;
-    private final JwtService jwtService;
+    final JwtService jwtService;
 
     @Autowired
     public ProjectService(ProjectDao projectDao, ProjectProvider projectProvider, JwtService jwtService) {
@@ -37,6 +38,16 @@ public class ProjectService {
      * @author 한규범
      */
     public PostPjRegisterRes registrationPj(PostPjRegisterReq postPjRegisterReq) throws BaseException {
+        //날짜 관련 검사
+        PjDateCheck(postPjRegisterReq.getPj_deadline(), postPjRegisterReq.getPj_startTerm(), postPjRegisterReq.getPj_endTerm());
+        // NULL 값 검사
+        PjNullCheck(postPjRegisterReq.getPj_header(), postPjRegisterReq.getPj_categoryName(), postPjRegisterReq.getPj_content(), postPjRegisterReq.getPj_name(), postPjRegisterReq.getPj_subCategoryName(), postPjRegisterReq.getPj_progress(), postPjRegisterReq.getPj_endTerm(), postPjRegisterReq.getPj_startTerm(), postPjRegisterReq.getPj_deadline(), postPjRegisterReq.getPj_totalPerson());
+        //해시태그 관련 검사
+        PjHashTagCheck(postPjRegisterReq.getHashtag());
+        //카테고리 번호, 이름
+        postPjRegisterReq.setPj_categoryNum(projectProvider.getPjCategoryNum(postPjRegisterReq.getPj_categoryName()));
+        //세부 카테고리 번호, 이름
+        postPjRegisterReq.setPj_subCategoryNum(projectProvider.getPjSubCategoryNum(postPjRegisterReq.getPj_subCategoryName()));
         try {
             String pjRegisterSucese = projectDao.pjRegistration(postPjRegisterReq);
             return new PostPjRegisterRes(pjRegisterSucese);
@@ -53,6 +64,13 @@ public class ProjectService {
      * @author 한규범
      */
     public PatchPjModifyRes pjModify(PatchPjModifyReq patchPjModifyReq) throws BaseException {
+        //날짜 관련 검사
+        PjDateCheck(patchPjModifyReq.getPj_deadline(), patchPjModifyReq.getPj_startTerm(), patchPjModifyReq.getPj_endTerm());
+        // NULL 값 검사
+        PjNullCheck(patchPjModifyReq.getPj_header(), patchPjModifyReq.getPj_categoryNum(), patchPjModifyReq.getPj_content(), patchPjModifyReq.getPj_name(), patchPjModifyReq.getPj_subCategoryNum(), patchPjModifyReq.getPj_progress(), patchPjModifyReq.getPj_endTerm(), patchPjModifyReq.getPj_startTerm(), patchPjModifyReq.getPj_deadline(), patchPjModifyReq.getPj_totalPerson());
+        //해시태그 관련 검사
+        PjHashTagCheck(patchPjModifyReq.getHashtag());
+
         try {
             String PjModify = projectDao.pjModify(patchPjModifyReq);
             return new PatchPjModifyRes(PjModify);
@@ -69,6 +87,7 @@ public class ProjectService {
      * @author 한규범
      */
     public DelPjDelRes pjDel(DelPjDelReq delPjDelReq) throws BaseException {
+        jwtService.JwtEffectiveness(delPjDelReq.getUser_id(), jwtService.getUserId());
         try {
             String pjDel = projectDao.pjDel(delPjDelReq);
             return new DelPjDelRes(pjDel);
@@ -152,6 +171,9 @@ public class ProjectService {
         if (!pj_inviteStatus.equals("승인완료")) throw new BaseException(PROJECT_KICK_OUT);
 
         try {
+//             String PjApprove = projectDao.pjApprove(patchPjApproveReq);
+//             return new PatchPjApproveRes(PjApprove);
+
             String res = projectDao.pjKickOut(patchPjMemberReq);
 
             return new PatchPjMemberRes(res);
@@ -163,7 +185,6 @@ public class ProjectService {
 
     /**
      * 프로젝트 찜 등록
-     *
      * @param postLikeRegisterReq
      * @return 등록 완료된 메세지
      * @author 윤성식
@@ -179,7 +200,6 @@ public class ProjectService {
 
     /**
      * 프로젝트 찜 삭제
-     *
      * @param postLikeRegisterReq
      * @return 찜 삭제된 메세지
      * @author 윤성식
@@ -202,11 +222,15 @@ public class ProjectService {
      * @throws BaseException
      * @author 한규범
      */
-    public void PjDateCheck(LocalDate pj_deadline, LocalDate pj_startTerm, LocalDate pj_endTerm) throws BaseException {
-        if (pj_deadline.isBefore(pj_startTerm)) {
+    public void PjDateCheck(String pj_deadline, String pj_startTerm, String pj_endTerm) throws BaseException {
+        LocalDate pj_deadlineLd = LocalDate.parse(pj_deadline, DateTimeFormatter.ISO_DATE);
+        LocalDate pj_startTermLd = LocalDate.parse(pj_startTerm, DateTimeFormatter.ISO_DATE);
+        LocalDate pj_endTermLd = LocalDate.parse(pj_endTerm, DateTimeFormatter.ISO_DATE);
+
+        if (pj_deadlineLd.isBefore(pj_startTermLd)) {
             throw new BaseException(POST_PROJECT_DEADLINE_BEFORE_START);
         }
-        if (pj_endTerm.isBefore(pj_startTerm)) {
+        if (pj_endTermLd.isBefore(pj_startTermLd)) {
             throw new BaseException(POST_PROJECT_END_BEFORE_START);
         }
     }
@@ -227,7 +251,7 @@ public class ProjectService {
      * @throws BaseException
      * @author 한규범
      */
-    public void PjNullCheck(String pj_header, String pj_field, String pj_content, String pj_name, String pj_subField, String pj_progress, LocalDate pj_endTerm, LocalDate pj_startTerm, LocalDate pj_deadline, int pj_totalPerson) throws BaseException {
+    public void PjNullCheck(String pj_header, String pj_field, String pj_content, String pj_name, String pj_subField, String pj_progress, String pj_endTerm, String pj_startTerm, String pj_deadline, int pj_totalPerson) throws BaseException {
         if (pj_header == null) {
             throw new BaseException(POST_PROJECT_EMPTY_HEADER);
         }
@@ -267,13 +291,26 @@ public class ProjectService {
      * @throws BaseException
      * @author 한규범
      */
-    public void PjKeywordCheck(String[] hashtag) throws BaseException {
+    public void PjHashTagCheck(String[] hashtag) throws BaseException {
+        String hashtagExtraction;
+
         if (hashtag.length > 7) {
             throw new BaseException(POST_PROJECT_KEYWORD_CNT_EXCEED);
         }
-        for (int j = 0; j < hashtag.length; j++) {
-            if (hashtag[j].length() > 6) {
+
+        for (int i = 0; i < hashtag.length; i++) {
+            if (hashtag[i].length() > 6) {
                 throw new BaseException(POST_PROJECT_KEYWORD_EXCEED);
+            }
+        }
+
+        for(int j = 0; j < hashtag.length; j++){
+            hashtagExtraction = hashtag[j];
+            hashtag[j]=null;
+            if(Arrays.asList(hashtag).contains(hashtagExtraction)==false){
+                hashtag[j]=hashtagExtraction;
+            }else{
+                throw new BaseException(POST_PROJECT_HASHTAG_DUPLICATION);
             }
         }
     }
@@ -349,7 +386,7 @@ public class ProjectService {
     /**
      * 유저 등급 등록(or 최신화)
      *
-     * @param postEvalReq
+     * @param user_id, grade
      * @throws BaseException
      * @ahthor shinhyeon
      */
@@ -446,27 +483,25 @@ public class ProjectService {
         }
     }
 
-    /**
-     * 유저 JWT 유효성 검사
-     *
-     * @param userId
-     * @param userIdByJwt
-     * @return BaseResponse
-     * @author 한규범
-     */
-    public BaseResponse<Object> userIdJwt(String userId, String userIdByJwt) {
-        if (!userId.equals(userIdByJwt)) {
-            return new BaseResponse<>(INVALID_USER_JWT);
-        }
-        return null;
-    }
 
+    /**
+     *
+     * @param postPjApplyRes
+     * @throws BaseException
+     * @author 윤성식
+     */
     public void rejectCheck(PostPjApplyRes postPjApplyRes) throws BaseException {
         if(postPjApplyRes.getComment().equals("거절")){
             throw new BaseException(POST_PROJECT_REJECT_RESTART);
         }
     }
 
+    /**
+     *
+     * @param postPjApplyRes
+     * @throws BaseException
+     * @author 윤성식
+     */
     public void coincideCheck(PostPjApplyRes postPjApplyRes) throws BaseException{
         if(postPjApplyRes.getComment().equals("중복")){
             throw new BaseException(POST_PROJECT_COINCIDE_CHECK);

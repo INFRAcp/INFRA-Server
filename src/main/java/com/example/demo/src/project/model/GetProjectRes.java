@@ -16,6 +16,7 @@ import java.util.Map;
 @Setter
 @AllArgsConstructor
 public class GetProjectRes {
+    private String user_id;
     private int pj_num;
     private String pj_header;
     private String pj_categoryName;
@@ -26,5 +27,7 @@ public class GetProjectRes {
     private int pj_recruitPerson;
     private String pj_recruit;
     private int pj_daysub;
+    private int pj_like;
+    private String [] hashtag;
     List<String> pj_photo;
 }

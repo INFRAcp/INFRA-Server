@@ -23,10 +23,10 @@ public class PostPjRegisterReq {
     private String pj_subCategoryNum=null;
     private String pj_subCategoryName=null;
     private String pj_progress=null;
-    private LocalDate pj_endTerm =null;
+    private String pj_endTerm =null;
 
-    private LocalDate pj_startTerm =null;
-    private LocalDate pj_deadline=null;
+    private String pj_startTerm =null;
+    private String pj_deadline=null;
     private int pj_totalPerson =0;
     private int pj_recruitPerson;
     private Timestamp pj_time;

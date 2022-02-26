@@ -3,10 +3,13 @@ package com.example.demo.src.project;
 import com.example.demo.config.BaseException;
 import com.example.demo.src.project.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
+import java.sql.ResultSet;
 import java.util.List;
 
 @Repository
@@ -20,16 +23,16 @@ public class ProjectDao {
 
     /**
      * 프로젝트 전체, 검색 조회
-     *
      * @return List 제목, 분야, 이름, 진행, 모집마감일, 전체인원, 모집인원, (모집, 마감임박), 마감 남은 일수
      * @author 한규범, 윤성식
      */
-    public List<GetProjectRes> getProjects() {
+    public List<GetProjectRes> getProjects(String user_id) {
         String getProjectQuery = "select Project.pj_num, user_id, pj_views, pj_header, pj_categoryName, pj_content, pj_name, pj_subCategoryNum, pj_progress, pj_endTerm,pj_startTerm, pj_deadline, pj_totalPerson,pj_recruitPerson, pj_time, DATEDIFF(pj_deadline,now()) " +
                 "from Project, Pj_category " +
                 "where pj_status = '등록' and Project.pj_categoryNum = Pj_category.pj_categoryNum";
         return this.jdbcTemplate.query(getProjectQuery,
                 (rs, rowNum) -> new GetProjectRes(
+                        user_id,
                         rs.getInt("pj_num"),
                         rs.getString("pj_header"),
                         rs.getString("pj_categoryName"),
@@ -40,6 +43,7 @@ public class ProjectDao {
                         rs.getInt("pj_recruitPerson"),
                         "모집중",
                         rs.getInt("DATEDIFF(pj_deadline,now())"),
+                        0,
                         null
                 ));
     }
@@ -47,12 +51,11 @@ public class ProjectDao {
 
     /**
      * 프로젝트 전체, 검색 조회
-     *
      * @param search
      * @return List 제목, 분야,ㅂ 이름, 진행, 모집마감일, 전체인원, 모집인원, (모집, 마감임박), 마감 남은 일수
      * @author 한규범, 윤성식
      */
-    public List<GetProjectRes> getProjectsBySearch(String search) {
+    public List<GetProjectRes> getProjectsBySearch(String search, String user_id) {
         String getProjectsBySearchQuery = "select distinct Project.pj_num, pj_header, Project.pj_categoryNum, pj_name, pj_name, pj_progress, pj_deadline, pj_totalPerson,pj_recruitPerson, DATEDIFF(pj_deadline,now()) " +
                 "from Project, Pj_hashtag, Pj_category, Pj_subCategory " +
 
@@ -66,6 +69,7 @@ public class ProjectDao {
 
         return this.jdbcTemplate.query(getProjectsBySearchQuery,
                 (rs, rowNum) -> new GetProjectRes(
+                        user_id,
                         rs.getInt("pj_num"),
                         rs.getString("pj_header"),
                         rs.getString("pj_categoryNum"),
@@ -76,6 +80,7 @@ public class ProjectDao {
                         rs.getInt("pj_recruitPerson"),
                         "모집중",
                         rs.getInt("DATEDIFF(pj_deadline,now())"),
+                        0,
                         null),
                 getProjectsBySearchParams,
                 getProjectsBySearchParams,
@@ -86,7 +91,6 @@ public class ProjectDao {
 
     /**
      * 프로젝트 키워드 조회
-     *
      * @return List 프로젝트 번호, 키워드
      * @author 한규범, 윤성식
      */
@@ -102,7 +106,6 @@ public class ProjectDao {
 
     /**
      * 프로젝트 키워드 조회
-     *
      * @param search
      * @return List 프로젝트 번호, 키워드
      * @author 한규범, 윤성식
@@ -124,7 +127,6 @@ public class ProjectDao {
 
     /**
      * 유저가 찜한 프로젝트 조회
-     *
      * @param postPj_likeReq
      * @return List 프로젝트 번호, 제목, 조회수, 분야, 이름, 세부분야, 진행상황, 모집마감일, 총 모집인원, 현재 모집인원, 게시일
      * @author 한규범
@@ -154,7 +156,6 @@ public class ProjectDao {
 
     /**
      * 프로젝트에 참여한 팀원들 조회
-     *
      * @param postPj_participateReq
      * @return List 유저 닉네임, 유저 사진
      * @author 윤성식
@@ -181,7 +182,6 @@ public class ProjectDao {
 
     /**
      * 유저가 조회했던 프로젝트 조회
-     *
      * @param postPj_inquiryReq
      * @return List 프로젝트 번호, 프로젝트 제목, 조회수, 프로젝트 분야, 이름, 세부분야, 진행, 마감일, 전체인원, 모집 중인 인원, 프로젝트 등록 시간
      * @author 한규범
@@ -209,7 +209,6 @@ public class ProjectDao {
 
     /**
      * 프로젝트 등록
-     *
      * @param postPjRegisterReq
      * @return PostPjRegisterRes 프로젝트 이름
      * @author 한규범
@@ -236,6 +235,8 @@ public class ProjectDao {
         String getPjNumQuery = "SELECT pj_num FROM Project ORDER BY pj_num DESC LIMIT 1";
         postPjRegisterReq.setPj_num(this.jdbcTemplate.queryForObject(getPjNumQuery, int.class));
 
+
+
         for (int i = 0; i < postPjRegisterReq.getHashtag().length; i++) {
             String insertKeywordQuery = "INSERT INTO Pj_hashtag (pj_num, hashtag) VALUES(?,?)";
             this.jdbcTemplate.update(insertKeywordQuery, postPjRegisterReq.getPj_num(), postPjRegisterReq.getHashtag()[i]);
@@ -247,7 +248,6 @@ public class ProjectDao {
 
     /**
      * 프로젝트 수정
-     *
      * @param patchPjModifyReq
      * @return PatchPjModifyRes 프로젝트 이름
      * @author 한규범
@@ -282,7 +282,6 @@ public class ProjectDao {
 
     /**
      * 프로젝트 삭제
-     *
      * @param delPjDelReq
      * @return DelPjDelRes 결과 메시지
      * @author 한규범
@@ -422,7 +421,6 @@ public class ProjectDao {
 
     /**
      * 프로젝트 찜 등록
-     *
      * @param postLikeRegisterReq
      * @return 등록 완료된 메세지
      * @author 윤성식
@@ -436,7 +434,6 @@ public class ProjectDao {
 
     /**
      * 프로젝트 찜 삭제
-     *
      * @param postLikeRegisterReq
      * @return 찜 삭제된 메세지
      * @author 윤성식
@@ -447,7 +444,6 @@ public class ProjectDao {
 
         return "찜 삭제";
     }
-
     /**
      * 팀원 평가 조회
      *
@@ -617,7 +613,6 @@ public class ProjectDao {
 
     /**
      * 카테고리 이름을 통한 번호 반환
-     *
      * @param pj_categoryName
      * @return
      * @throws BaseException
@@ -630,7 +625,6 @@ public class ProjectDao {
 
     /**
      * 세부 카테고리 이름을 통한 번호 반환
-     *
      * @param pj_subCategoryName
      * @return
      * @throws BaseException
@@ -641,6 +635,30 @@ public class ProjectDao {
         return this.jdbcTemplate.queryForObject(getPjSubCategoryNumQuery, String.class, pj_subCategoryName);
     }
 
+    /**
+     * 프로젝트 찜여부 반환 메서드
+     * @param pj_num
+     * @param user_id
+     * @return int 형 찜했으면 1, 안했으면 0
+     * @throws BaseException
+     * @author 한규범
+     */
+    public int checkPjLike(int pj_num, String user_id) {
+        String checkPjLikeQuery="SELECT count(*) FROM Pj_like WHERE pj_num = ? and user_id = ?";
+        return this.jdbcTemplate.queryForObject(checkPjLikeQuery,int.class, pj_num, user_id);
+    }
+
+    public String[] getHashtag(int pj_num) {
+        String nullcheckHashtag = "SELECT count(*) FROM Pj_hashtag WHERE pj_num = ?";
+        int cnt = this.jdbcTemplate.queryForObject(nullcheckHashtag, int.class, pj_num);
+        if(cnt > 0){
+                String getHashtagQuery = "SELECT hashtag FROM Pj_hashtag WHERE pj_num = ?";
+                List<String> hashTag = this.jdbcTemplate.queryForList(getHashtagQuery,String.class,pj_num);
+                String hashtag[] = hashTag.toArray(new String[hashTag.size()]); //형변환
+
+                return hashtag;
+        }
+        return null;
     /**
      * 유저 등급 조회
      *
