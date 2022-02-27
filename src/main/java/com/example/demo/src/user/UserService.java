@@ -98,7 +98,7 @@ public class UserService {
      * @throws BaseException
      * @author yunhee, yewon, kyubeom
      */
-    @org.springframework.transaction.annotation.Transactional
+    @Transactional
     public PostLoginRes logIn(PostLoginReq postLoginReq) throws BaseException {
         if (userProvider.checkId(postLoginReq.getUser_id()) == 0) {
             throw new BaseException(FAILED_TO_LOGIN);
