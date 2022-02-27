@@ -30,43 +30,7 @@ public class UserProvider {
     }
 
 
-    /**
-     * 로그인 - password 검사
-     *
-     * @param postLoginReq - user_id, user_pw
-     * @return PostLoginRes - user_id, jwt
-     * @throws BaseException
-     * @author yunhee, yewon, kyubeom
-     */
-    @Transactional
-    public PostLoginRes logIn(PostLoginReq postLoginReq) throws BaseException {
-        if (checkId(postLoginReq.getUser_id()) == 0) {
-            throw new BaseException(FAILED_TO_LOGIN);
-        }
 
-        User user = userDao.getPwd(postLoginReq);
-        String password;
-
-        try {
-            password = new AES128(Secret.USER_INFO_PASSWORD_KEY).decrypt(user.getUser_pw()); // 복호화
-        } catch (Exception ignored) {
-            throw new BaseException(PASSWORD_DECRYPTION_ERROR);
-        }
-
-        //로그인 성공
-        if (postLoginReq.getUser_pw().equals(password)) { //비밀번호 일치하면 user_id, nickname 가져오기
-            String userId = userDao.getPwd(postLoginReq).getUser_id();
-            String jwtAccess = jwtService.createAccessJwt(userId);
-            String jwtRefresh = jwtService.createRefreshJwt(userId);
-            String user_nickname = userDao.getPwd(postLoginReq).getUser_nickname();
-
-            int jwtRefreshIdx = userDao.pushRefreshToken(userId, jwtRefresh);
-
-            return new PostLoginRes(userId, jwtAccess, user_nickname, jwtRefreshIdx);
-        } else { // 비밀번호 불일치
-            throw new BaseException(FAILED_TO_LOGIN);
-        }
-    }
 
     /**
      * id 중복 체크

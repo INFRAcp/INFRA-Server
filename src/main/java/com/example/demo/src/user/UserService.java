@@ -96,9 +96,9 @@ public class UserService {
      * @param postLoginReq - user_id, user_pw
      * @return PostLoginRes - user_id, jwt
      * @throws BaseException
-     * @author yunhee, kyubeom
+     * @author yunhee, yewon, kyubeom
      */
-    @Transactional
+    @org.springframework.transaction.annotation.Transactional
     public PostLoginRes logIn(PostLoginReq postLoginReq) throws BaseException {
         if (userProvider.checkId(postLoginReq.getUser_id()) == 0) {
             throw new BaseException(FAILED_TO_LOGIN);
@@ -114,16 +114,15 @@ public class UserService {
         }
 
         //로그인 성공
-        if (postLoginReq.getUser_pw().equals(password)) { //비밀번호 일치하면 user_id, name, nickname 가져오기
+        if (postLoginReq.getUser_pw().equals(password)) { //비밀번호 일치하면 user_id, nickname 가져오기
             String userId = userDao.getPwd(postLoginReq).getUser_id();
             String jwtAccess = jwtService.createAccessJwt(userId);
             String jwtRefresh = jwtService.createRefreshJwt(userId);
-            String user_name = userDao.getPwd(postLoginReq).getUser_name();
             String user_nickname = userDao.getPwd(postLoginReq).getUser_nickname();
 
             int jwtRefreshIdx = userDao.pushRefreshToken(userId, jwtRefresh);
 
-            return new PostLoginRes(userId, jwtAccess, user_name, user_nickname, jwtRefreshIdx);
+            return new PostLoginRes(userId, jwtAccess, user_nickname, jwtRefreshIdx);
         } else { // 비밀번호 불일치
             throw new BaseException(FAILED_TO_LOGIN);
         }
