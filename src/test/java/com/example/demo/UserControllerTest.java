@@ -59,33 +59,33 @@ class UserControllerTest {
     void tearDown() {
     }
 
-    @Test
-    @Transactional
-    void 회원가입() {
+//    @Test
+//    @Transactional
+//    void 회원가입() {
+//
+//    }
 
-    }
+//    @Test
+//    void 로그인() throws Exception {
+//        PostLoginReq postLoginReq = new PostLoginReq("kang", "0000");
+//        MvcResult mvcResult = this.mockMvc.perform(MockMvcRequestBuilders
+//                .post("/user/log-in")
+//                .content(mapper.writeValueAsString(postLoginReq))
+//                .contentType(APPLICATION_JSON)
+//                .accept(APPLICATION_JSON)).andReturn();
+//        String contentAsString = mvcResult.getResponse().getContentAsString();
+//        ApiResponse res = mapper.readValue(contentAsString, ApiResponse.class);
+//        System.out.println(">>>>>>>>>>>>>>>>>>>>");
+//        System.out.println(contentAsString);
+//        System.out.println(res.toString());
+//    }
 
-    @Test
-    void 로그인() throws Exception {
-        PostLoginReq postLoginReq = new PostLoginReq("kang", "0000");
-        MvcResult mvcResult = this.mockMvc.perform(MockMvcRequestBuilders
-                .post("/user/log-in")
-                .content(mapper.writeValueAsString(postLoginReq))
-                .contentType(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)).andReturn();
-        String contentAsString = mvcResult.getResponse().getContentAsString();
-        ApiResponse res = mapper.readValue(contentAsString, ApiResponse.class);
-        System.out.println(">>>>>>>>>>>>>>>>>>>>");
-        System.out.println(contentAsString);
-        System.out.println(res.toString());
-    }
-
-    @Test
-    void id_중복체크() throws Exception {
-        String successCaseId = "infra2010";
-        Object obj = mockMvc.perform(get("/user/valid-id/" + successCaseId))
-                .andExpect(jsonPath("$.isSuccess").value(true))
-                .andDo(print());
-    }
+//    @Test
+//    void id_중복체크() throws Exception {
+//        String successCaseId = "infra2010";
+//        Object obj = mockMvc.perform(get("/user/valid-id/" + successCaseId))
+//                .andExpect(jsonPath("$.isSuccess").value(true))
+//                .andDo(print());
+//    }
 }
 
