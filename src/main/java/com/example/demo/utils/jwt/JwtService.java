@@ -22,7 +22,7 @@ import static com.example.demo.config.BaseResponseStatus.INVALID_USER_JWT;
 @Service
 public class JwtService {
 
-    private final long ACCESS_TOKEN_VALID_TIME = 1000 * 60L * 60L * 2L;   // 2시간
+    private final long ACCESS_TOKEN_VALID_TIME = 60 * 60 * 2 * 1000L;   // 2시간
     private final long REFRESH_TOKEN_VALID_TIME = 60 * 60 * 24 * 7 * 1000L;   // 1 달
 
     private final JwtDao jwtDao;

@@ -201,7 +201,7 @@ public class ProjectController {
      * 프로젝트 등록
      * 다중 파일 업르드 (form-data<image, json>)
      *
-     * @param postPjRegisterReq
+     * @param MultipartFiles
      * @return PostPjRegisterRes 프로젝트 이름
      * @author 한규범 강신현(s3)
      */
