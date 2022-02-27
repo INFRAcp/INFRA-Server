@@ -182,4 +182,17 @@ public class UserProvider {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
+    /**
+     * 프로필 사진 가져오기
+     * @param user_nickname
+     * @return String
+     * @author shinhyeon
+     */
+    public String getPrPhoto(String user_nickname) {
+        String user_prPhoto = null;
+        user_prPhoto = userDao.getPrphoto(user_nickname);
+        if(user_prPhoto == null) user_prPhoto = "https://infra-infra-bucket.s3.ap-northeast-2.amazonaws.com/prphoto/infra_profile.png";
+        return user_prPhoto;
+    }
 }

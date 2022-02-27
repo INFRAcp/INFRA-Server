@@ -242,8 +242,8 @@ public class UserController {
         try {
             GetProfileRes getProfileRes = userProvider.getProfile(userId);
             // 프로필 사진 가져오기
-//            String user_prPhoto = userProvider.getPrPhoto(getProfileRes.getUser_nickname());
-//            getProfileRes.setUser_prPhoto(user_prPhoto);
+            String user_prPhoto = userProvider.getPrPhoto(getProfileRes.getUser_nickname());
+            getProfileRes.setUser_prPhoto(user_prPhoto);
             return new BaseResponse<>(getProfileRes);
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
