@@ -9,11 +9,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
-import java.sql.Timestamp;
 import java.util.List;
 
 @Repository
-
 public class QaDao {
 
     private JdbcTemplate jdbcTemplate;
@@ -24,14 +22,14 @@ public class QaDao {
     }
 
     /**
-     * 모든 질문 조회x
+     * 질문 리스트 가져오기
      *
      * @param
      * @return List<질문 번호, 아이디, 질문, 답변, 질문한 시간, 답변한 시간, status></질문>
      * @author shinhyeon
      */
-    public List<GetQaRes> getQaRes() {
-        String getQaQuery = "select * from QA";
+    public List<GetQaRes> getQaAll() {
+        String getQaQuery = "select * from QA where qa_status!='삭제'";
 
         return this.jdbcTemplate.query(getQaQuery,
                 (rs, rowNum) -> new GetQaRes(
@@ -47,14 +45,14 @@ public class QaDao {
     }
 
     /**
-     * 특정 질문 조회
+     * 특정 사용자의 질문 목록 조회
      *
      * @param user_id
      * @return List<질문 번호, 아이디, 질문, 답변, 질문한 시간, 답변한 시간, status></질문>
      * @author shinhyeon
      */
     public List<GetQaRes> getQaByUserId(String user_id) {
-        String getQaByUserIdQuery = "select * from QA Where user_id = ?";
+        String getQaByUserIdQuery = "select * from QA Where user_id = ? and qa_status!='삭제'";
         String getQaByUserIdParam = user_id;
 
         return this.jdbcTemplate.query(getQaByUserIdQuery,
@@ -71,20 +69,30 @@ public class QaDao {
     }
 
     /**
+     * 특정 QA의 user_id 가져오기
+     *
+     * @param qa_num
+     * @return String
+     * @author yunhee
+     */
+    public String getUserIdByQaNum(int qa_num) {
+        String query = "select user_id from QA where qa_num=? and qa_status!='삭제'";
+        return this.jdbcTemplate.queryForObject(query, String.class, qa_num);
+    }
+
+    /**
      * 해당 qa_num을 갖는 질문 수정
      *
-     * @param PatchQaReq (qa_num, qa_q)
+     * @param qa_num
+     * @param patchQaReq
      * @return int
      * @author shinhyeon
      */
     public int modifyQa(int qa_num, PatchQaReq patchQaReq) {
-        String qa_qtimeQuery = "SELECT now()";
-        patchQaReq.setQa_qTime(this.jdbcTemplate.queryForObject(qa_qtimeQuery, Timestamp.class));
+        String modifyQaQuery = "update QA set qa_q = ?, qa_qTime = now() where qa_num = ?";
+        Object[] modifyQaParam = new Object[]{patchQaReq.getQa_q(), qa_num};
 
-        String modifyQaQuary = "update QA set qa_q = ?, qa_qTime = ? where qa_num = ?";
-        Object[] modifyQaParam = new Object[]{patchQaReq.getQa_q(), patchQaReq.getQa_qTime(), qa_num};
-
-        return this.jdbcTemplate.update(modifyQaQuary, modifyQaParam);
+        return this.jdbcTemplate.update(modifyQaQuery, modifyQaParam);
     }
 
     /**
@@ -95,7 +103,7 @@ public class QaDao {
      * @author shinhyeon
      */
     public GetQaRes getQaByQaNum(int qa_num) {
-        String getQaByQaNumQuery = "select * from QA Where qa_num = ?";
+        String getQaByQaNumQuery = "select * from QA Where qa_num = ? and qa_status!='삭제'";
         int getQaByQaNumParam = qa_num;
 
         return this.jdbcTemplate.queryForObject(getQaByQaNumQuery,
@@ -114,46 +122,41 @@ public class QaDao {
     /**
      * 질문 등록
      *
-     * @param PostQaReq (user_id, qa_q)
+     * @param postQaReq (user_id, qa_q)
      * @return int
      * @author shinhyeon
      */
-    public int uploadQa(PostQaReq postQaReq) {
-        String uploadQaQuery = "insert into QA (user_id, qa_q) VALUES (?,?)";
-        Object[] uploadQaParam = new Object[]{postQaReq.getUser_id(), postQaReq.getQa_q()};
+    public int createQa(PostQaReq postQaReq) {
+        String uploadQaQuery = "insert into QA (user_id, qa_q, qa_status) VALUES (?,?,?)";
+        Object[] uploadQaParam = new Object[]{postQaReq.getUser_id(), postQaReq.getQa_q(), "등록"};
 
         return this.jdbcTemplate.update(uploadQaQuery, uploadQaParam);
     }
 
     /**
-     * 질문 삭제
+     * 질문 삭제 : qa_status를 '삭제'로 변경
      *
-     * @param PostQaReq (user_id, qa_q)
+     * @param qa_num
      * @return int
      * @author shinhyeon
      */
-    public int modifyQa2(int qa_num) {
-        String modifyQaQuary = "update QA set qa_status = ? where qa_num = ?";
+    public int deleteQa(int qa_num) {
+        String modifyQaQuery = "update QA set qa_status = ? where qa_num = ?";
         Object[] modifyQaParam = new Object[]{"삭제", qa_num};
 
-        return this.jdbcTemplate.update(modifyQaQuary, modifyQaParam);
+        return this.jdbcTemplate.update(modifyQaQuery, modifyQaParam);
     }
 
     /**
-     * 해당 qa_num을 갖는 질문 수정
+     * 해당 qa_num에 해당하는 답변
      *
      * @param qa_num, patchAnswerReq
      * @return int
      * @author shinhyeon
      */
-
     public int answerQa(int qa_num, PatchAnswerReq patchAnswerReq) {
-        String qa_qtimeQuery = "SELECT now()";
-        patchAnswerReq.setQa_aTime(this.jdbcTemplate.queryForObject(qa_qtimeQuery, Timestamp.class));
-
-        String answerQaQuary = "update QA set qa_a = ?, qa_aTime = ? where qa_num = ?";
-        Object[] answerQaParam = new Object[]{patchAnswerReq.getQa_a(), patchAnswerReq.getQa_aTime(), qa_num};
-
-        return this.jdbcTemplate.update(answerQaQuary, answerQaParam);
+        String answerQaQuery = "update QA set qa_a = ?, qa_aTime = now() where qa_num = ?";
+        Object[] answerQaParam = new Object[]{patchAnswerReq.getQa_a(), qa_num};
+        return this.jdbcTemplate.update(answerQaQuery, answerQaParam);
     }
 }

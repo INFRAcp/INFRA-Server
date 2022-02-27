@@ -14,14 +14,13 @@ import javax.transaction.Transactional;
 import static com.example.demo.config.BaseResponseStatus.*;
 
 @Service
-
 public class QaService {
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final QaDao qaDao;
     private final QaProvider qaProvider;
 
-    @Autowired //readme 참고
+    @Autowired
     public QaService(QaDao qaDao, QaProvider qaProvider) {
         this.qaDao = qaDao;
         this.qaProvider = qaProvider;
@@ -30,12 +29,17 @@ public class QaService {
     /**
      * 해당 qa_num을 갖는 질문 수정
      *
-     * @param PatchQaReq (qa_num, qa_q)
+     * @param qa_num
+     * @param patchQaReq  - qa_q
      * @return
      * @throws BaseException
-     * @author shinhyeon
+     * @author shinhyeon, yunhee
      */
-    public void modifyQa(int qa_num, PatchQaReq patchQaReq) throws BaseException {
+    @Transactional
+    public void modifyQa(String userIdByJwt, int qa_num, PatchQaReq patchQaReq) throws BaseException {
+        String userId = qaProvider.getUserIdByQaNum(qa_num);
+        if (!userIdByJwt.equals(userId))
+            throw new BaseException(INVALID_USER_JWT);
         try {
             int result = qaDao.modifyQa(qa_num, patchQaReq);
             if (result == 0) {
@@ -49,17 +53,22 @@ public class QaService {
     /**
      * qa 등록
      *
-     * @param PostQaReq(user_id,qa_q)
+     * @param postQaReq - (user_id, qa_q)
      * @return
      * @throws BaseException
      * @author shinhyeon
      */
     @Transactional
-    public void uploadQa(PostQaReq postQaReq) throws BaseException {
+    public void createQa(PostQaReq postQaReq) throws BaseException {
         try {
-            qaDao.uploadQa(postQaReq);
+            if (qaDao.createQa(postQaReq) == 0) {
+                throw new BaseException(FAIL_TO_CREATE_QA);
+            }
         } catch (Exception exception) {
-            throw new BaseException(DATABASE_ERROR);
+            if (exception instanceof BaseException)
+                throw new BaseException(((BaseException) exception).getStatus());
+            else
+                throw new BaseException(DATABASE_ERROR);
         }
     }
 
@@ -71,9 +80,9 @@ public class QaService {
      * @throws BaseException
      * @author shinhyeon
      */
-    public void modifyQa2(int qa_num) throws BaseException {
+    public void deleteQa(int qa_num) throws BaseException {
         try {
-            int result = qaDao.modifyQa2(qa_num);
+            int result = qaDao.deleteQa(qa_num);
             if (result == 0) {
                 throw new BaseException(DELETE_FAIL_QA);
             }
