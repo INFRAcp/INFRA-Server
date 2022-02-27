@@ -17,7 +17,6 @@ public enum BaseResponseStatus {
     SEARCH_LENGTH_ERROR(false, 1300, "검색어 2글자 이상 입력해주세요."),
 
 
-
     /**
      * 2000 : Request 오류
      */
@@ -28,10 +27,13 @@ public enum BaseResponseStatus {
     INVALID_USER_JWT(false, 2003, "권한이 없는 유저의 접근입니다."),
     EXPIRATION_REFRESH_JWT(false, 2004, "리프레시 토큰이 만료되었습니다."),
     EXPIRATION_ACCESS_JWT(false, 2005, "엑세스 토큰이 만료되었습니다."),
+    REQUEST_BODY_FORMAT_ERROR(false, 2006, "JSON format으로 BODY를 전송하세요."),
+    HTTP_MEDIA_TYPE_NOT_SUPPORTED(false, 2007, "지원하지 않는 Media Type입니다."),
+
 
     // users (2100~)
     USERS_EMPTY_USER_ID(false, 2100, "유저 아이디 값을 확인해주세요."),
-    REQUEST_EMPTY(false, 2004,"필수 정보가 비었습니다."),
+    REQUEST_EMPTY(false, 2004, "필수 정보가 비었습니다."),
 
     // [POST] /users
     POST_USERS_EMPTY_EMAIL(false, 2101, "이메일을 입력해주세요."),
@@ -44,11 +46,11 @@ public enum BaseResponseStatus {
     POST_USERS_ALREADY_IN(false, 2108, "이미 회원가입이 완료된 사용자입니다."),
 
     // 소개페이지 (2200~)
-    POST_USERS_PROFILE_EMPTY_INFO(false,2201, "소개 페이지의 필수 정보가 비어있습니다."),
+    POST_USERS_PROFILE_EMPTY_INFO(false, 2201, "소개 페이지의 필수 정보가 비어있습니다."),
     POST_USER_PROFILE_MIN_PROFILE(false, 2202, "소개글은 최소 10자 이상 입력해주세요."),
-    POST_USER_PROFILE_MIN_ABILITY(false,2203, "능력은 최소 1글자 이상 입력해주세요."),
-    POST_USERS_PROFILE_KEYWORD_COUNT(false,2204, "키워드는 최대 6개까지 입력할 수 있습니다."),
-    POST_USERS_PROFILE_KEYWORD_WORD_COUNT(false,2205,"키워드의 글자수는 최소 1글자, 최대 5글자로 작성해주세요."),
+    POST_USER_PROFILE_MIN_ABILITY(false, 2203, "능력은 최소 1글자 이상 입력해주세요."),
+    POST_USERS_PROFILE_KEYWORD_COUNT(false, 2204, "키워드는 최대 6개까지 입력할 수 있습니다."),
+    POST_USERS_PROFILE_KEYWORD_WORD_COUNT(false, 2205, "키워드의 글자수는 최소 1글자, 최대 5글자로 작성해주세요."),
 
     // 프로젝트 (2300~)
     // Project 프로젝트 등록시 빈값 에러
@@ -85,8 +87,8 @@ public enum BaseResponseStatus {
     POST_PROJECT_GETTEAM_NULL(false, 2341, "승인된 팀원이 없습니다."),
     // 팀원 평가
     // [Post] /evaluate
-    POST_PROJECT_EVALUATE_SCORE(false, 2350,"평가 점수 범위는 0 ~ 5 이어야 합니다."),
-    POST_PROJECT_EVALUATE_EMPTY(false, 2351,"필수 요소가 비었습니다."),
+    POST_PROJECT_EVALUATE_SCORE(false, 2350, "평가 점수 범위는 0 ~ 5 이어야 합니다."),
+    POST_PROJECT_EVALUATE_EMPTY(false, 2351, "필수 요소가 비었습니다."),
 
     // 고객센터 (2500~)
     // 신고(report)
@@ -98,6 +100,7 @@ public enum BaseResponseStatus {
     MODIFY_FAIL_QA(false, 2512, "질문 수정 실패"),
     MODIFY_FAIL_ANSWER(false, 2513, "질문 답변 실패"),
     INVALID_AUTHORITY_ANSWER(false, 2514, "질문 답변 권한이 없습니다. (관리자만 답변이 가능합니다.)"),
+    QA_REQUEST_BODY_EMPTY(false, 2515, "필수 정보가 비어있습니다."),
 
     //SMS 관련 (2600~)
     POST_SMS_PHONEFORM_ERROE(false, 2601, "전화번호 형식이 알맞지 않습니다."),
@@ -124,14 +127,18 @@ public enum BaseResponseStatus {
 
     // 소개페이지 관련
     POST_USER_PROFILE_SAME_ABILITY(false, 3121, "중복된 능력(ability)은 입력할 수 없습니다."),
-    POST_USER_PROFILE_SAME_LINK(false,3122, "중복된 링크(link)는 입력할 수 없습니다."),
+    POST_USER_PROFILE_SAME_LINK(false, 3122, "중복된 링크(link)는 입력할 수 없습니다."),
     POST_USER_PROFILE_SAME_KEYWORD(false, 3123, "중복된 키워드(keyword)는 입력할 수 없습니다."),
 
     // 프로젝트 (3300~)
     // 팀원 평가
-    PROJECT_EVALUATE_AUTHORITY(false, 3351,"평가 권한이 없습니다. (프로젝트에 참여해야 평가 권한이 주어집니다.)"),
-    PROJECT_MEMBER(false, 3352,"해당 프로젝트의 참여 인원이 아닙니다. 프로젝트 번호와 평가 인원의 이름을 확인해주세요."),
+    PROJECT_EVALUATE_AUTHORITY(false, 3351, "평가 권한이 없습니다. (프로젝트에 참여해야 평가 권한이 주어집니다.)"),
+    PROJECT_MEMBER(false, 3352, "해당 프로젝트의 참여 인원이 아닙니다. 프로젝트 번호와 평가 인원의 이름을 확인해주세요."),
     PROJECT_EVALUATE(false, 3353, "존재하지 않는 평가입니다."),
+
+    // QA
+    NOT_EXIST_QA(false, 3501, "존재하지 않는 질문입니다."),
+    FAIL_TO_CREATE_QA(false, 3502, "질문 등록에 실패하셨습니다."),
 
     //SMS 관련 (3600~)
     DUPLICATED_PHONE(false, 3601, "해당번호로 이미 가입하였습니다."),
@@ -141,7 +148,7 @@ public enum BaseResponseStatus {
     PROJECT_APPROVE_AUTHORITY(false, 3360, "승인 권한이 없습니다. (프로젝트 팀장 권한)"),
     PROJECT_INVITESTATUS_ALREADY(false, 3361, "이미 승인한 유저입니다."),
     PROJECT_INVITESTATUS_REJECT(false, 3362, "이미 거절한 유저입니다."),
-    PROJECT_KICK_OUT(false,3363,"팀원이 아닙니다. (팀원만 강퇴가 가능합니다.)"),
+    PROJECT_KICK_OUT(false, 3363, "팀원이 아닙니다. (팀원만 강퇴가 가능합니다.)"),
 
     /**
      * 4000 : Database, Server 오류
@@ -150,6 +157,8 @@ public enum BaseResponseStatus {
     SERVER_ERROR(false, 4001, "서버와의 연결에 실패하였습니다."),
     EMAIL_ERROR(false, 4002, "서버 전용 이메일에 문제가 발생했습니다."),
     EMAIL_AUTH_ERROR(false, 4003, "서버 전용 이메일 계정 인증에 실패했습니다."),
+    URI_NOT_EXIST(false, 4004, "존재하지 않는 URI입니다."),
+    METHOD_NOT_EXIST(false, 4005, "사용할 수 없는 Method입니다."),
 
     //[PATCH] /users/{userIdx} (4010~)
     PASSWORD_ENCRYPTION_ERROR(false, 4011, "비밀번호 암호화에 실패하였습니다."),
