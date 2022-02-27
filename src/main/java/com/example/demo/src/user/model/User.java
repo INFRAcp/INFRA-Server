@@ -16,7 +16,6 @@ public class User {
     private float user_grade;
     private String user_phone;
     private String user_email;
-    private String user_name;
     private String user_prPhoto;
     private String user_prProfile;
 }

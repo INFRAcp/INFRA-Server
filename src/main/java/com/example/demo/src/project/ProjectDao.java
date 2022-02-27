@@ -3,13 +3,10 @@ package com.example.demo.src.project;
 import com.example.demo.config.BaseException;
 import com.example.demo.src.project.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
-import java.sql.ResultSet;
 import java.util.List;
 
 @Repository
@@ -44,6 +41,7 @@ public class ProjectDao {
                         "모집중",
                         rs.getInt("DATEDIFF(pj_deadline,now())"),
                         0,
+                        null,
                         null
                 ));
     }
@@ -81,6 +79,7 @@ public class ProjectDao {
                         "모집중",
                         rs.getInt("DATEDIFF(pj_deadline,now())"),
                         0,
+                        null,
                         null),
                 getProjectsBySearchParams,
                 getProjectsBySearchParams,
@@ -148,7 +147,8 @@ public class ProjectDao {
                         rs.getString("pj_deadline"),
                         rs.getInt("pj_totalPerson"),
                         rs.getInt("pj_recruitPerson"),
-                        rs.getString("pj_time")),
+                        rs.getString("pj_time"),
+                        null),
                 getParams
         );
     }
@@ -200,7 +200,8 @@ public class ProjectDao {
                         rs.getString("pj_deadline"),
                         rs.getInt("pj_totalPerson"),
                         rs.getInt("pj_recruitPerson"),
-                        rs.getString("pj_time")),
+                        rs.getString("pj_time"),
+                        null),
                 Pj_inquiryParams
         );
     }
@@ -649,14 +650,16 @@ public class ProjectDao {
     public String[] getHashtag(int pj_num) {
         String nullcheckHashtag = "SELECT count(*) FROM Pj_hashtag WHERE pj_num = ?";
         int cnt = this.jdbcTemplate.queryForObject(nullcheckHashtag, int.class, pj_num);
-        if(cnt > 0){
-                String getHashtagQuery = "SELECT hashtag FROM Pj_hashtag WHERE pj_num = ?";
-                List<String> hashTag = this.jdbcTemplate.queryForList(getHashtagQuery,String.class,pj_num);
-                String hashtag[] = hashTag.toArray(new String[hashTag.size()]); //형변환
+        if (cnt > 0) {
+            String getHashtagQuery = "SELECT hashtag FROM Pj_hashtag WHERE pj_num = ?";
+            List<String> hashTag = this.jdbcTemplate.queryForList(getHashtagQuery, String.class, pj_num);
+            String hashtag[] = hashTag.toArray(new String[hashTag.size()]); //형변환
 
-                return hashtag;
+            return hashtag;
         }
         return null;
+    }
+
     /**
      * 유저 등급 조회
      *
@@ -667,5 +670,16 @@ public class ProjectDao {
     public float getGrade(String user_id) {
         String getGradeQuery = "SELECT user_grade FROM User WHERE user_id = ?";
         return this.jdbcTemplate.queryForObject(getGradeQuery, Float.class, user_id);
+    }
+
+    /**
+     * 프로젝트 사진 경로 조회
+     * @param pj_num
+     * @return List<String>
+     * @qathor shinhyeon
+     */
+    public List<String> getPjPhoto(int pj_num) {
+        String getPjPhotoQuery = "SELECT pjPhoto FROM Pj_photo WHERE pj_num = ?";
+        return this.jdbcTemplate.queryForList(getPjPhotoQuery, String.class, pj_num);
     }
 }

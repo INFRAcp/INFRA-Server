@@ -207,9 +207,6 @@ public class UserService {
         if (!isRegexPw(postUserReq.getUser_pw())) {    // 비밀번호 형식 체크
             throw new BaseException(POST_USERS_INVALID_PW);
         }
-        if (!isRegexName(postUserReq.getUser_name())) {   // 이름 형식 체크
-            throw new BaseException(POST_USERS_INVALID_NAME);
-        }
         if (!isRegexPhone(postUserReq.getUser_phone())) {    // 핸드폰 번호 형식 체크
             throw new BaseException(POST_USERS_INVALID_PHONE);
         }

@@ -38,15 +38,15 @@ public class UserController {
      * 회원가입 API
      * [POST] /user/sign-up
      *
-     * @param postUserReq - id, pw, name, email, phone, nickname
+     * @param postUserReq - id, pw, email, phone, nickname
      * @return BaseResponse
-     * @author yunhee
+     * @author yunhee, yewon
      */
     @ResponseBody
     @PostMapping("/sign-up")
     public BaseResponse<PostUserRes> createUser(@RequestBody PostUserReq postUserReq) {
         if (postUserReq.getUser_id() == null || postUserReq.getUser_pw() == null || postUserReq.getUser_nickname() == null
-                || postUserReq.getUser_email() == null || postUserReq.getUser_name() == null || postUserReq.getUser_phone() == null) {
+                || postUserReq.getUser_email() == null || postUserReq.getUser_phone() == null) {
             return new BaseResponse<>(POST_USERS_EMPTY_INFO);
         }
 
@@ -234,13 +234,16 @@ public class UserController {
      *
      * @param userId
      * @return BaseResponse
-     * @author yunhee, yewon
+     * @author yunhee, yewon, shinhyeon(s3)
      */
     @ResponseBody
     @GetMapping("/profile/{userId}")
     public BaseResponse<GetProfileRes> getProfile(@PathVariable("userId") String userId) {
         try {
             GetProfileRes getProfileRes = userProvider.getProfile(userId);
+            // 프로필 사진 가져오기
+            String user_prPhoto = userProvider.getPrPhoto(getProfileRes.getUser_nickname());
+            getProfileRes.setUser_prPhoto(user_prPhoto);
             return new BaseResponse<>(getProfileRes);
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());

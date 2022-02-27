@@ -28,6 +28,10 @@ repositories {
 //스프링 부트 디펜던시 추가 하는곳
 dependencies {
 
+    // 네이버 로그인 API에 대한 의존성 추가
+    compile 'org.springframework.boot:spring-boot-starter-webflux'
+    compile 'org.projectreactor:reactor-spring:1.0.1.RELEASE'
+
     // 카카오 로그인 API에 대한 의존성 추가
     implementation 'com.google.code.gson:gson:2.8.9'
 
@@ -74,6 +78,12 @@ dependencies {
     implementation group: 'org.springframework.security.oauth', name: 'spring-security-oauth2', version: '2.3.5.RELEASE'
 
 
+    // Aws - S3
+    compile 'org.springframework.cloud:spring-cloud-starter-aws:2.0.1.RELEASE'
+    implementation platform('com.amazonaws:aws-java-sdk-bom:1.11.228')
+    implementation 'com.amazonaws:aws-java-sdk-s3'
+
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 }
 
 test {

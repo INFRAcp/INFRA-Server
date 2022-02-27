@@ -1,4 +1,4 @@
-package com.example.demo.src.google.dto;
+package com.example.demo.src.user.oauth.google.dto;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

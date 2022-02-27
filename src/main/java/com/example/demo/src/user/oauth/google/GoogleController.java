@@ -1,13 +1,14 @@
-package com.example.demo.src.google;
+package com.example.demo.src.user.oauth.google;
 
-import com.example.demo.src.google.constants.ConfigUtils;
-import com.example.demo.src.google.dto.GoogleLoginDto;
-import com.example.demo.src.google.dto.GoogleLoginRequest;
-import com.example.demo.src.google.dto.GoogleLoginResponse;
+import com.example.demo.src.user.oauth.google.constants.ConfigUtils;
+import com.example.demo.src.user.oauth.google.dto.GoogleLoginDto;
+import com.example.demo.src.user.oauth.google.dto.GoogleLoginRequest;
+import com.example.demo.src.user.oauth.google.dto.GoogleLoginResponse;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,12 +24,22 @@ import java.net.URISyntaxException;
 @RequestMapping(value = "/google")
 public class GoogleController {
 
+    @Autowired
+    private GoogleDao googleDao;
+
     private final ConfigUtils configUtils;
 
-    GoogleController(ConfigUtils configUtils) {
+    GoogleController(ConfigUtils configUtils, GoogleDao googleDao) {
         this.configUtils = configUtils;
+        this.googleDao = googleDao;
     }
 
+
+    /**
+     * 구글 로그인(요청 uri) API
+     * @return
+     * @author 규범
+     */
     @GetMapping(value = "/login")
     public ResponseEntity<Object> moveGoogleInitUrl() {
         String authUrl = configUtils.googleInitUrl();
@@ -45,6 +56,12 @@ public class GoogleController {
         return ResponseEntity.badRequest().build();
     }
 
+    /**
+     * 구글 로그인(응답 uri) API
+     * @param authCode
+     * @return
+     * @author 예원, 성식, 규범
+     */
     @GetMapping(value = "/login/redirect")
     public ResponseEntity<GoogleLoginDto> redirectGoogleLogin(
             @RequestParam(value = "code") String authCode
@@ -82,7 +99,7 @@ public class GoogleController {
 
             if(resultJson != null) {
                 GoogleLoginDto userInfoDto = objectMapper.readValue(resultJson, new TypeReference<GoogleLoginDto>() {});
-
+                googleDao.insertInfo(userInfoDto.getEmail());
                 return ResponseEntity.ok().body(userInfoDto);
             }
             else {

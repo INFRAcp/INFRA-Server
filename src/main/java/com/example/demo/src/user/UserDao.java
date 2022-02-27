@@ -22,14 +22,14 @@ public class UserDao {
     /**
      * 회원가입
      *
-     * @param postUserReq - id, pw, nickname, phone, email, name
+     * @param postUserReq - id, pw, nickname, phone, email
      * @author yunhee
      */
     public void createUser(PostUserReq postUserReq) {
         String createUserQuery = "insert into User (user_id, user_pw, user_nickname, user_grade, user_phone, " +
-                "user_email, user_name) VALUES (?,?,?,0,?,?,?)"; // 실행될 동적 쿼리문
+                "user_email) VALUES (?,?,?,0,?,?)"; // 실행될 동적 쿼리문
         Object[] createUserParams = new Object[]{postUserReq.getUser_id(), postUserReq.getUser_pw(), postUserReq.getUser_nickname(), postUserReq.getUser_phone(),
-                postUserReq.getUser_email(), postUserReq.getUser_name()};
+                postUserReq.getUser_email()};
         this.jdbcTemplate.update(createUserQuery, createUserParams);
     }
 
@@ -315,4 +315,10 @@ public class UserDao {
 
 
 
+
+    public String getPrphoto(String user_nickname) {
+        String getPrphotoQuery = "SELECT user_prPhoto from User Where user_nickname = ?";
+
+        return this.jdbcTemplate.queryForObject(getPrphotoQuery, new String[]{user_nickname}, String.class);
+    }
 }
