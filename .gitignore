@@ -148,6 +148,6 @@ gradle-app.setting
 
 
 # yml 파일 secret info
-src/main/resources/application.yml
-application.yml
-aws.yml
+#src/main/resources/application.yml
+#application.yml
+#aws.yml
