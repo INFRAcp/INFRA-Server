@@ -73,7 +73,7 @@ public class UserController {
             return new BaseResponse<>(POST_USERS_EMPTY_INFO);
         }
         try {
-            PostLoginRes postLoginRes = userProvider.logIn(postLoginReq);
+            PostLoginRes postLoginRes = userService.logIn(postLoginReq);
             return new BaseResponse<>(postLoginRes);
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());

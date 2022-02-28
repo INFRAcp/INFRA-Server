@@ -1,16 +1,11 @@
 package com.example.demo.src.help.qa.model;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
 
-import java.sql.Timestamp;
+import javax.validation.constraints.NotBlank;
 
 @Getter
-@Setter
-@AllArgsConstructor
-
 public class PatchQaReq {
+    @NotBlank
     private String qa_q;
-    private Timestamp qa_qTime;
 }

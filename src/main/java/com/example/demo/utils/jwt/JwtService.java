@@ -13,22 +13,20 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Calendar;
 import java.util.Date;
 
 import static com.example.demo.config.BaseResponseStatus.*;
-import static com.example.demo.config.BaseResponseStatus.INVALID_USER_JWT;
 
 @Service
 public class JwtService {
 
-    private final long ACCESS_TOKEN_VALID_TIME = 1000 * 60L * 60L * 2L;   // 2시간
+    private final long ACCESS_TOKEN_VALID_TIME = 60 * 60 * 2 * 1000L;   // 2시간
     private final long REFRESH_TOKEN_VALID_TIME = 60 * 60 * 24 * 7 * 1000L;   // 1 달
 
     private final JwtDao jwtDao;
 
     @Autowired
-    public JwtService(JwtDao jwtDao){
+    public JwtService(JwtDao jwtDao) {
         this.jwtDao = jwtDao;
     }
 
@@ -50,11 +48,12 @@ public class JwtService {
 
     /**
      * Refresh JWT 생성
+     *
      * @param userId
      * @return
      * @author 규범
      */
-    public String createRefreshJwt(String userId){
+    public String createRefreshJwt(String userId) {
         Date now = new Date();
         return Jwts.builder()
                 .setHeaderParam("type", "jwt")
@@ -74,7 +73,7 @@ public class JwtService {
         return request.getHeader("X-ACCESS-TOKEN");
     }
 
-    public String resolveRefreshToken(){
+    public String resolveRefreshToken() {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
         return request.getHeader("X-REFRESH-TOKEN");
     }
@@ -102,9 +101,9 @@ public class JwtService {
             //엑세스 토큰 만료
             try {
                 String refreshTokenIdx = resolveRefreshToken();
-                if(refreshTokenIdx == null || refreshTokenIdx.length() ==0){
+                if (refreshTokenIdx == null || refreshTokenIdx.length() == 0) {
                     throw new BaseException(EMPTY_JWT);
-                }else{
+                } else {
                     //리프레시토큰 DB에서 가져오기
                     String refreshToken = jwtDao.getRefreshToken(refreshTokenIdx);
                     claims = Jwts.parser()
@@ -112,7 +111,7 @@ public class JwtService {
                             .parseClaimsJws(refreshToken);  // 파싱 및 검증, 실패 시 에러
                     return "재발급";
                 }
-            }catch (Exception ignored2){
+            } catch (Exception ignored2) {
                 //리프레시 토큰 만료될 경우
                 return "만료";
             }
@@ -126,6 +125,7 @@ public class JwtService {
 
     /**
      * 유저 JWT 유효성 검사
+     *
      * @param userId
      * @param userIdByJwt
      * @return BaseResponse
@@ -134,10 +134,10 @@ public class JwtService {
     public void JwtEffectiveness(String userId, String userIdByJwt) throws BaseException {
         if (userIdByJwt.equals("만료")) {
             throw new BaseException(EXPIRATION_REFRESH_JWT);
-        }else if (userIdByJwt.equals("재발급")) {
+        } else if (userIdByJwt.equals("재발급")) {
             throw new BaseException(EXPIRATION_ACCESS_JWT);
-        }else if(!userId.equals(userIdByJwt)){
+        } else if (!userId.equals(userIdByJwt)) {
             throw new BaseException(INVALID_USER_JWT);
-            }
         }
+    }
 }
