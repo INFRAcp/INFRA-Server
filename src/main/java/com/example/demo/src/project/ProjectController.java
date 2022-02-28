@@ -207,7 +207,7 @@ public class ProjectController {
      */
     @ResponseBody
     @PostMapping("/registration")
-    public BaseResponse<PostPjRegisterRes> pjRegistration(@RequestParam("jsonList") String jsonList, @RequestPart("images") MultipartFile[] MultipartFiles) throws IOException {
+    public BaseResponse<PostPjRegisterRes> pjRegistration(@RequestParam("jsonList") String jsonList, @RequestPart(value = "images", required = false) MultipartFile[] MultipartFiles) throws IOException {
         try {
             ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
             PostPjRegisterReq postPjRegisterReq = objectMapper.readValue(jsonList, new TypeReference<PostPjRegisterReq>() {
@@ -216,14 +216,18 @@ public class ProjectController {
             jwtService.JwtEffectiveness(postPjRegisterReq.getUser_id(), jwtService.getUserId());
             PostPjRegisterRes postPjRegisterRes = projectService.registrationPj(postPjRegisterReq);
 
-            for(int i = 0; i < MultipartFiles.length; i++) { // 다중 이미지 파일
-                // s3에 업로드
-                int pj_num = postPjRegisterReq.getPj_num();
-                String s3path = "pjphoto/pj_num : " + Integer.toString(pj_num);
-                String imgPath = s3Service.uploadPrphoto(MultipartFiles[i], s3path);
-                // db에 반영 (Pj_photo)
-                s3Service.uploadPjPhoto(imgPath, pj_num);
+            if(MultipartFiles != null)
+            {
+                for(int i = 0; i < MultipartFiles.length; i++) { // 다중 이미지 파일
+                    // s3에 업로드
+                    int pj_num = postPjRegisterReq.getPj_num();
+                    String s3path = "pjphoto/pj_num : " + Integer.toString(pj_num);
+                    String imgPath = s3Service.uploadPrphoto(MultipartFiles[i], s3path);
+                    // db에 반영 (Pj_photo)
+                    s3Service.uploadPjPhoto(imgPath, pj_num);
+                }
             }
+
 
             return new BaseResponse<>(postPjRegisterRes);
         } catch (BaseException exception) {
