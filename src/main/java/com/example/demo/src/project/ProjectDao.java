@@ -195,7 +195,7 @@ public class ProjectDao {
                         rs.getInt("pj_views"),
                         rs.getString("pj_categoryName"),
                         rs.getString("pj_name"),
-                        rs.getString("pj_subCategoryNum"),
+                        rs.getInt("pj_subCategoryNum"),
                         rs.getString("pj_progress"),
                         rs.getString("pj_deadline"),
                         rs.getInt("pj_totalPerson"),
