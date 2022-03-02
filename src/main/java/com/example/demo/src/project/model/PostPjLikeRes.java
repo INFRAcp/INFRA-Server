@@ -16,7 +16,6 @@ public class PostPjLikeRes {
     private String pj_header;
     private int pj_views;
     private String pj_categoryName;
-    private String pj_name;
     private String pj_subCategoryNum;
     private String pj_progress;
     private String pj_deadline;

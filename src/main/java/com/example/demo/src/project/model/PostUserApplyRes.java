@@ -11,7 +11,6 @@ public class PostUserApplyRes {
     private int pj_num;
     private String pj_inviteStatus;
 
-    private String pj_name;
     private int pj_views;
     private String pj_header;
 }

@@ -57,7 +57,6 @@ public enum BaseResponseStatus {
     POST_PROJECT_EMPTY_HEADER(false, 2310, "프로젝트 제목을 입력해주세요."),
     POST_PROJECT_EMPTY_FIELD(false, 2311, "프로젝트 분야를 입력해주세요."),
     POST_PROJECT_EMPTY_CONTENT(false, 2312, "프로젝트 내용을 입력해주세요."),
-    POST_PROJECT_EMPTY_NAME(false, 2313, "프로젝트 이름을 입력해주세요."),
     POST_PROJECT_EMPTY_SUBFIELD(false, 2314, "프로젝트 세부 분야를 입력해주세요."),
     POST_PROJECT_EMPTY_PROGRESS(false, 2315, "프로젝트 진도를 입력해주세요."),
     POST_PROJECT_EMPTY_END_TERM(false, 2316, "프로젝트 종료 시점을 입력해주세요."),
