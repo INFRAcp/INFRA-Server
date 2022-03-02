@@ -308,7 +308,8 @@ public class ProjectController {
             return new BaseResponse<>(REQUEST_EMPTY);
         }
         try {
-            jwtService.JwtEffectiveness(patchPjMemberReq.getUser_id(), jwtService.getUserId());
+            String teamLeader = projectProvider.getTeamLeader(patchPjMemberReq.getPj_num());
+            jwtService.JwtEffectiveness(teamLeader, jwtService.getUserId());
 
             if (patchPjMemberReq.getPj_inviteStatus().equals("강퇴")) {
                 PatchPjMemberRes patchPjMemberRes = projectService.pjKickOut(patchPjMemberReq, jwtService.getUserId());
