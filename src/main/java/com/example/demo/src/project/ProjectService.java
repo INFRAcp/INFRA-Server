@@ -41,7 +41,7 @@ public class ProjectService {
         //날짜 관련 검사
         PjDateCheck(postPjRegisterReq.getPj_deadline(), postPjRegisterReq.getPj_startTerm(), postPjRegisterReq.getPj_endTerm());
         // NULL 값 검사
-        PjNullCheck(postPjRegisterReq.getPj_header(), postPjRegisterReq.getPj_categoryName(), postPjRegisterReq.getPj_content(), postPjRegisterReq.getPj_name(), postPjRegisterReq.getPj_subCategoryName(), postPjRegisterReq.getPj_progress(), postPjRegisterReq.getPj_endTerm(), postPjRegisterReq.getPj_startTerm(), postPjRegisterReq.getPj_deadline(), postPjRegisterReq.getPj_totalPerson());
+        PjNullCheck(postPjRegisterReq.getPj_header(), postPjRegisterReq.getPj_categoryName(), postPjRegisterReq.getPj_content(), postPjRegisterReq.getPj_subCategoryName(), postPjRegisterReq.getPj_progress(), postPjRegisterReq.getPj_endTerm(), postPjRegisterReq.getPj_startTerm(), postPjRegisterReq.getPj_deadline(), postPjRegisterReq.getPj_totalPerson());
         //해시태그 관련 검사
         PjHashTagCheck(postPjRegisterReq.getHashtag());
         //카테고리 번호, 이름
@@ -67,7 +67,7 @@ public class ProjectService {
         //날짜 관련 검사
         PjDateCheck(patchPjModifyReq.getPj_deadline(), patchPjModifyReq.getPj_startTerm(), patchPjModifyReq.getPj_endTerm());
         // NULL 값 검사
-        PjNullCheck(patchPjModifyReq.getPj_header(), patchPjModifyReq.getPj_categoryNum(), patchPjModifyReq.getPj_content(), patchPjModifyReq.getPj_name(), patchPjModifyReq.getPj_subCategoryNum(), patchPjModifyReq.getPj_progress(), patchPjModifyReq.getPj_endTerm(), patchPjModifyReq.getPj_startTerm(), patchPjModifyReq.getPj_deadline(), patchPjModifyReq.getPj_totalPerson());
+        PjNullCheck(patchPjModifyReq.getPj_header(), patchPjModifyReq.getPj_categoryNum(), patchPjModifyReq.getPj_content(), patchPjModifyReq.getPj_subCategoryNum(), patchPjModifyReq.getPj_progress(), patchPjModifyReq.getPj_endTerm(), patchPjModifyReq.getPj_startTerm(), patchPjModifyReq.getPj_deadline(), patchPjModifyReq.getPj_totalPerson());
         //해시태그 관련 검사
         PjHashTagCheck(patchPjModifyReq.getHashtag());
 
@@ -251,7 +251,7 @@ public class ProjectService {
      * @throws BaseException
      * @author 한규범
      */
-    public void PjNullCheck(String pj_header, String pj_field, String pj_content, String pj_name, String pj_subField, String pj_progress, String pj_endTerm, String pj_startTerm, String pj_deadline, int pj_totalPerson) throws BaseException {
+    public void PjNullCheck(String pj_header, String pj_field, String pj_content, String pj_subField, String pj_progress, String pj_endTerm, String pj_startTerm, String pj_deadline, int pj_totalPerson) throws BaseException {
         if (pj_header == null) {
             throw new BaseException(POST_PROJECT_EMPTY_HEADER);
         }
@@ -260,9 +260,6 @@ public class ProjectService {
         }
         if (pj_content == null) {
             throw new BaseException(POST_PROJECT_EMPTY_CONTENT);
-        }
-        if (pj_name == null) {
-            throw new BaseException(POST_PROJECT_EMPTY_NAME);
         }
         if (pj_subField == null) {
             throw new BaseException(POST_PROJECT_EMPTY_SUBFIELD);
