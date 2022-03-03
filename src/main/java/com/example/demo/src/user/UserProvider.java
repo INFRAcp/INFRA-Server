@@ -1,9 +1,9 @@
 package com.example.demo.src.user;
 
 import com.example.demo.config.BaseException;
-import com.example.demo.config.secret.Secret;
-import com.example.demo.src.user.model.*;
-import com.example.demo.utils.AES128;
+import com.example.demo.src.user.model.GetProfileRes;
+import com.example.demo.src.user.model.GetUserRes;
+import com.example.demo.src.user.model.User;
 import com.example.demo.utils.jwt.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.example.demo.config.BaseResponseStatus.*;
+import static com.example.demo.config.BaseResponseStatus.DATABASE_ERROR;
+import static com.example.demo.config.BaseResponseStatus.NOT_EXISTS_USER_ID;
 
 @Service
 public class UserProvider {
@@ -88,15 +89,15 @@ public class UserProvider {
     /**
      * nickname 중복 체크
      *
-     * @param nickname
+     * @param user_nickname
      * @return int - 이미 존재하면 1, 없으면 0
      * @throws BaseException
-     * @author yunhee
+     * @author yunhee, yewon
      */
     @Transactional(readOnly = true)
-    public int checkNickname(String nickname) throws BaseException {
+    public int checkNickname(String user_nickname) throws BaseException {
         try {
-            return userDao.checkNickname(nickname);
+            return userDao.checkNickname(user_nickname);
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }
