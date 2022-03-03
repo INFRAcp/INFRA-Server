@@ -20,7 +20,6 @@ public class GetProjectRes {
     private int pj_num;
     private String pj_header;
     private String pj_categoryName;
-    private String pj_name;
     private String pj_progress;
     private String pj_deadline;
     private int pj_totalPerson;

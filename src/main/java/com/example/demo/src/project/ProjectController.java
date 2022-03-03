@@ -418,12 +418,7 @@ public class ProjectController {
     public BaseResponse<List<GetEvalRes>> getEval(@RequestParam String passiveUser_id) {
         try {
             // Query String (user_id) 가 받은 평가들만 조회
-            // jwt
-            String userIdByJwt = jwtService.getUserId();
-            if (!passiveUser_id.equals(userIdByJwt)) {
-                return new BaseResponse<>(INVALID_USER_JWT);
-            }
-
+            jwtService.JwtEffectiveness(passiveUser_id, jwtService.getUserId());
             List<GetEvalRes> getEvalRes = projectProvider.getEval(passiveUser_id);
             return new BaseResponse<>(getEvalRes);
         } catch (BaseException exception) {
@@ -451,10 +446,7 @@ public class ProjectController {
 
         try {
             // jwt (평가하는 user_id 와 jwt의 id 를 비교)
-            String userIdByJwt = jwtService.getUserId();
-            if (!postEvalReq.getUser_id().equals(userIdByJwt)) {
-                return new BaseResponse<>(INVALID_USER_JWT);
-            }
+            jwtService.JwtEffectiveness(postEvalReq.getUser_id(), jwtService.getUserId());
 
             // 팀원 평가 등록
             projectService.uploadEval(postEvalReq);
@@ -490,11 +482,7 @@ public class ProjectController {
 
         try {
             // jwt
-            String userIdByJwt = jwtService.getUserId();
-
-            if (!patchEvalReq.getUser_id().equals(userIdByJwt)) {
-                return new BaseResponse<>(INVALID_USER_JWT);
-            }
+            jwtService.JwtEffectiveness(patchEvalReq.getUser_id(), jwtService.getUserId());
 
             // 팀원 평가 수정
             projectService.modifyEval(patchEvalReq);
@@ -526,11 +514,7 @@ public class ProjectController {
         }
         try {
             // jwt
-            String userIdByJwt = jwtService.getUserId();
-
-            if (!patchEvalDelReq.getUser_id().equals(userIdByJwt)) {
-                return new BaseResponse<>(INVALID_USER_JWT);
-            }
+            jwtService.JwtEffectiveness(patchEvalDelReq.getUser_id(), jwtService.getUserId());
 
             // 팀원 평가 삭제
             projectService.delEval(patchEvalDelReq);
