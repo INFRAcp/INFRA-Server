@@ -505,9 +505,19 @@ public class ProjectService {
         }
     }
 
-    public GetContactRes pjContact(String pj_num, String user_id) throws BaseException{
+    public GetContactRes pjContact(int pj_num, String user_id) throws BaseException{
         try {
-            return projectDao.pjContact(pj_num, user_id);
+            GetContactRes getContactRes = projectDao.pjContact(pj_num, user_id);
+            getContactRes.setHashtag(projectDao.getHashtag(pj_num));
+            return getContactRes;
+        }catch (Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    public void plusViews(int pj_num, String user_id) throws BaseException{
+        try {
+            projectDao.plusViews(pj_num, user_id);
         }catch (Exception exception){
             throw new BaseException(DATABASE_ERROR);
         }

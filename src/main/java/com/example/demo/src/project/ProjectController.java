@@ -527,11 +527,11 @@ public class ProjectController {
 
     @ResponseBody
     @GetMapping("/contact")
-    public BaseResponse<GetContactRes> pjContact(@RequestParam(required = false) String pj_num, @RequestHeader(required = false) String user_id){
+    public BaseResponse<GetContactRes> pjContact(@RequestParam(required = false) int pj_num, @RequestHeader(required = false) String user_id){
         try{
 //            jwtService.JwtEffectiveness(user_id, jwtService.getUserId());
             GetContactRes getContactRes = projectService.pjContact(pj_num, user_id);
-
+            projectService.plusViews(pj_num, user_id);
 
 
             return new BaseResponse<>(getContactRes);

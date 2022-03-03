@@ -15,7 +15,7 @@ public class GetContactRes {
     private String pj_categoryName;
     private String pj_subCategoryName;
     private String pj_content;
-    private String pj_name;
+    private String pj_header;
     private String pj_progress;
     private String pj_endTerm;
     private String pj_startTerm;

@@ -7,6 +7,10 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Repository
@@ -675,8 +679,8 @@ public class ProjectDao {
         return this.jdbcTemplate.queryForList(getPjPhotoQuery, String.class, pj_num);
     }
 
-    public GetContactRes pjContact(String pj_num, String user_id) {
-        String pjContactQuery = "SELECT Project.user_id, user_nickname, user_prPhoto, pj_name, pj_views, pj_categoryName, pj_subCategoryName, pj_content, pj_progress, pj_endTerm, pj_startTerm, pj_deadline, pj_totalPerson, pj_recruitPerson," +
+    public GetContactRes pjContact(int pj_num, String user_id) {
+        String pjContactQuery = "SELECT Project.user_id, user_nickname, user_prPhoto, pj_header, pj_views, pj_categoryName, pj_subCategoryName, pj_content, pj_progress, pj_endTerm, pj_startTerm, pj_deadline, pj_totalPerson, pj_recruitPerson," +
                 "(SELECT count(*) FROM Project, Pj_like WHERE Project.pj_num = Pj_like.pj_num and Project.pj_num = ?) as CNT " +
                 "FROM User, Project, Pj_subCategory, Pj_category " +
                 "WHERE Project.user_id = User.user_id and Pj_subCategory.pj_categoryNum = Pj_category.pj_categoryNum and Project.pj_categoryNum = Pj_category.pj_categoryNum and Project.pj_subCategoryNum = Pj_subCategory.pj_subCategoryNum and pj_num = ?";
@@ -687,7 +691,7 @@ public class ProjectDao {
                         pj_categoryName(rs.getString("pj_categoryName")).
                         pj_subCategoryName(rs.getString("pj_subCategoryName")).
                         pj_content(rs.getString("pj_content")).
-                        pj_name(rs.getString("pj_name")).
+                        pj_header(rs.getString("pj_header")).
                         pj_progress(rs.getString("pj_progress")).
                         pj_endTerm(rs.getString("pj_endTerm")).
                         pj_startTerm(rs.getString("pj_startTerm")).
@@ -699,5 +703,33 @@ public class ProjectDao {
                         hashtag(null).
                         pjLikeCount(rs.getInt("CNT")).build(), pj_num, pj_num);
 
+    }
+
+    public void plusViews(int pj_num, String user_id) {
+        String plusViewsCheckQuery = "SELECT count(*) FROM Pj_inquiry WHERE user_id = ? and pj_num = ?";
+        int timeCount = this.jdbcTemplate.queryForObject(plusViewsCheckQuery, int.class, user_id, pj_num);
+        if(timeCount==0){ //처음 조회
+            String inputViews = "insert into Pj_inquiry (user_id, pj_num, pj_inquiryTime) VALUES (?,?,DEFAULT)";
+            this.jdbcTemplate.update(inputViews, user_id, pj_num);
+        } else if (timeCount==1) { //두번 이상 조회
+            String plusViewsQuery = "SELECT pj_inquiryTime FROM Pj_inquiry WHERE user_id = ? and pj_num = ?";
+            String time = this.jdbcTemplate.queryForObject(plusViewsQuery, String.class, user_id, pj_num);
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+            LocalDateTime ldTime = LocalDateTime.parse(time, formatter);
+            ldTime = ldTime.plusHours(30);
+            LocalDateTime now = LocalDateTime.now();
+
+            if(ldTime.isBefore(now)){ // 30분이 경과된 경우
+                String plusViews = "SELECT pj_views FROM Project WHERE pj_num = ?";
+                int views = this.jdbcTemplate.queryForObject(plusViews, int.class, pj_num);
+                views++;
+
+                String plusPjViews = "UPDATE Prject SET ph_views = ?";
+                this.jdbcTemplate.update(plusPjViews, pj_num);
+            }
+
+        }
     }
 }
