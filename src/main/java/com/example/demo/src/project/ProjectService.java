@@ -507,4 +507,12 @@ public class ProjectService {
             throw new BaseException(POST_PROJECT_COINCIDE_CHECK);
         }
     }
+
+    public GetContactRes pjContact(String pj_num, String user_id) throws BaseException{
+        try {
+            return projectDao.pjContact(pj_num, user_id);
+        }catch (Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 }

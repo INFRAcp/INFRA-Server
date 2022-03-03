@@ -540,4 +540,19 @@ public class ProjectController {
             return new BaseResponse<>(exception.getStatus());
         }
     }
+
+    @ResponseBody
+    @GetMapping("/contact")
+    public BaseResponse<GetContactRes> pjContact(@RequestParam(required = false) String pj_num, @RequestHeader(required = false) String user_id){
+        try{
+//            jwtService.JwtEffectiveness(user_id, jwtService.getUserId());
+            GetContactRes getContactRes = projectService.pjContact(pj_num, user_id);
+
+
+
+            return new BaseResponse<>(getContactRes);
+        }catch (BaseException exception){
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
 }

@@ -682,4 +682,30 @@ public class ProjectDao {
         String getPjPhotoQuery = "SELECT pjPhoto FROM Pj_photo WHERE pj_num = ?";
         return this.jdbcTemplate.queryForList(getPjPhotoQuery, String.class, pj_num);
     }
+
+    public GetContactRes pjContact(String pj_num, String user_id) {
+        String pjContactQuery = "SELECT Project.user_id, user_nickname, user_prPhoto, pj_name, pj_views, pj_categoryName, pj_subCategoryName, pj_content, pj_progress, pj_endTerm, pj_startTerm, pj_deadline, pj_totalPerson, pj_recruitPerson," +
+                "(SELECT count(*) FROM Project, Pj_like WHERE Project.pj_num = Pj_like.pj_num and Project.pj_num = ?) as CNT " +
+                "FROM User, Project, Pj_subCategory, Pj_category " +
+                "WHERE Project.user_id = User.user_id and Pj_subCategory.pj_categoryNum = Pj_category.pj_categoryNum and Project.pj_categoryNum = Pj_category.pj_categoryNum and Project.pj_subCategoryNum = Pj_subCategory.pj_subCategoryNum and pj_num = ?";
+
+        return this.jdbcTemplate.queryForObject(pjContactQuery,
+                (rs, rowNum) -> GetContactRes.builder().user_id(rs.getString("user_id")).
+                        pj_views(rs.getInt("pj_views")).
+                        pj_categoryName(rs.getString("pj_categoryName")).
+                        pj_subCategoryName(rs.getString("pj_subCategoryName")).
+                        pj_content(rs.getString("pj_content")).
+                        pj_name(rs.getString("pj_name")).
+                        pj_progress(rs.getString("pj_progress")).
+                        pj_endTerm(rs.getString("pj_endTerm")).
+                        pj_startTerm(rs.getString("pj_startTerm")).
+                        pj_deadline(rs.getString("pj_deadline")).
+                        pj_totalPerson(rs.getString("pj_totalPerson")).
+                        pj_recruitPerson(rs.getString("pj_recruitPerson")).
+                        user_nickname(rs.getString("user_nickname")).
+                        user_prPhoto(rs.getString("user_prPhoto")).
+                        hashtag(null).
+                        pjLikeCount(rs.getInt("CNT")).build(), pj_num, pj_num);
+
+    }
 }
