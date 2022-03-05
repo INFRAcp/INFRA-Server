@@ -525,14 +525,19 @@ public class ProjectController {
         }
     }
 
+    /**
+     * 프로젝트 하나 접속
+     * @param pj_num
+     * @param user_id
+     * @author 한규범
+     */
     @ResponseBody
     @GetMapping("/contact")
-    public BaseResponse<GetContactRes> pjContact(@RequestParam(required = false) int pj_num, @RequestHeader(required = false) String user_id){
+    public BaseResponse<GetContactRes> pjContact(@RequestParam(required = false) int pj_num, String user_id){
         try{
-//            jwtService.JwtEffectiveness(user_id, jwtService.getUserId());
+            jwtService.JwtEffectiveness(user_id, jwtService.getUserId());
             GetContactRes getContactRes = projectService.pjContact(pj_num, user_id);
             projectService.plusViews(pj_num, user_id);
-
 
             return new BaseResponse<>(getContactRes);
         }catch (BaseException exception){
