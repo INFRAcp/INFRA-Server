@@ -504,4 +504,22 @@ public class ProjectService {
             throw new BaseException(POST_PROJECT_COINCIDE_CHECK);
         }
     }
+
+    public GetContactRes pjContact(int pj_num, String user_id) throws BaseException{
+        try {
+            GetContactRes getContactRes = projectDao.pjContact(pj_num, user_id);
+            getContactRes.setHashtag(projectDao.getHashtag(pj_num));
+            return getContactRes;
+        }catch (Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    public void plusViews(int pj_num, String user_id) throws BaseException{
+        try {
+            projectDao.plusViews(pj_num, user_id);
+        }catch (Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 }
