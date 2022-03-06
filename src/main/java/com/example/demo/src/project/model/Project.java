@@ -16,7 +16,6 @@ public class Project {
     private int pj_views;
     private String pj_header;
     private String pj_categoryNum;
-    private String pj_name;
     private String pj_subCategoryNum;
     private String pj_progress;
     private String pj_deadline;

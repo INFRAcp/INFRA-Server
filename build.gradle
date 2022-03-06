@@ -11,14 +11,6 @@ version = '0.0.1-SNAPSHOT'
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-bootJar {
-    enabled = false
-}
-
-jar {
-    enabled = true
-}
-
 //인코딩 방식
 compileJava.options.encoding = 'UTF-8'
 
@@ -48,6 +40,9 @@ dependencies {
 
     // Spring Boot Starter
     testImplementation('org.springframework.boot:spring-boot-starter-test')
+
+    // validation
+    implementation 'org.springframework.boot:spring-boot-starter-validation:2.6.3'
 
     // Lombok
     implementation('org.projectlombok:lombok')

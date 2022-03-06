@@ -41,7 +41,7 @@ public class ProjectService {
         //날짜 관련 검사
         PjDateCheck(postPjRegisterReq.getPj_deadline(), postPjRegisterReq.getPj_startTerm(), postPjRegisterReq.getPj_endTerm());
         // NULL 값 검사
-        PjNullCheck(postPjRegisterReq.getPj_header(), postPjRegisterReq.getPj_categoryName(), postPjRegisterReq.getPj_content(), postPjRegisterReq.getPj_name(), postPjRegisterReq.getPj_subCategoryName(), postPjRegisterReq.getPj_progress(), postPjRegisterReq.getPj_endTerm(), postPjRegisterReq.getPj_startTerm(), postPjRegisterReq.getPj_deadline(), postPjRegisterReq.getPj_totalPerson());
+        PjNullCheck(postPjRegisterReq.getPj_header(), postPjRegisterReq.getPj_categoryName(), postPjRegisterReq.getPj_content(), postPjRegisterReq.getPj_subCategoryName(), postPjRegisterReq.getPj_progress(), postPjRegisterReq.getPj_endTerm(), postPjRegisterReq.getPj_startTerm(), postPjRegisterReq.getPj_deadline(), postPjRegisterReq.getPj_totalPerson());
         //해시태그 관련 검사
         PjHashTagCheck(postPjRegisterReq.getHashtag());
         //카테고리 번호, 이름
@@ -67,7 +67,7 @@ public class ProjectService {
         //날짜 관련 검사
         PjDateCheck(patchPjModifyReq.getPj_deadline(), patchPjModifyReq.getPj_startTerm(), patchPjModifyReq.getPj_endTerm());
         // NULL 값 검사
-        PjNullCheck(patchPjModifyReq.getPj_header(), patchPjModifyReq.getPj_categoryNum(), patchPjModifyReq.getPj_content(), patchPjModifyReq.getPj_name(), patchPjModifyReq.getPj_subCategoryNum(), patchPjModifyReq.getPj_progress(), patchPjModifyReq.getPj_endTerm(), patchPjModifyReq.getPj_startTerm(), patchPjModifyReq.getPj_deadline(), patchPjModifyReq.getPj_totalPerson());
+        PjNullCheck(patchPjModifyReq.getPj_header(), patchPjModifyReq.getPj_categoryNum(), patchPjModifyReq.getPj_content(), patchPjModifyReq.getPj_subCategoryNum(), patchPjModifyReq.getPj_progress(), patchPjModifyReq.getPj_endTerm(), patchPjModifyReq.getPj_startTerm(), patchPjModifyReq.getPj_deadline(), patchPjModifyReq.getPj_totalPerson());
         //해시태그 관련 검사
         PjHashTagCheck(patchPjModifyReq.getHashtag());
 
@@ -251,7 +251,7 @@ public class ProjectService {
      * @throws BaseException
      * @author 한규범
      */
-    public void PjNullCheck(String pj_header, String pj_field, String pj_content, String pj_name, String pj_subField, String pj_progress, String pj_endTerm, String pj_startTerm, String pj_deadline, int pj_totalPerson) throws BaseException {
+    public void PjNullCheck(String pj_header, String pj_field, String pj_content, String pj_subField, String pj_progress, String pj_endTerm, String pj_startTerm, String pj_deadline, int pj_totalPerson) throws BaseException {
         if (pj_header == null) {
             throw new BaseException(POST_PROJECT_EMPTY_HEADER);
         }
@@ -260,9 +260,6 @@ public class ProjectService {
         }
         if (pj_content == null) {
             throw new BaseException(POST_PROJECT_EMPTY_CONTENT);
-        }
-        if (pj_name == null) {
-            throw new BaseException(POST_PROJECT_EMPTY_NAME);
         }
         if (pj_subField == null) {
             throw new BaseException(POST_PROJECT_EMPTY_SUBFIELD);
@@ -471,18 +468,14 @@ public class ProjectService {
         if (evalCheck != 1) throw new BaseException(PROJECT_EVALUATE);
     }
 
-    /**
-     * @param getProjectRes
-     * @author 한규범
-     */
-    public void recruit(List<GetProjectRes> getProjectRes) {
-        for (int i = 0; i < getProjectRes.size(); i++) {
-            if (getProjectRes.get(i).getPj_daysub() <= 2 && getProjectRes.get(i).getPj_daysub() >= 0) {
-                getProjectRes.get(i).setPj_recruit("마감임박");
+    public String recruit(int pj_daysub) {
+            if (pj_daysub <=2 && pj_daysub >= 0 ){
+                return "마감임박";
+            }else if(pj_daysub <0){
+                return "마감";
             }
-        }
+        return null;
     }
-
 
     /**
      *
@@ -507,4 +500,39 @@ public class ProjectService {
             throw new BaseException(POST_PROJECT_COINCIDE_CHECK);
         }
     }
+
+    /**
+     * 프로젝트 하나 접속
+     * @param pj_num
+     * @param user_id
+     * @return
+     * @throws BaseException
+     * @author 한규범
+     */
+    public GetContactRes pjContact(int pj_num, String user_id) throws BaseException{
+        try {
+            GetContactRes getContactRes = projectDao.pjContact(pj_num, user_id);
+            getContactRes.setHashtag(projectDao.getHashtag(pj_num));
+            return getContactRes;
+        }catch (Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    /**
+     * 조회수 증가 메서드
+     * @param pj_num
+     * @param user_id
+     * @throws BaseException
+     * @author 한규범
+     */
+    public void plusViews(int pj_num, String user_id) throws BaseException{
+        try {
+            projectDao.plusViews(pj_num, user_id);
+        }catch (Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+
 }

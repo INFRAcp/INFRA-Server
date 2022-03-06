@@ -59,34 +59,6 @@ public class ProjectProvider {
         }
     }
 
-    /**
-     * 프로젝트 키워드 조회
-     * @return List 프로젝트 번호, 키워드
-     * @author 한규범, 윤성식
-     */
-    public List<GetPjKeywordRes> getPj_keywords() throws BaseException {
-        try {
-            List<GetPjKeywordRes> getPj_keywordRes = projectDao.getPj_keywords();
-            return getPj_keywordRes;
-        } catch (Exception exception) {
-            throw new BaseException(DATABASE_ERROR);
-        }
-    }
-
-    /**
-     * 프로젝트 키워드 조회
-     * @param search
-     * @return List 프로젝트 번호, 키워드
-     * @author 한규범, 윤성식
-     */
-    public List<GetPjKeywordRes> getPj_keywordsBysearch(String search) throws BaseException {
-        try {
-            List<GetPjKeywordRes> getPj_keywordRes = projectDao.getPj_keywordsBysearch(search);
-            return getPj_keywordRes;
-        } catch (Exception exception) {
-            throw new BaseException(DATABASE_ERROR);
-        }
-    }
 
     /**
      * 유저가 찜한 프로젝트 조회
@@ -94,9 +66,9 @@ public class ProjectProvider {
      * @return List 프로젝트 번호, 제목, 조회수, 분야, 이름, 세부분야, 진행상황, 모집마감일, 총 모집인원, 현재 모집인원, 게시일
      * @author 한규범
      */
-    public List<PostPjLikeRes> like(PostPjLikeReq postPj_likeReq) throws BaseException {
+    public List<GetPjLikeRes> like(String user_id) throws BaseException {
         try {
-            List<PostPjLikeRes> postPj_likeRes = projectDao.getPj_num(postPj_likeReq);
+            List<GetPjLikeRes> postPj_likeRes = projectDao.getPj_num(user_id);
             return postPj_likeRes;
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
@@ -105,13 +77,13 @@ public class ProjectProvider {
 
     /**
      * 프로젝트에 참여한 팀원들 조회
-     * @param postPj_participateReq
+     * @param pj_num
      * @return List 유저 닉네임, 유저 사진
      * @author 윤성식
      */
-    public List<PostPjParticipateRes> getTeam(PostPjParticipateReq postPj_participateReq) throws BaseException {
+    public List<GetPjParticipateRes> getTeam(int pj_num) throws BaseException {
         try {
-            List<PostPjParticipateRes> postPj_participateRes = projectDao.getTeam(postPj_participateReq);
+            List<GetPjParticipateRes> postPj_participateRes = projectDao.getTeam(pj_num);
             return postPj_participateRes;
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
@@ -120,13 +92,13 @@ public class ProjectProvider {
 
     /**
      * 유저가 조회했던 프로젝트 조회
-     * @param postPj_inquiryReq
+     * @param user_id
      * @return List 프로젝트 번호, 프로젝트 제목, 조회수, 프로젝트 분야, 이름, 세부분야, 진행, 마감일, 전체인원, 모집 중인 인원, 프로젝트 등록 시간
      * @author 한규범
      */
-    public List<PostPjInquiryRes> proInquiry(PostPjInquiryReq postPj_inquiryReq) throws BaseException {
+    public List<GetPjInquiryRes> proInquiry(String user_id) throws BaseException {
         try {
-            List<PostPjInquiryRes> postPj_inquiryRes = projectDao.proInquiry(postPj_inquiryReq);
+            List<GetPjInquiryRes> postPj_inquiryRes = projectDao.proInquiry(user_id);
             return postPj_inquiryRes;
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
@@ -321,4 +293,6 @@ public class ProjectProvider {
         if(photos.isEmpty()) photos.add("https://infra-infra-bucket.s3.ap-northeast-2.amazonaws.com/pjphoto/infra_project.png");
         return photos;
     }
+
+
 }
