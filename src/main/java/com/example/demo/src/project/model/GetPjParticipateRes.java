@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class PostPjParticipateRes {
+public class GetPjParticipateRes {
     private String user_nickname;
     private String user_prPhoto;
 }

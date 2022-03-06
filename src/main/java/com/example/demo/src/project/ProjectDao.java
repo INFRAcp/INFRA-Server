@@ -7,9 +7,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -89,55 +87,20 @@ public class ProjectDao {
                 getProjectsBySearchParams);
     }
 
-    /**
-     * 프로젝트 키워드 조회
-     * @return List 프로젝트 번호, 키워드
-     * @author 한규범, 윤성식
-     */
-    public List<GetPjKeywordRes> getPj_keywords() {
-        String getProjectQuery = "select Project.pj_num, hashtag from Pj_hashtag, Project where Project.pj_num = Pj_hashtag.pj_num";
-        return this.jdbcTemplate.query(getProjectQuery,
-                (rs, rowNum) -> new GetPjKeywordRes(
-                        rs.getInt("pj_num"),
-                        rs.getString("hashtag")
-                )
-        );
-    }
-
-    /**
-     * 프로젝트 키워드 조회
-     * @param search
-     * @return List 프로젝트 번호, 키워드
-     * @author 한규범, 윤성식
-     */
-    public List<GetPjKeywordRes> getPj_keywordsBysearch(String search) {
-        String getProjectsBySearchQuery = "select Project.pj_num, hashtag from Project, Pj_hashtag " +
-                "where Project.pj_num = Pj_hashtag.pj_num or pj_content like ? or hashtag like ?";
-
-        String getProjectsBySearchParams = '%' + search + '%';
-
-        return this.jdbcTemplate.query(getProjectsBySearchQuery,
-                (rs, rowNum) -> new GetPjKeywordRes(
-                        rs.getInt("pj_num"),
-                        rs.getString("hashtag")),
-                getProjectsBySearchParams,
-                getProjectsBySearchParams,
-                getProjectsBySearchParams);
-    }
 
     /**
      * 유저가 찜한 프로젝트 조회
-     * @param postPj_likeReq
+     * @param user_id
      * @return List 프로젝트 번호, 제목, 조회수, 분야, 세부분야, 진행상황, 모집마감일, 총 모집인원, 현재 모집인원, 게시일
      * @author 한규범
      */
-    public List<PostPjLikeRes> getPj_num(PostPjLikeReq postPj_likeReq) {
-        String getPj_numQuery = "select Project.pj_num, pj_header, pj_views, pj_categoryName, pj_subCategoryNum, pj_progress, pj_deadline, pj_totalPerson, pj_recruitPerson, pj_time " +
+    public List<GetPjLikeRes> getPj_num(String user_id) {
+        String getPj_numQuery = "select Project.pj_num, pj_header, pj_views, pj_categoryName, pj_subCategoryNum, pj_progress, pj_deadline, pj_totalPerson, pj_recruitPerson, pj_time, DATEDIFF(pj_deadline,now()) " +
                 "from Project, Pj_category " +
                 "where Project.pj_categoryNum = Pj_category.pj_categoryNum and pj_num in (select pj_num from Pj_like where user_id= ?)";
-        String getParams = postPj_likeReq.getUser_id();
+        String getParams = user_id;
         return this.jdbcTemplate.query(getPj_numQuery,
-                (rs, rowNum) -> new PostPjLikeRes(
+                (rs, rowNum) -> new GetPjLikeRes(
                         rs.getInt("pj_num"),
                         rs.getString("pj_header"),
                         rs.getInt("pj_views"),
@@ -148,30 +111,35 @@ public class ProjectDao {
                         rs.getInt("pj_totalPerson"),
                         rs.getInt("pj_recruitPerson"),
                         rs.getString("pj_time"),
+                        null,
+                        null,
+                        rs.getInt("DATEDIFF(pj_deadline,now())"),
+                        0,
                         null),
+
                 getParams
         );
     }
 
     /**
      * 프로젝트에 참여한 팀원들 조회
-     * @param postPj_participateReq
+     * @param pj_num
      * @return List 유저 닉네임, 유저 사진
      * @author 윤성식
      */
-    public List<PostPjParticipateRes> getTeam(PostPjParticipateReq postPj_participateReq) {
+    public List<GetPjParticipateRes> getTeam(int pj_num) {
         String getTeamCheckQuery = "select count(*) from Pj_request where pj_inviteStatus = '승인완료' and pj_num = ?";
 
-        if(this.jdbcTemplate.queryForObject(getTeamCheckQuery, int.class, postPj_participateReq.getPj_num()) == 0){
+        if(this.jdbcTemplate.queryForObject(getTeamCheckQuery, int.class, pj_num) == 0){
             return null;
         }
         else {
             String getTeam_Query = "select user_nickname, user_prPhoto " +
                     "from User " +
                     "where user_id in (select user_id from Pj_request where pj_inviteStatus = '승인완료' and pj_num = ?)";
-            Integer getParams = postPj_participateReq.getPj_num();
+            Integer getParams = pj_num;
             return this.jdbcTemplate.query(getTeam_Query,
-                    (rs, rowNum) -> new PostPjParticipateRes(
+                    (rs, rowNum) -> new GetPjParticipateRes(
                             rs.getString("user_nickname"),
                             rs.getString("user_prPhoto")),
                     getParams
@@ -181,15 +149,15 @@ public class ProjectDao {
 
     /**
      * 유저가 조회했던 프로젝트 조회
-     * @param postPj_inquiryReq
+     * @param user_id
      * @return List 프로젝트 번호, 프로젝트 제목, 조회수, 프로젝트 분야, 세부분야, 진행, 마감일, 전체인원, 모집 중인 인원, 프로젝트 등록 시간
      * @author 한규범
      */
-    public List<PostPjInquiryRes> proInquiry(PostPjInquiryReq postPj_inquiryReq) {
-        String getPj_inquiryQuery = "select pj_num, pj_header, pj_views, pj_categoryName, pj_subCategoryNum, pj_progress, pj_deadline, pj_totalPerson, pj_recruitPerson, pj_time from Project, Pj_category where Project.pj_categoryNum = Pj_category.pj_categoryNum and pj_num in (select pj_num from Pj_inquiry where user_id = ?)";
-        String Pj_inquiryParams = postPj_inquiryReq.getUser_id();
+    public List<GetPjInquiryRes> proInquiry(String user_id) {
+        String getPj_inquiryQuery = "select pj_num, pj_header, pj_views, pj_categoryName, pj_subCategoryNum, pj_progress, pj_deadline, pj_totalPerson, pj_recruitPerson, pj_time, DATEDIFF(pj_deadline,now()) from Project, Pj_category where Project.pj_categoryNum = Pj_category.pj_categoryNum and pj_num in (select pj_num from Pj_inquiry where user_id = ?)";
+        String Pj_inquiryParams = user_id;
         return this.jdbcTemplate.query(getPj_inquiryQuery,
-                (rs, rowNum) -> new PostPjInquiryRes(
+                (rs, rowNum) -> new GetPjInquiryRes(
                         rs.getInt("pj_num"),
                         rs.getString("pj_header"),
                         rs.getInt("pj_views"),
@@ -200,6 +168,10 @@ public class ProjectDao {
                         rs.getInt("pj_totalPerson"),
                         rs.getInt("pj_recruitPerson"),
                         rs.getString("pj_time"),
+                        null,
+                        null,
+                        rs.getInt("DATEDIFF(pj_deadline,now())"),
+                        0,
                         null),
                 Pj_inquiryParams
         );
@@ -643,6 +615,12 @@ public class ProjectDao {
         return this.jdbcTemplate.queryForObject(checkPjLikeQuery,int.class, pj_num, user_id);
     }
 
+    /**
+     * 해시태그 반환하는 메서드
+     * @param pj_num
+     * @return
+     * @author 한규범
+     */
     public String[] getHashtag(int pj_num) {
         String nullcheckHashtag = "SELECT count(*) FROM Pj_hashtag WHERE pj_num = ?";
         int cnt = this.jdbcTemplate.queryForObject(nullcheckHashtag, int.class, pj_num);
@@ -679,6 +657,13 @@ public class ProjectDao {
         return this.jdbcTemplate.queryForList(getPjPhotoQuery, String.class, pj_num);
     }
 
+    /**
+     * 프로젝트 하나 접속
+     * @param pj_num
+     * @param user_id
+     * @return
+     * @author 한규범
+     */
     public GetContactRes pjContact(int pj_num, String user_id) {
         String pjContactQuery = "SELECT Project.user_id, user_nickname, user_prPhoto, pj_header, pj_views, pj_categoryName, pj_subCategoryName, pj_content, pj_progress, pj_endTerm, pj_startTerm, pj_deadline, pj_totalPerson, pj_recruitPerson," +
                 "(SELECT count(*) FROM Project, Pj_like WHERE Project.pj_num = Pj_like.pj_num and Project.pj_num = ?) as CNT " +
@@ -705,6 +690,12 @@ public class ProjectDao {
 
     }
 
+    /**
+     * 조회수 증가 메서드
+     * @param pj_num
+     * @param user_id
+     * @author 한규범
+     */
     public void plusViews(int pj_num, String user_id) {
         String plusViewsCheckQuery = "SELECT count(*) FROM Pj_inquiry WHERE user_id = ? and pj_num = ?";
         int timeCount = this.jdbcTemplate.queryForObject(plusViewsCheckQuery, int.class, user_id, pj_num);
@@ -726,8 +717,8 @@ public class ProjectDao {
                 int views = this.jdbcTemplate.queryForObject(plusViews, int.class, pj_num);
                 views++;
 
-                String plusPjViews = "UPDATE Prject SET ph_views = ?";
-                this.jdbcTemplate.update(plusPjViews, pj_num);
+                String plusPjViews = "UPDATE Project SET pj_views = ? WHERE pj_num = ?";
+                this.jdbcTemplate.update(plusPjViews, views, pj_num);
             }
 
         }
