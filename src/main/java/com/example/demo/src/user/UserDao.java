@@ -338,6 +338,12 @@ public class UserDao {
                         user_prPhoto(rs.getString("user_prPhoto")).build(), user_id);
     }
 
+    /**
+     * 내 정보 수정(PR) API
+     * @param user_id
+     * @param patchInfoReq
+     * @author yewon
+     */
     public void modifyInfo(String user_id, PatchInfoReq patchInfoReq) {
         String modifyInfoQuery = "update User set user_nickname = ? where user_id = ?"; // TODO 사진 수정 부분 추가 예정
         String modifyInfoParams = user_id;
