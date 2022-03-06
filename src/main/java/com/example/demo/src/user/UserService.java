@@ -284,4 +284,20 @@ public class UserService {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
+    /**
+     * 내 정보 수정(PR) API
+     *
+     * @param user_id
+     * @throws BaseException
+     * @author yewon
+     */
+    @Transactional
+    public void modifyInfo(String user_id, PatchInfoReq patchInfoReq) throws BaseException {
+        try {
+            userDao.modifyInfo(user_id, patchInfoReq);
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 }

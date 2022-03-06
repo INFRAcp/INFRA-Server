@@ -1,6 +1,7 @@
 package com.example.demo.src.user;
 
 import com.example.demo.config.BaseException;
+import com.example.demo.src.user.model.GetInfoRes;
 import com.example.demo.src.user.model.GetProfileRes;
 import com.example.demo.src.user.model.GetUserRes;
 import com.example.demo.src.user.model.User;
@@ -179,6 +180,23 @@ public class UserProvider {
             return getProfileRes;
         } catch (IncorrectResultSizeDataAccessException error) {
             throw new BaseException(NOT_EXISTS_USER_ID);
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    /**
+     * 내 정보 조회(PR) API
+     * @param user_id
+     * @return
+     * @throws BaseException
+     * @author yewon
+     */
+    @Transactional(readOnly = true)
+    public GetInfoRes getInfo(String user_id) throws BaseException {
+        try {
+            GetInfoRes getInfoRes = userDao.getInfo(user_id);
+            return getInfoRes;
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }

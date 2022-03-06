@@ -114,26 +114,16 @@ public class UserController {
      * @author yewon
      */
     @ResponseBody
-    @GetMapping("/valid-nickname")
+    @PostMapping("/valid-nickname")
     public BaseResponse<String> validNickname(@RequestBody GetNicknameReq getNicknameReq) {
         try {
-            if(userProvider.checkNickname(getNicknameReq.getUser_nickname()) == 1) {
+            if (userProvider.checkNickname(getNicknameReq.getUser_nickname()) == 1) {
                 throw new BaseException(POST_USERS_EXISTS_NICKNAME);
             }
             return new BaseResponse<>("사용 가능한 닉네임입니다.");
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
         }
-        // path variable로 보냈을 시, 처음 시도에만 에러가 나서 requestBody에 담는 방식으로 해둠.
-//    public BaseResponse<String> validNickname(@PathVariable("user_nickname") String user_nickname) {
-//        try {
-//            if(userProvider.checkNickname(user_nickname) == 1) {
-//                throw new BaseException(POST_USERS_EXISTS_NICKNAME);
-//            }
-//            return new BaseResponse<>("사용 가능한 닉네임입니다.");
-//        } catch (BaseException exception) {
-//            return new BaseResponse<>(exception.getStatus());
-//        }
     }
 
     /**
@@ -250,7 +240,6 @@ public class UserController {
         }
     }
 
-
     /**
      * 소개 페이지 내용 조회 API
      * [GET] /user/profile/:userId
@@ -273,7 +262,51 @@ public class UserController {
         }
     }
 
+    /**
+     * 내 정보 조회(PR) API
+     * [GET] /user/profile/info/userId
+     *
+     * @param user_id
+     * @return
+     * @author yewon
+     */
+    @ResponseBody
+    @GetMapping("/profile/info/{user_id}")
+    public BaseResponse<GetInfoRes> getInfo (@PathVariable("user_id") String user_id) {
+        try {
+            jwtService.JwtEffectiveness(user_id, jwtService.getUserId());   // jwt token 검증
+            GetInfoRes getInfoRes = userProvider.getInfo(user_id);  // user_id로 정보 조회
+            // 프로필 사진 가져오기
+            String user_prPhoto = userProvider.getPrPhoto(getInfoRes.getUser_nickname());
+            getInfoRes.setUser_prPhoto(user_prPhoto);
+            return new BaseResponse<>(getInfoRes);
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
 
+    /**
+     * 내 정보 수정(PR) API
+     * [PATCH] /user/profile/info/userId
+     *
+     * @param user_id
+     * @param patchInfoReq
+     * @return
+     * @author yewon
+     */
+    @ResponseBody
+    @PatchMapping("/profile/info/{user_id}")
+    public BaseResponse<String> modifyInfo(@PathVariable("user_id") String user_id, @RequestBody PatchInfoReq patchInfoReq) {
+        try {
+            jwtService.JwtEffectiveness(user_id, jwtService.getUserId());   // jwt token 검증
+            userService.modifyInfo(user_id, patchInfoReq);
+            // TODO 사진 수정 부분 추가 예정
+            String result = "정상으로 수정되었습니다.";
+            return new BaseResponse<>(result);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
 }
 
 
