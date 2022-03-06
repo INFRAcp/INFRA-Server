@@ -271,19 +271,24 @@ public class ProjectDao {
      */
     public String pjApply(PostPjApplyReq postPjApplyReq) {
         String pjApplyCoincideCheckQuery = "Select Count(*) from Pj_request where pj_num = ? and user_id = ?";
-        String pjApplyRejectCheckQuery = "select pj_inviteStatus from Pj_request where pj_num = ? and user_id = ?";
+        int checkCount = this.jdbcTemplate.queryForObject(pjApplyCoincideCheckQuery, int.class, postPjApplyReq.getPj_num(), postPjApplyReq.getUser_id());
+        if(checkCount >= 1){
+            String pjApplyRejectCheckQuery = "select pj_inviteStatus from Pj_request where pj_num = ? and user_id = ?";
 
-        String comment = this.jdbcTemplate.queryForObject(pjApplyRejectCheckQuery, String.class, postPjApplyReq.getPj_num(), postPjApplyReq.getUser_id());
+            String comment = this.jdbcTemplate.queryForObject(pjApplyRejectCheckQuery, String.class, postPjApplyReq.getPj_num(), postPjApplyReq.getUser_id());
 
-        if (comment.equals("거절")) {
-            return "거절";
-        } else if (this.jdbcTemplate.queryForObject(pjApplyCoincideCheckQuery, int.class, postPjApplyReq.getPj_num(), postPjApplyReq.getUser_id()) == 1) {
-            return "중복";
-        } else {
+            if (comment.equals("거절")) {
+                return "거절";
+            } else if (comment.equals("승인완료") || comment.equals("신청")) {
+                return "중복";
+            }
+
+        }else{
             String pjApplyQuery = "insert into Pj_request (user_id, pj_num, pj_inviteStatus) VALUES (?,?,'신청')";
             this.jdbcTemplate.update(pjApplyQuery, postPjApplyReq.getUser_id(), postPjApplyReq.getPj_num());
             return "신청이 완료되었습니다.";
         }
+        return null;
     }
 
     /**
