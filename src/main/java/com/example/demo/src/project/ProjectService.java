@@ -505,6 +505,14 @@ public class ProjectService {
         }
     }
 
+    /**
+     * 프로젝트 하나 접속
+     * @param pj_num
+     * @param user_id
+     * @return
+     * @throws BaseException
+     * @author 한규범
+     */
     public GetContactRes pjContact(int pj_num, String user_id) throws BaseException{
         try {
             GetContactRes getContactRes = projectDao.pjContact(pj_num, user_id);
@@ -515,6 +523,13 @@ public class ProjectService {
         }
     }
 
+    /**
+     * 조회수 증가 메서드
+     * @param pj_num
+     * @param user_id
+     * @throws BaseException
+     * @author 한규범
+     */
     public void plusViews(int pj_num, String user_id) throws BaseException{
         try {
             projectDao.plusViews(pj_num, user_id);

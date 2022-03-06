@@ -47,7 +47,6 @@ public class ProjectController {
      * @return List 제목, 분야, 이름, 진행, 모집마감일, 전체인원, 모집인원, (모집, 마감임박), 마감 남은 일수, 사진
      * @author 한규범, 윤성식, shinhyeon
      */
-    @ResponseBody
     @GetMapping("/inquiry")
     public BaseResponse<List<GetProjectRes>> getProjects(@RequestParam(required = false) String search, String user_id) throws BaseException {
             jwtService.JwtEffectiveness(user_id, jwtService.getUserId());
@@ -103,7 +102,6 @@ public class ProjectController {
      * @return List 프로젝트 번호, 키워드
      * @author 한규범, 윤성식
      */
-    @ResponseBody
     @GetMapping("/keyword")
     public BaseResponse<List<GetPjKeywordRes>> getPj_keywords(@RequestParam(required = false) String user_id, String search) throws BaseException{
             jwtService.JwtEffectiveness(user_id, jwtService.getUserId());
@@ -122,7 +120,6 @@ public class ProjectController {
      * @return List 프로젝트 번호, 제목, 조회수, 분야, 이름, 세부분야, 진행상황, 모집마감일, 총 모집인원, 현재 모집인원, 게시일
      * @author 한규범
      */
-    @ResponseBody
     @PostMapping("/like-pj")
     public BaseResponse<List<PostPjLikeRes>> like(@RequestBody PostPjLikeReq postPj_likeReq) throws BaseException{
             jwtService.JwtEffectiveness(postPj_likeReq.getUser_id(), jwtService.getUserId());
@@ -143,7 +140,6 @@ public class ProjectController {
      * @return List 프로젝트 번호, 프로젝트 제목, 조회수, 프로젝트 분야, 이름, 세부분야, 진행, 마감일, 전체인원, 모집 중인 인원, 프로젝트 등록 시간
      * @author 한규범
      */
-    @ResponseBody
     @PostMapping("/project-inquiry")
     public BaseResponse<List<PostPjInquiryRes>> proInquiry(@RequestBody PostPjInquiryReq postPj_inquiryReq) throws BaseException{
             jwtService.JwtEffectiveness(postPj_inquiryReq.getUser_id(), jwtService.getUserId());
@@ -164,7 +160,6 @@ public class ProjectController {
      * @return List 유저 닉네임, 유저 사진
      * @author 윤성식
      */
-    @ResponseBody
     @PostMapping("/team")
     public BaseResponse<List<PostPjParticipateRes>> getTeam(@RequestBody PostPjParticipateReq postPj_participateReq, String user_id) throws BaseException{
             jwtService.JwtEffectiveness(user_id, jwtService.getUserId());
@@ -185,7 +180,6 @@ public class ProjectController {
      * @return PostPjRegisterRes 프로젝트 이름
      * @author 한규범 강신현(s3)
      */
-    @ResponseBody
     @PostMapping("/registration")
     public BaseResponse<PostPjRegisterRes> pjRegistration(@RequestParam("jsonList") String jsonList, @RequestPart(value = "images", required = false) MultipartFile[] MultipartFiles) throws IOException, BaseException{
             ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
@@ -216,7 +210,6 @@ public class ProjectController {
      * @return PatchPjModifyRes 프로젝트 이름
      * @author 한규범
      */
-    @ResponseBody
     @PatchMapping("/modify")
     public BaseResponse<PatchPjModifyRes> pjModify(@RequestBody PatchPjModifyReq patchPjModifyReq) throws BaseException{
             jwtService.JwtEffectiveness(patchPjModifyReq.getUser_id(), jwtService.getUserId());
@@ -231,7 +224,6 @@ public class ProjectController {
      * @return DelPjDelRes 결과 메시지
      * @author 한규범
      */
-    @ResponseBody
     @DeleteMapping("/del")
     public BaseResponse<DelPjDelRes> pjDel(@RequestBody DelPjDelReq delPjDelReq) throws BaseException{
             jwtService.JwtEffectiveness(delPjDelReq.getUser_id(), jwtService.getUserId());
@@ -247,7 +239,6 @@ public class ProjectController {
      * @return PostPjApplyRes 완료 메시지
      * @author 한규범
      */
-    @ResponseBody
     @PostMapping("/apply")
     public BaseResponse<PostPjApplyRes> pjApply(@RequestBody PostPjApplyReq postPjApplyReq) throws BaseException{
             PostPjApplyRes postPjApplyRes = projectService.pjApply(postPjApplyReq);
@@ -264,7 +255,6 @@ public class ProjectController {
      * @return PatchPjApproveRes 완료 메시지
      * @author shinhyeon
      */
-    @ResponseBody
     @PatchMapping("/member")
     public BaseResponse<PatchPjMemberRes> pjAcceptRequest(@RequestBody PatchPjMemberReq patchPjMemberReq) throws BaseException{
         if (patchPjMemberReq.getUser_id() == null || patchPjMemberReq.getPj_num() == null || patchPjMemberReq.getPj_inviteStatus() == null) {
@@ -290,7 +280,6 @@ public class ProjectController {
      * @return List 유저ID, 유저 평점, 유저 사진, 프로젝트 번호
      * @author 윤성식
      */
-    @ResponseBody
     @GetMapping("/apply-list")
     public BaseResponse<List<GetApplyListRes>> pjApplyList(@RequestParam(required = false) String pj_num, String user_id) throws BaseException{
             jwtService.JwtEffectiveness(user_id, jwtService.getUserId());
@@ -308,7 +297,6 @@ public class ProjectController {
      * @return List 프로젝트 번호, 참여 상태, 프로젝트 이름, 조회수, 프로젝트 제목
      * @author 윤성식
      */
-    @ResponseBody
     @PostMapping("/apply-mylist")
     public BaseResponse<List<PostUserApplyRes>> userApply(@RequestBody PostUserApplyReq postUserApplyReq) throws BaseException{
             jwtService.JwtEffectiveness(postUserApplyReq.getUser_id(), jwtService.getUserId());
@@ -324,7 +312,6 @@ public class ProjectController {
      * @return 등록 완료된 메세지
      * @author 윤성식
      */
-    @ResponseBody
     @PostMapping("/like")
     public BaseResponse<PostLikeRegisterRes> likeRegister(@RequestBody PostLikeRegisterReq postLikeRegisterReq) throws BaseException{
             jwtService.JwtEffectiveness(postLikeRegisterReq.getUser_id(), jwtService.getUserId());
@@ -339,7 +326,6 @@ public class ProjectController {
      * @return 찜 삭제된 메세지
      * @author 윤성식
      */
-    @ResponseBody
     @DeleteMapping("/like-del")
     public BaseResponse<PostLikeRegisterRes> likeDel(@RequestBody PostLikeRegisterReq postLikeRegisterReq) throws BaseException{
             jwtService.JwtEffectiveness(postLikeRegisterReq.getUser_id(), jwtService.getUserId());
@@ -356,8 +342,6 @@ public class ProjectController {
      * @return List <평가한 id, 평가 받은 id, 프로젝트 num, 의견, 책임감, 역량, 팀워크, 리더쉽>
      * @author shinhyeon
      */
-
-    @ResponseBody
     @GetMapping("/evaluate")
     public BaseResponse<List<GetEvalRes>> getEval(@RequestParam String passiveUser_id) throws BaseException{
             // Query String (user_id) 가 받은 평가들만 조회
@@ -374,8 +358,6 @@ public class ProjectController {
      * @return String
      * @author shinhyeon
      */
-
-    @ResponseBody
     @PostMapping("/evaluate")
     public BaseResponse<String> uploadEval(@RequestBody PostEvalReq postEvalReq) throws BaseException{
         if (postEvalReq.getUser_id() == null || postEvalReq.getPassiveUser_id() == null || postEvalReq.getPj_num() == null ||
@@ -406,8 +388,6 @@ public class ProjectController {
      * @return String
      * @author shinhyeon
      */
-
-    @ResponseBody
     @PatchMapping("/evaluate/modify")
     public BaseResponse<String> modifyEval(@RequestBody PatchEvalReq patchEvalReq) throws BaseException{
         if (patchEvalReq.getUser_id() == null || patchEvalReq.getPassiveUser_id() == null || patchEvalReq.getPj_num() == null ||
@@ -438,8 +418,6 @@ public class ProjectController {
      * @return String
      * @author shinhyeon
      */
-
-    @ResponseBody
     @PatchMapping("/evaluate/del")
     public BaseResponse<String> delEval(@RequestBody PatchEvalDelReq patchEvalDelReq) throws BaseException{
         if (patchEvalDelReq.getUser_id() == null || patchEvalDelReq.getPassiveUser_id() == null || patchEvalDelReq.getPj_num() == null) {
@@ -461,7 +439,6 @@ public class ProjectController {
      * @param user_id
      * @author 한규범
      */
-    @ResponseBody
     @GetMapping("/contact")
     public BaseResponse<GetContactRes> pjContact(@RequestParam(required = false) int pj_num, String user_id) throws BaseException{
             jwtService.JwtEffectiveness(user_id, jwtService.getUserId());

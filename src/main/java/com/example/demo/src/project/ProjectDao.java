@@ -643,6 +643,12 @@ public class ProjectDao {
         return this.jdbcTemplate.queryForObject(checkPjLikeQuery,int.class, pj_num, user_id);
     }
 
+    /**
+     * 해시태그 반환하는 메서드
+     * @param pj_num
+     * @return
+     * @author 한규범
+     */
     public String[] getHashtag(int pj_num) {
         String nullcheckHashtag = "SELECT count(*) FROM Pj_hashtag WHERE pj_num = ?";
         int cnt = this.jdbcTemplate.queryForObject(nullcheckHashtag, int.class, pj_num);
@@ -679,6 +685,13 @@ public class ProjectDao {
         return this.jdbcTemplate.queryForList(getPjPhotoQuery, String.class, pj_num);
     }
 
+    /**
+     * 프로젝트 하나 접속
+     * @param pj_num
+     * @param user_id
+     * @return
+     * @author 한규범
+     */
     public GetContactRes pjContact(int pj_num, String user_id) {
         String pjContactQuery = "SELECT Project.user_id, user_nickname, user_prPhoto, pj_header, pj_views, pj_categoryName, pj_subCategoryName, pj_content, pj_progress, pj_endTerm, pj_startTerm, pj_deadline, pj_totalPerson, pj_recruitPerson," +
                 "(SELECT count(*) FROM Project, Pj_like WHERE Project.pj_num = Pj_like.pj_num and Project.pj_num = ?) as CNT " +
@@ -705,6 +718,12 @@ public class ProjectDao {
 
     }
 
+    /**
+     * 조회수 증가 메서드
+     * @param pj_num
+     * @param user_id
+     * @author 한규범
+     */
     public void plusViews(int pj_num, String user_id) {
         String plusViewsCheckQuery = "SELECT count(*) FROM Pj_inquiry WHERE user_id = ? and pj_num = ?";
         int timeCount = this.jdbcTemplate.queryForObject(plusViewsCheckQuery, int.class, user_id, pj_num);
