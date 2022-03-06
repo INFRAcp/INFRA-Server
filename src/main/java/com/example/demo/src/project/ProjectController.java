@@ -235,6 +235,7 @@ public class ProjectController {
      */
     @PostMapping("/apply")
     public BaseResponse<PostPjApplyRes> pjApply(@RequestBody PostPjApplyReq postPjApplyReq) throws BaseException{
+            jwtService.JwtEffectiveness(postPjApplyReq.getUser_id(), jwtService.getUserId());
             PostPjApplyRes postPjApplyRes = projectService.pjApply(postPjApplyReq);
             projectService.rejectCheck(postPjApplyRes);
             projectService.coincideCheck(postPjApplyRes);
