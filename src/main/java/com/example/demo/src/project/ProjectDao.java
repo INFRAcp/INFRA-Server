@@ -717,8 +717,8 @@ public class ProjectDao {
                 int views = this.jdbcTemplate.queryForObject(plusViews, int.class, pj_num);
                 views++;
 
-                String plusPjViews = "UPDATE Prject SET ph_views = ?";
-                this.jdbcTemplate.update(plusPjViews, pj_num);
+                String plusPjViews = "UPDATE Project SET pj_views = ? WHERE pj_num = ?";
+                this.jdbcTemplate.update(plusPjViews, views, pj_num);
             }
 
         }
