@@ -52,11 +52,16 @@ public class ProjectController {
             jwtService.JwtEffectiveness(user_id, jwtService.getUserId());
             if (search == null) {
                 List<GetProjectRes> getProjectRes = projectProvider.getProjects(user_id);
-                projectService.recruit(getProjectRes);
+                //프로젝트 모집중, 마감, 마감임박 구분
 
                 for (int i = 0; i < getProjectRes.size(); i++) {
+                    //프로젝트 좋아요 유무
                     getProjectRes.get(i).setPj_like(projectProvider.checkPjLike(getProjectRes.get(i).getPj_num(), user_id));
+                    //프로젝트 해시태그 불러오기
                     getProjectRes.get(i).setHashtag(projectProvider.getHashtag(getProjectRes.get(i).getPj_num()));
+                    //프로젝트 모집중, 마감임박, 마감 표시
+                    getProjectRes.get(i).setPj_recruit(projectService.recruit(getProjectRes.get(i).getPj_daysub()));
+
                 }
 
                 // 프로젝트 사진 조회
@@ -68,11 +73,14 @@ public class ProjectController {
             }
             // 키워드 있는 검색
             List<GetProjectRes> getProjectRes = projectProvider.getProjectsByKeyword(search, user_id);
-            projectService.recruit(getProjectRes);
 
             for (int i = 0; i < getProjectRes.size(); i++) {
+                //프로젝트 좋아요 유무
                 getProjectRes.get(i).setPj_like(projectProvider.checkPjLike(getProjectRes.get(i).getPj_num(), user_id));
+                //프로젝트 해시태그 불러오기
                 getProjectRes.get(i).setHashtag(projectProvider.getHashtag(getProjectRes.get(i).getPj_num()));
+                //프로젝트 모집중, 마감임박, 마감 표시
+                getProjectRes.get(i).setPj_recruit(projectService.recruit(getProjectRes.get(i).getPj_daysub()));
             }
 
             // 프로젝트 사진 조회
@@ -83,52 +91,30 @@ public class ProjectController {
             return new BaseResponse<>(getProjectRes);
     }
 
-    /**
-     * @param getProjectRes
-     * @author 한규범
-     */
-    public void recruit(List<GetProjectRes> getProjectRes) {
-        for (int i = 0; i < getProjectRes.size(); i++) {
-            if (getProjectRes.get(i).getPj_daysub() <= 2 && getProjectRes.get(i).getPj_daysub() >= 0) {
-                getProjectRes.get(i).setPj_recruit("마감임박");
-            }
-        }
-    }
-
-    /**
-     * 프로젝트 키워드 조회
-     *
-     * @param search
-     * @return List 프로젝트 번호, 키워드
-     * @author 한규범, 윤성식
-     */
-    @GetMapping("/keyword")
-    public BaseResponse<List<GetPjKeywordRes>> getPj_keywords(@RequestParam(required = false) String user_id, String search) throws BaseException{
-            jwtService.JwtEffectiveness(user_id, jwtService.getUserId());
-            if (search == null) {
-                List<GetPjKeywordRes> getPj_keywordRes = projectProvider.getPj_keywords();
-                return new BaseResponse<>(getPj_keywordRes);
-            }
-            List<GetPjKeywordRes> getPj_keywordRes = projectProvider.getPj_keywordsBysearch(search);
-            return new BaseResponse<>(getPj_keywordRes);
-    }
 
     /**
      * 유저가 찜한 프로젝트 조회
      *
-     * @param postPj_likeReq
+     * @param user_id
      * @return List 프로젝트 번호, 제목, 조회수, 분야, 이름, 세부분야, 진행상황, 모집마감일, 총 모집인원, 현재 모집인원, 게시일
      * @author 한규범
      */
-    @PostMapping("/like-pj")
-    public BaseResponse<List<PostPjLikeRes>> like(@RequestBody PostPjLikeReq postPj_likeReq) throws BaseException{
-            jwtService.JwtEffectiveness(postPj_likeReq.getUser_id(), jwtService.getUserId());
+    @GetMapping("/like-pj")
+    public BaseResponse<List<GetPjLikeRes>> like(@RequestParam(required = false) String user_id) throws BaseException{
+            jwtService.JwtEffectiveness(user_id, jwtService.getUserId());
 
-            List<PostPjLikeRes> postPj_likeRes = projectProvider.like(postPj_likeReq);
+            List<GetPjLikeRes> postPj_likeRes = projectProvider.like(user_id);
             // 프로젝트 사진 조회
             for (int i = 0; i < postPj_likeRes.size(); i++) {
                 List<String> photos = projectProvider.getPjPhoto(postPj_likeRes.get(i).getPj_num());
                 postPj_likeRes.get(i).setPj_photo(photos);
+
+                //프로젝트 좋아요 유무
+                postPj_likeRes.get(i).setPj_like(projectProvider.checkPjLike(postPj_likeRes.get(i).getPj_num(), user_id));
+                //프로젝트 해시태그 불러오기
+                postPj_likeRes.get(i).setHashtag(projectProvider.getHashtag(postPj_likeRes.get(i).getPj_num()));
+                //프로젝트 모집중, 마감임박, 마감 표시
+                postPj_likeRes.get(i).setPj_recruit(projectService.recruit(postPj_likeRes.get(i).getPj_daysub()));
             }
             return new BaseResponse<>(postPj_likeRes);
     }
@@ -136,19 +122,27 @@ public class ProjectController {
     /**
      * 유저가 조회했던 프로젝트 조회
      *
-     * @param postPj_inquiryReq
+     * @param user_id
      * @return List 프로젝트 번호, 프로젝트 제목, 조회수, 프로젝트 분야, 이름, 세부분야, 진행, 마감일, 전체인원, 모집 중인 인원, 프로젝트 등록 시간
      * @author 한규범
      */
-    @PostMapping("/project-inquiry")
-    public BaseResponse<List<PostPjInquiryRes>> proInquiry(@RequestBody PostPjInquiryReq postPj_inquiryReq) throws BaseException{
-            jwtService.JwtEffectiveness(postPj_inquiryReq.getUser_id(), jwtService.getUserId());
+    //데이섭, 라이크, 해시태그, 모집중 마감
+    @GetMapping("/project-inquiry")
+    public BaseResponse<List<GetPjInquiryRes>> proInquiry(@RequestParam(required = false) String user_id) throws BaseException{
+            jwtService.JwtEffectiveness(user_id, jwtService.getUserId());
 
-            List<PostPjInquiryRes> postPj_inquiryRes = projectProvider.proInquiry(postPj_inquiryReq);
+            List<GetPjInquiryRes> postPj_inquiryRes = projectProvider.proInquiry(user_id);
             // 프로젝트 사진 조회
             for (int i = 0; i < postPj_inquiryRes.size(); i++) {
                 List<String> photos = projectProvider.getPjPhoto(postPj_inquiryRes.get(i).getPj_num());
                 postPj_inquiryRes.get(i).setPj_photo(photos);
+
+                //프로젝트 좋아요 유무
+                postPj_inquiryRes.get(i).setPj_like(projectProvider.checkPjLike(postPj_inquiryRes.get(i).getPj_num(), user_id));
+                //프로젝트 해시태그 불러오기
+                postPj_inquiryRes.get(i).setHashtag(projectProvider.getHashtag(postPj_inquiryRes.get(i).getPj_num()));
+                //프로젝트 모집중, 마감임박, 마감 표시
+                postPj_inquiryRes.get(i).setPj_recruit(projectService.recruit(postPj_inquiryRes.get(i).getPj_daysub()));
             }
             return new BaseResponse<>(postPj_inquiryRes);
     }
@@ -156,15 +150,15 @@ public class ProjectController {
     /**
      * 프로젝트에 참여한 팀원들 조회
      *
-     * @param postPj_participateReq
+     * @param pj_num
      * @return List 유저 닉네임, 유저 사진
      * @author 윤성식
      */
-    @PostMapping("/team")
-    public BaseResponse<List<PostPjParticipateRes>> getTeam(@RequestBody PostPjParticipateReq postPj_participateReq, String user_id) throws BaseException{
+    @GetMapping("/team")
+    public BaseResponse<List<GetPjParticipateRes>> getTeam(@RequestParam(required = false) String user_id, int pj_num) throws BaseException{
             jwtService.JwtEffectiveness(user_id, jwtService.getUserId());
 
-            List<PostPjParticipateRes> postPj_participateRes = projectProvider.getTeam(postPj_participateReq);
+            List<GetPjParticipateRes> postPj_participateRes = projectProvider.getTeam(pj_num);
             if (postPj_participateRes == null) {
                 throw new BaseException(POST_PROJECT_GETTEAM_NULL);
             } else {
@@ -443,6 +437,7 @@ public class ProjectController {
     public BaseResponse<GetContactRes> pjContact(@RequestParam(required = false) int pj_num, String user_id) throws BaseException{
             jwtService.JwtEffectiveness(user_id, jwtService.getUserId());
             GetContactRes getContactRes = projectService.pjContact(pj_num, user_id);
+            //조회수 증가
             projectService.plusViews(pj_num, user_id);
 
             return new BaseResponse<>(getContactRes);

@@ -468,18 +468,14 @@ public class ProjectService {
         if (evalCheck != 1) throw new BaseException(PROJECT_EVALUATE);
     }
 
-    /**
-     * @param getProjectRes
-     * @author 한규범
-     */
-    public void recruit(List<GetProjectRes> getProjectRes) {
-        for (int i = 0; i < getProjectRes.size(); i++) {
-            if (getProjectRes.get(i).getPj_daysub() <= 2 && getProjectRes.get(i).getPj_daysub() >= 0) {
-                getProjectRes.get(i).setPj_recruit("마감임박");
+    public String recruit(int pj_daysub) {
+            if (pj_daysub <=2 && pj_daysub >= 0 ){
+                return "마감임박";
+            }else if(pj_daysub <0){
+                return "마감";
             }
-        }
+        return null;
     }
-
 
     /**
      *
@@ -537,4 +533,6 @@ public class ProjectService {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
+
 }
