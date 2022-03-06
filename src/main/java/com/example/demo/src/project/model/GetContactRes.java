@@ -11,6 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class GetContactRes {
     private String user_id;
+    private int pj_num;
     private int pj_views;
     private String pj_categoryName;
     private String pj_subCategoryName;
@@ -26,4 +27,7 @@ public class GetContactRes {
     private String user_prPhoto;
     private String[] hashtag;
     private int pjLikeCount;
+    private String pj_recruit;
+    private int pj_daysub;
+    private int pj_like;
 }

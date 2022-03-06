@@ -671,12 +671,13 @@ public class ProjectDao {
      */
     public GetContactRes pjContact(int pj_num, String user_id) {
         String pjContactQuery = "SELECT Project.user_id, user_nickname, user_prPhoto, pj_header, pj_views, pj_categoryName, pj_subCategoryName, pj_content, pj_progress, pj_endTerm, pj_startTerm, pj_deadline, pj_totalPerson, pj_recruitPerson," +
-                "(SELECT count(*) FROM Project, Pj_like WHERE Project.pj_num = Pj_like.pj_num and Project.pj_num = ?) as CNT " +
+                "(SELECT count(*) FROM Project, Pj_like WHERE Project.pj_num = Pj_like.pj_num and Project.pj_num = ?) as CNT, DATEDIFF(pj_deadline,now()) as DAY " +
                 "FROM User, Project, Pj_subCategory, Pj_category " +
                 "WHERE Project.user_id = User.user_id and Pj_subCategory.pj_categoryNum = Pj_category.pj_categoryNum and Project.pj_categoryNum = Pj_category.pj_categoryNum and Project.pj_subCategoryNum = Pj_subCategory.pj_subCategoryNum and pj_num = ?";
 
         return this.jdbcTemplate.queryForObject(pjContactQuery,
                 (rs, rowNum) -> GetContactRes.builder().user_id(rs.getString("user_id")).
+                        pj_num(pj_num).
                         pj_views(rs.getInt("pj_views")).
                         pj_categoryName(rs.getString("pj_categoryName")).
                         pj_subCategoryName(rs.getString("pj_subCategoryName")).
@@ -691,7 +692,8 @@ public class ProjectDao {
                         user_nickname(rs.getString("user_nickname")).
                         user_prPhoto(rs.getString("user_prPhoto")).
                         hashtag(null).
-                        pjLikeCount(rs.getInt("CNT")).build(), pj_num, pj_num);
+                        pjLikeCount(rs.getInt("CNT")).
+                        pj_daysub(rs.getInt("DAY")).build(), pj_num, pj_num);
 
     }
 

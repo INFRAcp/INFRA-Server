@@ -513,6 +513,12 @@ public class ProjectService {
         try {
             GetContactRes getContactRes = projectDao.pjContact(pj_num, user_id);
             getContactRes.setHashtag(projectDao.getHashtag(pj_num));
+            //프로젝트 좋아요 유무
+            getContactRes.setPj_like(projectProvider.checkPjLike(pj_num, user_id));
+            //프로젝트 해시태그 불러오기
+            getContactRes.setHashtag(projectProvider.getHashtag(pj_num));
+            //프로젝트 모집중, 마감임박, 마감 표시
+            getContactRes.setPj_recruit(recruit(getContactRes.getPj_daysub()));
             return getContactRes;
         }catch (Exception exception){
             throw new BaseException(DATABASE_ERROR);
