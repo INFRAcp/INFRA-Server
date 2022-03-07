@@ -444,4 +444,43 @@ public class ProjectController {
 
             return new BaseResponse<>(getContactRes);
     }
+
+    /**
+     * 인기 프로젝트 조회 (지금 핫한 프로젝트)
+     * @param user_id
+     * @returnn List<GetHotProjectRes> 아이디, 프로젝트 번호, 프로젝트 제목, 조회수, 하루 단위 조회수, 카테고리, 진행, 마감기한, 총 인원수, 모집 인원수, 모집 상태, 남은 기한, 찜 수, 해쉬태그, 사진
+     * @throws BaseException
+     * @author shinhyeon
+     */
+    @GetMapping("/hot")
+    public BaseResponse<List<GetHotProjectRes>> getHotProjects(@RequestParam String user_id) throws BaseException{
+        jwtService.JwtEffectiveness(user_id, jwtService.getUserId());
+
+        // pj_views_1day(하루 동안 조회수) 많은 순으로 프로젝트 조회
+        List<GetHotProjectRes> getHotProjectRes = projectProvider.getProjectsBy1DayViews(user_id);
+
+        for (int i = 0; i < getHotProjectRes.size(); i++) {
+            //프로젝트 좋아요 유무
+            getHotProjectRes.get(i).setPj_like(projectProvider.checkPjLike(getHotProjectRes.get(i).getPj_num(), user_id));
+            //프로젝트 해시태그 불러오기
+            getHotProjectRes.get(i).setHashtag(projectProvider.getHashtag(getHotProjectRes.get(i).getPj_num()));
+            //프로젝트 모집중, 마감임박, 마감 표시
+            getHotProjectRes.get(i).setPj_recruit(projectService.recruit(getHotProjectRes.get(i).getPj_daysub()));
+        }
+
+        // 이미 모집 마감된건 목록에서 제거 (pj_recruit → “모집중” 인것만 조회)
+        getHotProjectRes.removeIf(GetHotProjectRes -> (GetHotProjectRes.getPj_recruit().equals("마감")));
+        // 이미 진행 완료된건 목록에서 제거 (pj_progress → “진행전” 인것만 조회)
+        getHotProjectRes.removeIf(GetHotProjectRes -> (GetHotProjectRes.getPj_progress().equals("진행완료")));
+
+        // 프로젝트 사진 조회
+        for (int i = 0; i < getHotProjectRes.size(); i++) {
+            List<String> photos = projectProvider.getPjPhoto(getHotProjectRes.get(i).getPj_num());
+            getHotProjectRes.get(i).setPj_photo(photos);
+        }
+
+
+
+        return new BaseResponse<>(getHotProjectRes);
+    }
 }

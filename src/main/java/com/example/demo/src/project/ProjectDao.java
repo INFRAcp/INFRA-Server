@@ -9,6 +9,8 @@ import org.springframework.stereotype.Repository;
 import javax.sql.DataSource;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 @Repository
@@ -722,5 +724,63 @@ public class ProjectDao {
             }
 
         }
+    }
+
+    /**
+     * 인기 프로젝트 조회 (지금 핫한 프로젝트)
+     * @param user_id
+     * @return List<GetHotProjectRes>
+     * @author shinhyeon
+     */
+    public List<GetHotProjectRes> getProjectsBy1DayViews(String user_id) {
+        String getHotProjectsQuery = "SELECT Project.pj_num, user_id, pj_views, pj_header, pj_views, pj_categoryName, pj_content, pj_subCategoryNum, pj_progress, pj_endTerm,pj_startTerm, pj_deadline, pj_totalPerson,pj_recruitPerson, pj_time, DATEDIFF(pj_deadline,now()) " +
+                "FROM Project, Pj_category " +
+                "WHERE pj_status = '등록' AND Project.pj_categoryNum = Pj_category.pj_categoryNum ";
+
+        List<GetHotProjectRes> getHotProjectRes = this.jdbcTemplate.query(getHotProjectsQuery,
+                (rs, rowNum) -> new GetHotProjectRes(
+                        user_id,
+                        rs.getInt("pj_num"),
+                        rs.getString("pj_header"),
+                        rs.getInt("pj_views"),
+                        0,
+                        rs.getString("pj_categoryName"),
+                        rs.getString("pj_progress"),
+                        rs.getString("pj_deadline"),
+                        rs.getInt("pj_totalPerson"),
+                        rs.getInt("pj_recruitPerson"),
+                        "모집중",
+                        rs.getInt("DATEDIFF(pj_deadline,now())"),
+                        0,
+                        null,
+                        null
+                ));
+
+        // pj_views_1day(하루 동안 조회수) 값 계산하여 대입
+        for(int i=0;i<getHotProjectRes.size();i++)
+        {
+            String plusViewsQuery = "SELECT pj_inquiryTime FROM Pj_inquiry WHERE pj_num = ?";
+            List<String> time = this.jdbcTemplate.queryForList(plusViewsQuery, String.class, getHotProjectRes.get(i).getPj_num());
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+            int views_1day = 0;
+            for(int j=0;j<time.size();j++)
+            {
+                LocalDateTime ldTime = LocalDateTime.parse(time.get(j), formatter);
+                ldTime = ldTime.plusDays(1);
+                LocalDateTime now = LocalDateTime.now();
+
+                if(ldTime.isAfter(now)){ // 조회한지 하루가 안된 경우
+                    views_1day ++;
+                }
+            }
+            getHotProjectRes.get(i).setPj_views_1day(views_1day);
+        }
+
+        // pj_views_1day 기준으로 내림차순 정렬
+        Collections.sort(getHotProjectRes, (c1, c2) ->  c2.getPj_views_1day() - c1.getPj_views_1day());
+
+        return getHotProjectRes;
     }
 }
