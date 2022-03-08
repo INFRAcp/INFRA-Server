@@ -9,6 +9,8 @@ import org.springframework.stereotype.Repository;
 import javax.sql.DataSource;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 @Repository
@@ -271,19 +273,24 @@ public class ProjectDao {
      */
     public String pjApply(PostPjApplyReq postPjApplyReq) {
         String pjApplyCoincideCheckQuery = "Select Count(*) from Pj_request where pj_num = ? and user_id = ?";
-        String pjApplyRejectCheckQuery = "select pj_inviteStatus from Pj_request where pj_num = ? and user_id = ?";
+        int checkCount = this.jdbcTemplate.queryForObject(pjApplyCoincideCheckQuery, int.class, postPjApplyReq.getPj_num(), postPjApplyReq.getUser_id());
+        if(checkCount >= 1){
+            String pjApplyRejectCheckQuery = "select pj_inviteStatus from Pj_request where pj_num = ? and user_id = ?";
 
-        String comment = this.jdbcTemplate.queryForObject(pjApplyRejectCheckQuery, String.class, postPjApplyReq.getPj_num(), postPjApplyReq.getUser_id());
+            String comment = this.jdbcTemplate.queryForObject(pjApplyRejectCheckQuery, String.class, postPjApplyReq.getPj_num(), postPjApplyReq.getUser_id());
 
-        if (comment.equals("거절")) {
-            return "거절";
-        } else if (this.jdbcTemplate.queryForObject(pjApplyCoincideCheckQuery, int.class, postPjApplyReq.getPj_num(), postPjApplyReq.getUser_id()) == 1) {
-            return "중복";
-        } else {
+            if (comment.equals("거절")) {
+                return "거절";
+            } else if (comment.equals("승인완료") || comment.equals("신청")) {
+                return "중복";
+            }
+
+        }else{
             String pjApplyQuery = "insert into Pj_request (user_id, pj_num, pj_inviteStatus) VALUES (?,?,'신청')";
             this.jdbcTemplate.update(pjApplyQuery, postPjApplyReq.getUser_id(), postPjApplyReq.getPj_num());
             return "신청이 완료되었습니다.";
         }
+        return null;
     }
 
     /**
@@ -666,12 +673,13 @@ public class ProjectDao {
      */
     public GetContactRes pjContact(int pj_num, String user_id) {
         String pjContactQuery = "SELECT Project.user_id, user_nickname, user_prPhoto, pj_header, pj_views, pj_categoryName, pj_subCategoryName, pj_content, pj_progress, pj_endTerm, pj_startTerm, pj_deadline, pj_totalPerson, pj_recruitPerson," +
-                "(SELECT count(*) FROM Project, Pj_like WHERE Project.pj_num = Pj_like.pj_num and Project.pj_num = ?) as CNT " +
+                "(SELECT count(*) FROM Project, Pj_like WHERE Project.pj_num = Pj_like.pj_num and Project.pj_num = ?) as CNT, DATEDIFF(pj_deadline,now()) as DAY " +
                 "FROM User, Project, Pj_subCategory, Pj_category " +
                 "WHERE Project.user_id = User.user_id and Pj_subCategory.pj_categoryNum = Pj_category.pj_categoryNum and Project.pj_categoryNum = Pj_category.pj_categoryNum and Project.pj_subCategoryNum = Pj_subCategory.pj_subCategoryNum and pj_num = ?";
 
         return this.jdbcTemplate.queryForObject(pjContactQuery,
                 (rs, rowNum) -> GetContactRes.builder().user_id(rs.getString("user_id")).
+                        pj_num(pj_num).
                         pj_views(rs.getInt("pj_views")).
                         pj_categoryName(rs.getString("pj_categoryName")).
                         pj_subCategoryName(rs.getString("pj_subCategoryName")).
@@ -686,7 +694,8 @@ public class ProjectDao {
                         user_nickname(rs.getString("user_nickname")).
                         user_prPhoto(rs.getString("user_prPhoto")).
                         hashtag(null).
-                        pjLikeCount(rs.getInt("CNT")).build(), pj_num, pj_num);
+                        pjLikeCount(rs.getInt("CNT")).
+                        pj_daysub(rs.getInt("DAY")).build(), pj_num, pj_num);
 
     }
 
@@ -709,7 +718,7 @@ public class ProjectDao {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
             LocalDateTime ldTime = LocalDateTime.parse(time, formatter);
-            ldTime = ldTime.plusHours(30);
+            ldTime = ldTime.plusMinutes(30);
             LocalDateTime now = LocalDateTime.now();
 
             if(ldTime.isBefore(now)){ // 30분이 경과된 경우
@@ -717,10 +726,71 @@ public class ProjectDao {
                 int views = this.jdbcTemplate.queryForObject(plusViews, int.class, pj_num);
                 views++;
 
-                String plusPjViews = "UPDATE Prject SET ph_views = ?";
-                this.jdbcTemplate.update(plusPjViews, pj_num);
+                String plusPjViews = "UPDATE Project SET pj_views = ? WHERE pj_num = ?";
+                this.jdbcTemplate.update(plusPjViews, views, pj_num);
+
+                String viewtimeUpdate = "UPDATE Pj_inquiry SET pj_inquiryTime = Default WHERE pj_num = ? and user_id = ?";
+                this.jdbcTemplate.update(viewtimeUpdate, pj_num, user_id);
             }
 
         }
+    }
+
+    /**
+     * 인기 프로젝트 조회 (지금 핫한 프로젝트)
+     * @param user_id
+     * @return List<GetHotProjectRes>
+     * @author shinhyeon
+     */
+    public List<GetHotProjectRes> getProjectsBy1DayViews(String user_id) {
+        String getHotProjectsQuery = "SELECT Project.pj_num, user_id, pj_views, pj_header, pj_views, pj_categoryName, pj_content, pj_subCategoryNum, pj_progress, pj_endTerm,pj_startTerm, pj_deadline, pj_totalPerson,pj_recruitPerson, pj_time, DATEDIFF(pj_deadline,now()) " +
+                "FROM Project, Pj_category " +
+                "WHERE pj_status = '등록' AND Project.pj_categoryNum = Pj_category.pj_categoryNum ";
+
+        List<GetHotProjectRes> getHotProjectRes = this.jdbcTemplate.query(getHotProjectsQuery,
+                (rs, rowNum) -> new GetHotProjectRes(
+                        user_id,
+                        rs.getInt("pj_num"),
+                        rs.getString("pj_header"),
+                        rs.getInt("pj_views"),
+                        0,
+                        rs.getString("pj_categoryName"),
+                        rs.getString("pj_progress"),
+                        rs.getString("pj_deadline"),
+                        rs.getInt("pj_totalPerson"),
+                        rs.getInt("pj_recruitPerson"),
+                        "모집중",
+                        rs.getInt("DATEDIFF(pj_deadline,now())"),
+                        0,
+                        null,
+                        null
+                ));
+
+        // pj_views_1day(하루 동안 조회수) 값 계산하여 대입
+        for(int i=0;i<getHotProjectRes.size();i++)
+        {
+            String plusViewsQuery = "SELECT pj_inquiryTime FROM Pj_inquiry WHERE pj_num = ?";
+            List<String> time = this.jdbcTemplate.queryForList(plusViewsQuery, String.class, getHotProjectRes.get(i).getPj_num());
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+            int views_1day = 0;
+            for(int j=0;j<time.size();j++)
+            {
+                LocalDateTime ldTime = LocalDateTime.parse(time.get(j), formatter);
+                ldTime = ldTime.plusDays(1);
+                LocalDateTime now = LocalDateTime.now();
+
+                if(ldTime.isAfter(now)){ // 조회한지 하루가 안된 경우
+                    views_1day ++;
+                }
+            }
+            getHotProjectRes.get(i).setPj_views_1day(views_1day);
+        }
+
+        // pj_views_1day 기준으로 내림차순 정렬
+        Collections.sort(getHotProjectRes, (c1, c2) ->  c2.getPj_views_1day() - c1.getPj_views_1day());
+
+        return getHotProjectRes;
     }
 }

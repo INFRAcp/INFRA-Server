@@ -294,5 +294,19 @@ public class ProjectProvider {
         return photos;
     }
 
-
+    /**
+     * 인기 프로젝트 조회 (지금 핫한 프로젝트)
+     * @param user_id
+     * @return List<GetHotProjectRes>
+     * @throws BaseException
+     * @author shinhyeon
+     */
+    public List<GetHotProjectRes> getProjectsBy1DayViews(String user_id) throws BaseException {
+        try {
+            List<GetHotProjectRes> getHotProjectRes = projectDao.getProjectsBy1DayViews(user_id);
+            return getHotProjectRes;
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 }

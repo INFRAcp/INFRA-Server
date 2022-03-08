@@ -9,5 +9,5 @@ import lombok.Setter;
 @AllArgsConstructor
 public class PostPjApplyReq {
     private String user_id;
-    private String pj_num;
+    private int pj_num;
 }
