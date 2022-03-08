@@ -174,7 +174,7 @@ public class UserProvider {
 
             // 프로젝트 리스트
             List<String> project = userDao.getUserProject(userId);
-            getProfileRes.setPj_name(project);
+            getProfileRes.setPj_header(project);
 
 
             return getProfileRes;

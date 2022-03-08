@@ -271,7 +271,7 @@ public class UserDao {
      * @author yewon
      */
     public List<String> getUserProject(String userId) {
-        String getUserProjectQuery = "select Project.pj_name from Project " +
+        String getUserProjectQuery = "select Project.pj_header from Project " +
                     "inner join Pj_request on Project.pj_num = Pj_request.pj_num " +
                     "where Pj_request.user_id = ? and Pj_request.pj_inviteStatus = '승인완료'";
         return this.jdbcTemplate.queryForList(getUserProjectQuery, String.class, userId);
