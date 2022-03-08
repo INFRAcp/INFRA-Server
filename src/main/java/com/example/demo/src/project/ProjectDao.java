@@ -726,6 +726,9 @@ public class ProjectDao {
 
                 String plusPjViews = "UPDATE Project SET pj_views = ? WHERE pj_num = ?";
                 this.jdbcTemplate.update(plusPjViews, views, pj_num);
+
+                String viewtimeUpdate = "UPDATE Pj_inquiry SET pj_inquiryTime = Default WHERE pj_num = ? and user_id = ?";
+                this.jdbcTemplate.update(viewtimeUpdate, pj_num, user_id);
             }
 
         }

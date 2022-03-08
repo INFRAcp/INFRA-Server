@@ -511,6 +511,7 @@ public class ProjectService {
     public GetContactRes pjContact(int pj_num, String user_id) throws BaseException{
         try {
             GetContactRes getContactRes = projectDao.pjContact(pj_num, user_id);
+
             getContactRes.setHashtag(projectDao.getHashtag(pj_num));
             //프로젝트 좋아요 유무
             getContactRes.setPj_like(projectProvider.checkPjLike(pj_num, user_id));
