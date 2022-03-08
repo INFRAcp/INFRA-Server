@@ -473,7 +473,7 @@ public class ProjectService {
             }else if(pj_daysub <0){
                 return "마감";
             }
-        return null;
+        return "모집중";
     }
 
     /**

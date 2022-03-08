@@ -8,5 +8,5 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class PatchPjModifyRes {
-    private String pj_string;
+    private String pj_header;
 }
