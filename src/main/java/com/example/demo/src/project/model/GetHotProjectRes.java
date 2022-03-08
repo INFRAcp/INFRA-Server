@@ -1,33 +1,28 @@
 package com.example.demo.src.project.model;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-@Builder
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
-public class GetContactRes {
+public class GetHotProjectRes {
     private String user_id;
     private int pj_num;
-    private int pj_views;
-    private String pj_categoryName;
-    private String pj_subCategoryName;
-    private String pj_content;
     private String pj_header;
+    private int pj_views;
+    private int pj_views_1day;
+    private String pj_categoryName;
     private String pj_progress;
-    private String pj_endTerm;
-    private String pj_startTerm;
     private String pj_deadline;
-    private String pj_totalPerson;
-    private String pj_recruitPerson;
-    private String user_nickname;
-    private String user_prPhoto;
-    private String[] hashtag;
-    private int pjLikeCount;
+    private int pj_totalPerson;
+    private int pj_recruitPerson;
     private String pj_recruit;
     private int pj_daysub;
     private int pj_like;
+    private String [] hashtag;
+    List<String> pj_photo;
 }
