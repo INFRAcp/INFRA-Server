@@ -16,6 +16,7 @@ public class GetHotProjectRes {
     private int pj_views;
     private int pj_views_1day;
     private String pj_categoryName;
+    private String pj_subCategoryName;
     private String pj_progress;
     private String pj_deadline;
     private int pj_totalPerson;

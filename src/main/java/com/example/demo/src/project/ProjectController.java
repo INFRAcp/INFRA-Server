@@ -448,7 +448,7 @@ public class ProjectController {
     /**
      * 인기 프로젝트 조회 (지금 핫한 프로젝트)
      * @param user_id
-     * @returnn List<GetHotProjectRes> 아이디, 프로젝트 번호, 프로젝트 제목, 조회수, 하루 단위 조회수, 카테고리, 진행, 마감기한, 총 인원수, 모집 인원수, 모집 상태, 남은 기한, 찜 수, 해쉬태그, 사진
+     * @returnn List<GetHotProjectRes> 아이디, 프로젝트 번호, 프로젝트 제목, 조회수, 하루 단위 조회수, 카테고리, 서브카테고리, 진행, 마감기한, 총 인원수, 모집 인원수, 모집 상태, 남은 기한, 찜 수, 해쉬태그, 사진
      * @throws BaseException
      * @author shinhyeon
      */

@@ -733,9 +733,9 @@ public class ProjectDao {
      * @author shinhyeon
      */
     public List<GetHotProjectRes> getProjectsBy1DayViews(String user_id) {
-        String getHotProjectsQuery = "SELECT Project.pj_num, user_id, pj_views, pj_header, pj_views, pj_categoryName, pj_content, pj_subCategoryNum, pj_progress, pj_endTerm,pj_startTerm, pj_deadline, pj_totalPerson,pj_recruitPerson, pj_time, DATEDIFF(pj_deadline,now()) " +
-                "FROM Project, Pj_category " +
-                "WHERE pj_status = '등록' AND Project.pj_categoryNum = Pj_category.pj_categoryNum ";
+        String getHotProjectsQuery = "SELECT Project.pj_num, user_id, pj_views, pj_header, pj_views, pj_categoryName, pj_subCategoryName, pj_content, pj_progress, pj_endTerm,pj_startTerm, pj_deadline, pj_totalPerson,pj_recruitPerson, pj_time, DATEDIFF(pj_deadline,now()) " +
+                "FROM Project, Pj_category, Pj_subCategory " +
+                "WHERE pj_status = '등록' AND Project.pj_categoryNum = Pj_category.pj_categoryNum AND Project.pj_categoryNum = Pj_subCategory.pj_categoryNum AND Project.pj_subCategoryNum = Pj_subCategory.pj_subCategoryNum";
 
         List<GetHotProjectRes> getHotProjectRes = this.jdbcTemplate.query(getHotProjectsQuery,
                 (rs, rowNum) -> new GetHotProjectRes(
@@ -745,6 +745,7 @@ public class ProjectDao {
                         rs.getInt("pj_views"),
                         0,
                         rs.getString("pj_categoryName"),
+                        rs.getString("pj_subCategoryName"),
                         rs.getString("pj_progress"),
                         rs.getString("pj_deadline"),
                         rs.getInt("pj_totalPerson"),
@@ -756,9 +757,10 @@ public class ProjectDao {
                         null
                 ));
 
-        // pj_views_1day(하루 동안 조회수) 값 계산하여 대입
+
         for(int i=0;i<getHotProjectRes.size();i++)
         {
+            // pj_views_1day(하루 동안 조회수) 값 계산하여 대입
             String plusViewsQuery = "SELECT pj_inquiryTime FROM Pj_inquiry WHERE pj_num = ?";
             List<String> time = this.jdbcTemplate.queryForList(plusViewsQuery, String.class, getHotProjectRes.get(i).getPj_num());
 
