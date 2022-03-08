@@ -716,7 +716,7 @@ public class ProjectDao {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
             LocalDateTime ldTime = LocalDateTime.parse(time, formatter);
-            ldTime = ldTime.plusHours(30);
+            ldTime = ldTime.plusMinutes(30);
             LocalDateTime now = LocalDateTime.now();
 
             if(ldTime.isBefore(now)){ // 30분이 경과된 경우

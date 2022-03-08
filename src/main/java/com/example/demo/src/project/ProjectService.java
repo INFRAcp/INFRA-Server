@@ -227,7 +227,7 @@ public class ProjectService {
         LocalDate pj_startTermLd = LocalDate.parse(pj_startTerm, DateTimeFormatter.ISO_DATE);
         LocalDate pj_endTermLd = LocalDate.parse(pj_endTerm, DateTimeFormatter.ISO_DATE);
 
-        if (pj_deadlineLd.isBefore(pj_startTermLd)) {
+        if (pj_startTermLd.isBefore(pj_deadlineLd)) {
             throw new BaseException(POST_PROJECT_DEADLINE_BEFORE_START);
         }
         if (pj_endTermLd.isBefore(pj_startTermLd)) {
@@ -241,7 +241,6 @@ public class ProjectService {
      * @param pj_header
      * @param pj_field
      * @param pj_content
-     * @param pj_name
      * @param pj_subField
      * @param pj_progress
      * @param pj_endTerm
