@@ -178,7 +178,7 @@ public class UserController {
 
     /**
      * 회원정보조회 API
-     * [POST] /user/{user_id}
+     * [POST] /user/:userId
      *
      * @param user_id
      * @return
@@ -199,7 +199,7 @@ public class UserController {
 
     /**
      * 회원탈퇴  API
-     * [PATCH] /user/{user_id}
+     * [PATCH] /user/:userId
      *
      * @param user_id
      * @return
@@ -221,7 +221,7 @@ public class UserController {
 
     /**
      * 소개 페이지 작성 API
-     * [POST] /user/profile
+     * [POST] /user/profilez
      *
      * @param postProfileReq
      * @return profile, photo, ability, link, keyword, request(project)
@@ -261,6 +261,28 @@ public class UserController {
             return new BaseResponse<>(exception.getStatus());
         }
     }
+
+    /**
+     * 소개 페이지 수정 API
+     * [PATCH] /user/profile/:userId
+     *
+     * @param user_id
+     * @param patchProfileReq
+     * @return
+     * @author yewon
+     */
+    @ResponseBody
+    @PatchMapping("/profile/{user_id}")
+    public BaseResponse<PatchProfileRes> modifyProfile(@PathVariable("user_id") String user_id, @RequestBody PatchProfileReq patchProfileReq) {
+        try {
+            jwtService.JwtEffectiveness(user_id, jwtService.getUserId());
+            PatchProfileRes patchProfileRes = userService.modifyProfile(user_id, patchProfileReq);
+            return new BaseResponse<>(patchProfileRes);
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
 
     /**
      * 내 정보 조회(PR) API
@@ -306,6 +328,13 @@ public class UserController {
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
+    }
+
+    @GetMapping("/profile/all")
+    public BaseResponse<List<GetAllUserProfilesRes>> getAllProfile() throws BaseException { // user_id는 넣을지 말지 회의에 따라 결정
+        List<GetAllUserProfilesRes> getAllUserProfilesRes = userProvider.getAllProfile();
+        // 프로필 사진 가져오기
+        return new BaseResponse<>(getAllUserProfilesRes);
     }
 }
 

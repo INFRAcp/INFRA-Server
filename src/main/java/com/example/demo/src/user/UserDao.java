@@ -162,6 +162,20 @@ public class UserDao {
     }
 
     /**
+     * phone에 해당하는 email 정보 가져오기
+     *
+     * @param phone
+     * @return String - email
+     * @author yunhee
+     */
+    public User getEmailFromPhone(String phone) {
+        String getEmailQuery = "select user_id, user_email from User where user_phone=? and user_status REGEXP 'ACTIVE|STOP'";
+        return this.jdbcTemplate.queryForObject(getEmailQuery,
+                (rs, rowNum) -> User.builder().user_id(rs.getString("user_id")).
+                        user_email(rs.getString("user_email")).build(), phone);
+    }
+
+    /**
      * 소개 페이지 작성 API
      *
      * @param postProfileReq - profile, ability, link, keyword
@@ -195,20 +209,6 @@ public class UserDao {
         }
 
         return "소개 페이지가 완성되었습니다~!";
-    }
-
-    /**
-     * phone에 해당하는 email 정보 가져오기
-     *
-     * @param phone
-     * @return String - email
-     * @author yunhee
-     */
-    public User getEmailFromPhone(String phone) {
-        String getEmailQuery = "select user_id, user_email from User where user_phone=? and user_status REGEXP 'ACTIVE|STOP'";
-        return this.jdbcTemplate.queryForObject(getEmailQuery,
-                (rs, rowNum) -> User.builder().user_id(rs.getString("user_id")).
-                        user_email(rs.getString("user_email")).build(), phone);
     }
 
     /**
@@ -275,6 +275,52 @@ public class UserDao {
                     "inner join Pj_request on Project.pj_num = Pj_request.pj_num " +
                     "where Pj_request.user_id = ? and Pj_request.pj_inviteStatus = '승인완료'";
         return this.jdbcTemplate.queryForList(getUserProjectQuery, String.class, userId);
+    }
+
+    /**
+     * 소개페이지 수정 API
+     * @param user_id
+     * @param patchProfileReq
+     * @return
+     * @author yewon
+     */
+    public String modifyProfile(String user_id, PatchProfileReq patchProfileReq) {
+        String userId = user_id;
+
+        // photo와 profile을 user 테이블에 추가하기 (이미 존재하는 아이디에 넣는 것이기 때문에 update)
+        String userProfileQuery = "UPDATE User SET user_prProfile = ? WHERE user_id = ? ";
+        Object[] createProfileParams = new Object[]{patchProfileReq.getUser_prProfile(), userId};
+        this.jdbcTemplate.update(userProfileQuery, createProfileParams);
+
+        // user_prAbility
+        String abilityQuery1 = "DELETE from User_ability where user_id = ?"; // 배열에 있는 값들을 먼저 삭제해준 후 업뎃
+        this.jdbcTemplate.update(abilityQuery1, userId);
+        for (int i = 0; i < patchProfileReq.getUser_prAbility().length; i++) {  // 다시 입력받은 값(사용자가 수정한 값) 넣어주기
+            String abilityQuery2 = "INSERT INTO User_ability (user_id, user_prAbility) VALUES (?, ?)";
+            this.jdbcTemplate.update(abilityQuery2, userId, patchProfileReq.getUser_prAbility()[i]);
+        }
+
+        // TODO : 프로젝트 제목 수정 부분 회의 이후에 추가 예정
+//        // pj_header
+//        String projectQuery1 = "DELETE from Project where "
+
+        // user_prLink
+        String linkQuery1 = "DELETE from User_link where user_id = ?";
+        this.jdbcTemplate.update(linkQuery1, userId);
+        for (int i = 0; i < patchProfileReq.getUser_prLink().length; i++) {
+            String linkQuery2 = "INSERT INTO User_link (user_id, user_prLink) VALUES (?, ?)";
+            this.jdbcTemplate.update(linkQuery2, userId, patchProfileReq.getUser_prLink()[i]);
+        }
+
+        // user_prKeyword
+        String keywordQuery1 = "DELETE from User_keyword where user_id = ?";
+        this.jdbcTemplate.update(keywordQuery1,userId);
+        for (int i = 0; i < patchProfileReq.getUser_prKeyword().length; i++) {
+            String keywordQuery = "INSERT INTO User_keyword (user_id, user_prKeyword) VALUES (?, ?)";
+            this.jdbcTemplate.update(keywordQuery, userId, patchProfileReq.getUser_prKeyword()[i]);
+        }
+
+        return "소개페이지가 수정되었습니다~!";
     }
 
     /**

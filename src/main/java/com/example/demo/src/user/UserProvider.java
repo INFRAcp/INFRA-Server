@@ -1,10 +1,7 @@
 package com.example.demo.src.user;
 
 import com.example.demo.config.BaseException;
-import com.example.demo.src.user.model.GetInfoRes;
-import com.example.demo.src.user.model.GetProfileRes;
-import com.example.demo.src.user.model.GetUserRes;
-import com.example.demo.src.user.model.User;
+import com.example.demo.src.user.model.*;
 import com.example.demo.utils.jwt.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -213,5 +210,15 @@ public class UserProvider {
         user_prPhoto = userDao.getPrphoto(user_nickname);
         if(user_prPhoto == null) user_prPhoto = "https://infra-infra-bucket.s3.ap-northeast-2.amazonaws.com/prphoto/infra_profile.png";
         return user_prPhoto;
+    }
+
+    @Transactional
+    public List<GetAllUserProfilesRes> getAllProfile() throws BaseException {
+        try {
+            List<GetAllUserProfilesRes> getAllUserProfilesRes = userDao.getAllProfile();
+            return getAllUserProfilesRes;
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
     }
 }
