@@ -14,8 +14,9 @@ import java.util.List;
 import static com.example.demo.config.BaseResponseStatus.*;
 import static com.example.demo.utils.ValidationRegex.isRegexId;
 
+
 @RestController
-@RequestMapping("/user")
+@RequestMapping(value = "/user")
 public class UserController {
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -94,12 +95,32 @@ public class UserController {
         if (!isRegexId(user_id)) {   // id 형식 체크
             return new BaseResponse<>(POST_USERS_INVALID_ID);
         }
-
         try {
             if (userProvider.checkId(user_id) == 1) {
                 throw new BaseException(POST_USERS_EXISTS_ID);
             }
-            return new BaseResponse<>("사용가능한 아이디입니다.");
+            return new BaseResponse<>("사용 가능한 아이디입니다.");
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
+    /**
+     * 닉네임 중복 체크 API (회원가입시 체크하지만 소셜 로그인으로 들어온 사용자를 위한 단독 체크 API)
+     * [GET] /user/valid-nickname/:user_nickname
+     *
+     * @param getNicknameReq - nickname
+     * @return
+     * @author yewon
+     */
+    @ResponseBody
+    @PostMapping("/valid-nickname")
+    public BaseResponse<String> validNickname(@RequestBody GetNicknameReq getNicknameReq) {
+        try {
+            if (userProvider.checkNickname(getNicknameReq.getUser_nickname()) == 1) {
+                throw new BaseException(POST_USERS_EXISTS_NICKNAME);
+            }
+            return new BaseResponse<>("사용 가능한 닉네임입니다.");
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
         }
@@ -113,10 +134,8 @@ public class UserController {
     @PatchMapping("/update-pw/{userId}")
     public BaseResponse<String> modifyUserName(@PathVariable("userId") String userId, @RequestBody User user) {
         try {
-            String userIdByJwt = jwtService.getUserId();    //jwt에서 id 추출
-            if (!userId.equals(userIdByJwt)) {
-                return new BaseResponse<>(INVALID_USER_JWT);
-            }
+            jwtService.JwtEffectiveness(userId, jwtService.getUserId());
+
             if (user.getUser_pw() == null) {
                 return new BaseResponse<>(POST_USERS_EMPTY_INFO);
             }
@@ -169,10 +188,8 @@ public class UserController {
     @GetMapping("/{user_id}")
     public BaseResponse<List<GetUserRes>> getUser(@PathVariable("user_id") String user_id) {
         try {
-            String userIdByJwt = jwtService.getUserId();
-            if (!user_id.equals(userIdByJwt)) {
-                return new BaseResponse<>(INVALID_USER_JWT);
-            }
+            jwtService.JwtEffectiveness(user_id, jwtService.getUserId());
+
             List<GetUserRes> getUserRes = userProvider.getUser(user_id);
             return new BaseResponse<>(getUserRes);
         } catch (BaseException exception) {
@@ -192,10 +209,8 @@ public class UserController {
     @PatchMapping("/{user_id}")
     public BaseResponse<String> delUser(@PathVariable("user_id") String user_id) {
         try {
-            String userIdByJwt = jwtService.getUserId();
-            if (!user_id.equals(userIdByJwt)) {
-                return new BaseResponse<>(INVALID_USER_JWT);
-            }
+            jwtService.JwtEffectiveness(user_id, jwtService.getUserId());
+
             userService.delUser(user_id);
             String result = "탈퇴가 정상적으로 처리되었습니다.";
             return new BaseResponse<>(result);
@@ -216,17 +231,14 @@ public class UserController {
     @PostMapping("/profile/{user_id}")
     public BaseResponse<PostProfileRes> createProfile(@PathVariable("user_id") String user_id, @RequestBody PostProfileReq postProfileReq) {
         try {
-            String userIdByJwt = jwtService.getUserId();
-            if (!user_id.equals(userIdByJwt)) {
-                return new BaseResponse<>(INVALID_USER_JWT);
-            }
+            jwtService.JwtEffectiveness(user_id, jwtService.getUserId());
+
             PostProfileRes postProfileRes = userService.createProfile(user_id, postProfileReq);
             return new BaseResponse<>(postProfileRes);
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
         }
     }
-
 
     /**
      * 소개 페이지 내용 조회 API
@@ -250,7 +262,51 @@ public class UserController {
         }
     }
 
+    /**
+     * 내 정보 조회(PR) API
+     * [GET] /user/profile/info/userId
+     *
+     * @param user_id
+     * @return
+     * @author yewon
+     */
+    @ResponseBody
+    @GetMapping("/profile/info/{user_id}")
+    public BaseResponse<GetInfoRes> getInfo (@PathVariable("user_id") String user_id) {
+        try {
+            jwtService.JwtEffectiveness(user_id, jwtService.getUserId());   // jwt token 검증
+            GetInfoRes getInfoRes = userProvider.getInfo(user_id);  // user_id로 정보 조회
+            // 프로필 사진 가져오기
+            String user_prPhoto = userProvider.getPrPhoto(getInfoRes.getUser_nickname());
+            getInfoRes.setUser_prPhoto(user_prPhoto);
+            return new BaseResponse<>(getInfoRes);
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
 
+    /**
+     * 내 정보 수정(PR) API
+     * [PATCH] /user/profile/info/userId
+     *
+     * @param user_id
+     * @param patchInfoReq
+     * @return
+     * @author yewon
+     */
+    @ResponseBody
+    @PatchMapping("/profile/info/{user_id}")
+    public BaseResponse<String> modifyInfo(@PathVariable("user_id") String user_id, @RequestBody PatchInfoReq patchInfoReq) {
+        try {
+            jwtService.JwtEffectiveness(user_id, jwtService.getUserId());   // jwt token 검증
+            userService.modifyInfo(user_id, patchInfoReq);
+            // TODO 사진 수정 부분 추가 예정
+            String result = "정상으로 수정되었습니다.";
+            return new BaseResponse<>(result);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
 }
 
 

@@ -5,7 +5,6 @@ import com.example.demo.src.user.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
 import java.util.List;
@@ -272,7 +271,7 @@ public class UserDao {
      * @author yewon
      */
     public List<String> getUserProject(String userId) {
-        String getUserProjectQuery = "select Project.pj_name from Project " +
+        String getUserProjectQuery = "select Project.pj_header from Project " +
                     "inner join Pj_request on Project.pj_num = Pj_request.pj_num " +
                     "where Pj_request.user_id = ? and Pj_request.pj_inviteStatus = '승인완료'";
         return this.jdbcTemplate.queryForList(getUserProjectQuery, String.class, userId);
@@ -313,12 +312,41 @@ public class UserDao {
         }
     }
 
-
-
-
+    /**
+     * 프로필 사진 가져오기
+     * @param user_nickname
+     * @return
+     * @author shinhyeon
+     */
     public String getPrphoto(String user_nickname) {
         String getPrphotoQuery = "SELECT user_prPhoto from User Where user_nickname = ?";
 
         return this.jdbcTemplate.queryForObject(getPrphotoQuery, new String[]{user_nickname}, String.class);
+    }
+
+    /**
+     * 내 정보 조회(PR) API
+     * @param user_id
+     * @return
+     * @author yewon
+     */
+    public GetInfoRes getInfo(String user_id) {
+        String getInfoQuery = "select user_nickname, user_prPhoto" +
+                "    from User where user_id = ?";
+        return this.jdbcTemplate.queryForObject(getInfoQuery,
+                (rs, rowNum) -> GetInfoRes.builder().user_nickname(rs.getString("user_nickname")).
+                        user_prPhoto(rs.getString("user_prPhoto")).build(), user_id);
+    }
+
+    /**
+     * 내 정보 수정(PR) API
+     * @param user_id
+     * @param patchInfoReq
+     * @author yewon
+     */
+    public void modifyInfo(String user_id, PatchInfoReq patchInfoReq) {
+        String modifyInfoQuery = "update User set user_nickname = ? where user_id = ?"; // TODO 사진 수정 부분 추가 예정
+        String modifyInfoParams = user_id;
+        this.jdbcTemplate.update(modifyInfoQuery, patchInfoReq.getUser_nickname(), modifyInfoParams);
     }
 }
