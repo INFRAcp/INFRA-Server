@@ -52,6 +52,8 @@ public enum BaseResponseStatus {
     POST_USERS_PROFILE_KEYWORD_COUNT(false, 2204, "키워드는 최대 6개까지 입력할 수 있습니다."),
     POST_USERS_PROFILE_KEYWORD_WORD_COUNT(false, 2205, "키워드의 글자수는 최소 1글자, 최대 5글자로 작성해주세요."),
 
+    INVALID_ODER_PRPHOTO(false, 2211, "프로필 사진은 등록 및 삭제만 가능합니다 (user_prPhoto key 값을 확인해주세요)"),
+
     // 프로젝트 (2300~)
     // Project 프로젝트 등록시 빈값 에러
     POST_PROJECT_EMPTY_HEADER(false, 2310, "프로젝트 제목을 입력해주세요."),

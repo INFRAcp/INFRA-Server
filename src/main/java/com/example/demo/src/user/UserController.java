@@ -2,13 +2,16 @@ package com.example.demo.src.user;
 
 import com.example.demo.config.BaseException;
 import com.example.demo.config.BaseResponse;
+import com.example.demo.src.s3.S3Service;
 import com.example.demo.src.user.model.*;
 import com.example.demo.utils.jwt.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 import static com.example.demo.config.BaseResponseStatus.*;
@@ -26,12 +29,15 @@ public class UserController {
     private final UserService userService;
     @Autowired
     private final JwtService jwtService;
+    @Autowired
+    private final S3Service s3Service;
 
 
-    public UserController(UserProvider userProvider, UserService userService, JwtService jwtService) {
+    public UserController(UserProvider userProvider, UserService userService, JwtService jwtService, S3Service s3Service) {
         this.userProvider = userProvider;
         this.userService = userService;
         this.jwtService = jwtService;
+        this.s3Service = s3Service;
     }
 
 
@@ -292,15 +298,30 @@ public class UserController {
      * @param user_id
      * @param patchInfoReq
      * @return
-     * @author yewon
+     * @author yewon, shinhyeon(s3)
      */
     @ResponseBody
     @PatchMapping("/profile/info/{user_id}")
-    public BaseResponse<String> modifyInfo(@PathVariable("user_id") String user_id, @RequestBody PatchInfoReq patchInfoReq) {
+    public BaseResponse<String> modifyInfo(@PathVariable("user_id") String user_id, @RequestParam("user_nickname") String user_nickname, @RequestParam("user_prPhoto") String user_prPhoto, @RequestParam("images") MultipartFile multipartFile) throws IOException {
         try {
             jwtService.JwtEffectiveness(user_id, jwtService.getUserId());   // jwt token 검증
-            userService.modifyInfo(user_id, patchInfoReq);
-            // TODO 사진 수정 부분 추가 예정
+
+            if(user_prPhoto.equals("등록")){ // 프로필 사진 등록
+                // s3에 업로드
+                String imgPath = s3Service.uploadPrphoto(multipartFile, "prphoto");
+                // db에 반영 (user_prPhoto)
+                s3Service.uploadPrphoto(imgPath, user_id);
+            }
+            else if(user_prPhoto.equals("삭제")){ // 프로필 사진 삭제
+                s3Service.delPrphoto(user_id);
+            }
+            else {
+                return new BaseResponse<>(INVALID_ODER_PRPHOTO);
+            }
+
+            // 닉네임 변경
+            userService.modifyInfo(user_id, user_nickname);
+
             String result = "정상으로 수정되었습니다.";
             return new BaseResponse<>(result);
         } catch (BaseException exception) {
