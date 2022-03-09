@@ -785,4 +785,41 @@ public class ProjectDao {
 
         return getHotProjectRes;
     }
+
+    /**
+     * 프로젝트 추천 조회 (이런 프로젝트는 어떠세요?)
+     * @param user_id
+     * @return List<GetHotProjectRes>
+     * @author shinhyeon
+     */
+    public List<GetHotProjectRes> getRecommendProjects(String user_id) {
+        // 관심 카테고리 가져오기
+        String getUserInterestCategory = "SELECT user_interestCategory FROM User_interest WHERE user_id = ? ";
+        int user_interestCategory = this.jdbcTemplate.queryForObject(getUserInterestCategory, int.class, user_id);
+
+        // (관심 카테고리와 일치하는) 추천 프로젝트 가져오기
+        String getRecommendProjectsQuery = "SELECT Project.pj_num, user_id, pj_views, pj_header, pj_views, pj_categoryName, pj_subCategoryName, pj_content, pj_progress, pj_endTerm,pj_startTerm, pj_deadline, pj_totalPerson,pj_recruitPerson, pj_time, DATEDIFF(pj_deadline,now()) " +
+                "FROM Project, Pj_category, Pj_subCategory " +
+                "WHERE pj_status = '등록' AND Project.pj_categoryNum = Pj_category.pj_categoryNum AND Project.pj_categoryNum = Pj_subCategory.pj_categoryNum AND Project.pj_subCategoryNum = Pj_subCategory.pj_subCategoryNum AND Project.pj_categoryNum = ? ";
+
+        return this.jdbcTemplate.query(getRecommendProjectsQuery,
+                (rs, rowNum) -> new GetHotProjectRes(
+                        user_id,
+                        rs.getInt("pj_num"),
+                        rs.getString("pj_header"),
+                        rs.getInt("pj_views"),
+                        0,
+                        rs.getString("pj_categoryName"),
+                        rs.getString("pj_subCategoryName"),
+                        rs.getString("pj_progress"),
+                        rs.getString("pj_deadline"),
+                        rs.getInt("pj_totalPerson"),
+                        rs.getInt("pj_recruitPerson"),
+                        "모집중",
+                        rs.getInt("DATEDIFF(pj_deadline,now())"),
+                        0,
+                        null,
+                        null
+                ), user_interestCategory);
+    }
 }
