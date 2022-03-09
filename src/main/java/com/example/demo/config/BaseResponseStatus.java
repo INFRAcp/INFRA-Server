@@ -52,6 +52,8 @@ public enum BaseResponseStatus {
     POST_USERS_PROFILE_KEYWORD_COUNT(false, 2204, "키워드는 최대 6개까지 입력할 수 있습니다."),
     POST_USERS_PROFILE_KEYWORD_WORD_COUNT(false, 2205, "키워드의 글자수는 최소 1글자, 최대 5글자로 작성해주세요."),
 
+    INVALID_ODER_PRPHOTO(false, 2211, "프로필 사진은 등록 및 삭제만 가능합니다 (user_prPhoto key 값을 확인해주세요)"),
+
     // 프로젝트 (2300~)
     // Project 프로젝트 등록시 빈값 에러
     POST_PROJECT_EMPTY_HEADER(false, 2310, "프로젝트 제목을 입력해주세요."),
@@ -128,6 +130,9 @@ public enum BaseResponseStatus {
     POST_USER_PROFILE_SAME_ABILITY(false, 3121, "중복된 능력(ability)은 입력할 수 없습니다."),
     POST_USER_PROFILE_SAME_LINK(false, 3122, "중복된 링크(link)는 입력할 수 없습니다."),
     POST_USER_PROFILE_SAME_KEYWORD(false, 3123, "중복된 키워드(keyword)는 입력할 수 없습니다."),
+
+    // 관심분야
+    EMPTY_INTEREST_CATEGORY(false, 3150, "설정한 관심분야가 없습니다."),
 
     // 프로젝트 (3300~)
     // 팀원 평가

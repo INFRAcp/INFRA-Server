@@ -364,9 +364,9 @@ public class UserService {
      * @author yewon
      */
     @Transactional
-    public void modifyInfo(String user_id, PatchInfoReq patchInfoReq) throws BaseException {
+    public void modifyInfo(String user_id, String user_nickname) throws BaseException {
         try {
-            userDao.modifyInfo(user_id, patchInfoReq);
+            userDao.modifyInfo(user_id, user_nickname);
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }

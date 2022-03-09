@@ -390,9 +390,8 @@ public class UserDao {
      * @param patchInfoReq
      * @author yewon
      */
-    public void modifyInfo(String user_id, PatchInfoReq patchInfoReq) {
-        String modifyInfoQuery = "update User set user_nickname = ? where user_id = ?"; // TODO 사진 수정 부분 추가 예정
-        String modifyInfoParams = user_id;
-        this.jdbcTemplate.update(modifyInfoQuery, patchInfoReq.getUser_nickname(), modifyInfoParams);
+    public void modifyInfo(String user_id, String user_nickname) {
+        String modifyInfoQuery = "update User set user_nickname = ? where user_id = ?";
+        this.jdbcTemplate.update(modifyInfoQuery, user_nickname, user_id);
     }
 }
