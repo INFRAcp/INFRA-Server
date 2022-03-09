@@ -227,7 +227,7 @@ public class ProjectService {
         LocalDate pj_startTermLd = LocalDate.parse(pj_startTerm, DateTimeFormatter.ISO_DATE);
         LocalDate pj_endTermLd = LocalDate.parse(pj_endTerm, DateTimeFormatter.ISO_DATE);
 
-        if (pj_deadlineLd.isBefore(pj_startTermLd)) {
+        if (pj_startTermLd.isBefore(pj_deadlineLd)) {
             throw new BaseException(POST_PROJECT_DEADLINE_BEFORE_START);
         }
         if (pj_endTermLd.isBefore(pj_startTermLd)) {
@@ -241,7 +241,6 @@ public class ProjectService {
      * @param pj_header
      * @param pj_field
      * @param pj_content
-     * @param pj_name
      * @param pj_subField
      * @param pj_progress
      * @param pj_endTerm
@@ -512,7 +511,14 @@ public class ProjectService {
     public GetContactRes pjContact(int pj_num, String user_id) throws BaseException{
         try {
             GetContactRes getContactRes = projectDao.pjContact(pj_num, user_id);
+
             getContactRes.setHashtag(projectDao.getHashtag(pj_num));
+            //프로젝트 좋아요 유무
+            getContactRes.setPj_like(projectProvider.checkPjLike(pj_num, user_id));
+            //프로젝트 해시태그 불러오기
+            getContactRes.setHashtag(projectProvider.getHashtag(pj_num));
+            //프로젝트 모집중, 마감임박, 마감 표시
+            getContactRes.setPj_recruit(recruit(getContactRes.getPj_daysub()));
             return getContactRes;
         }catch (Exception exception){
             throw new BaseException(DATABASE_ERROR);

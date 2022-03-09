@@ -273,19 +273,24 @@ public class ProjectDao {
      */
     public String pjApply(PostPjApplyReq postPjApplyReq) {
         String pjApplyCoincideCheckQuery = "Select Count(*) from Pj_request where pj_num = ? and user_id = ?";
-        String pjApplyRejectCheckQuery = "select pj_inviteStatus from Pj_request where pj_num = ? and user_id = ?";
+        int checkCount = this.jdbcTemplate.queryForObject(pjApplyCoincideCheckQuery, int.class, postPjApplyReq.getPj_num(), postPjApplyReq.getUser_id());
+        if(checkCount >= 1){
+            String pjApplyRejectCheckQuery = "select pj_inviteStatus from Pj_request where pj_num = ? and user_id = ?";
 
-        String comment = this.jdbcTemplate.queryForObject(pjApplyRejectCheckQuery, String.class, postPjApplyReq.getPj_num(), postPjApplyReq.getUser_id());
+            String comment = this.jdbcTemplate.queryForObject(pjApplyRejectCheckQuery, String.class, postPjApplyReq.getPj_num(), postPjApplyReq.getUser_id());
 
-        if (comment.equals("거절")) {
-            return "거절";
-        } else if (this.jdbcTemplate.queryForObject(pjApplyCoincideCheckQuery, int.class, postPjApplyReq.getPj_num(), postPjApplyReq.getUser_id()) == 1) {
-            return "중복";
-        } else {
+            if (comment.equals("거절")) {
+                return "거절";
+            } else if (comment.equals("승인완료") || comment.equals("신청")) {
+                return "중복";
+            }
+
+        }else{
             String pjApplyQuery = "insert into Pj_request (user_id, pj_num, pj_inviteStatus) VALUES (?,?,'신청')";
             this.jdbcTemplate.update(pjApplyQuery, postPjApplyReq.getUser_id(), postPjApplyReq.getPj_num());
             return "신청이 완료되었습니다.";
         }
+        return null;
     }
 
     /**
@@ -668,12 +673,13 @@ public class ProjectDao {
      */
     public GetContactRes pjContact(int pj_num, String user_id) {
         String pjContactQuery = "SELECT Project.user_id, user_nickname, user_prPhoto, pj_header, pj_views, pj_categoryName, pj_subCategoryName, pj_content, pj_progress, pj_endTerm, pj_startTerm, pj_deadline, pj_totalPerson, pj_recruitPerson," +
-                "(SELECT count(*) FROM Project, Pj_like WHERE Project.pj_num = Pj_like.pj_num and Project.pj_num = ?) as CNT " +
+                "(SELECT count(*) FROM Project, Pj_like WHERE Project.pj_num = Pj_like.pj_num and Project.pj_num = ?) as CNT, DATEDIFF(pj_deadline,now()) as DAY " +
                 "FROM User, Project, Pj_subCategory, Pj_category " +
                 "WHERE Project.user_id = User.user_id and Pj_subCategory.pj_categoryNum = Pj_category.pj_categoryNum and Project.pj_categoryNum = Pj_category.pj_categoryNum and Project.pj_subCategoryNum = Pj_subCategory.pj_subCategoryNum and pj_num = ?";
 
         return this.jdbcTemplate.queryForObject(pjContactQuery,
                 (rs, rowNum) -> GetContactRes.builder().user_id(rs.getString("user_id")).
+                        pj_num(pj_num).
                         pj_views(rs.getInt("pj_views")).
                         pj_categoryName(rs.getString("pj_categoryName")).
                         pj_subCategoryName(rs.getString("pj_subCategoryName")).
@@ -688,7 +694,8 @@ public class ProjectDao {
                         user_nickname(rs.getString("user_nickname")).
                         user_prPhoto(rs.getString("user_prPhoto")).
                         hashtag(null).
-                        pjLikeCount(rs.getInt("CNT")).build(), pj_num, pj_num);
+                        pjLikeCount(rs.getInt("CNT")).
+                        pj_daysub(rs.getInt("DAY")).build(), pj_num, pj_num);
 
     }
 
@@ -711,7 +718,7 @@ public class ProjectDao {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
             LocalDateTime ldTime = LocalDateTime.parse(time, formatter);
-            ldTime = ldTime.plusHours(30);
+            ldTime = ldTime.plusMinutes(30);
             LocalDateTime now = LocalDateTime.now();
 
             if(ldTime.isBefore(now)){ // 30분이 경과된 경우
@@ -719,8 +726,11 @@ public class ProjectDao {
                 int views = this.jdbcTemplate.queryForObject(plusViews, int.class, pj_num);
                 views++;
 
-                String plusPjViews = "UPDATE Prject SET ph_views = ?";
-                this.jdbcTemplate.update(plusPjViews, pj_num);
+                String plusPjViews = "UPDATE Project SET pj_views = ? WHERE pj_num = ?";
+                this.jdbcTemplate.update(plusPjViews, views, pj_num);
+
+                String viewtimeUpdate = "UPDATE Pj_inquiry SET pj_inquiryTime = Default WHERE pj_num = ? and user_id = ?";
+                this.jdbcTemplate.update(viewtimeUpdate, pj_num, user_id);
             }
 
         }
