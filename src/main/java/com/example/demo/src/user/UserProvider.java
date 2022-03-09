@@ -1,9 +1,7 @@
 package com.example.demo.src.user;
 
 import com.example.demo.config.BaseException;
-import com.example.demo.config.secret.Secret;
 import com.example.demo.src.user.model.*;
-import com.example.demo.utils.AES128;
 import com.example.demo.utils.jwt.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.example.demo.config.BaseResponseStatus.*;
+import static com.example.demo.config.BaseResponseStatus.DATABASE_ERROR;
+import static com.example.demo.config.BaseResponseStatus.NOT_EXISTS_USER_ID;
 
 @Service
 public class UserProvider {
@@ -88,15 +87,15 @@ public class UserProvider {
     /**
      * nickname 중복 체크
      *
-     * @param nickname
+     * @param user_nickname
      * @return int - 이미 존재하면 1, 없으면 0
      * @throws BaseException
-     * @author yunhee
+     * @author yunhee, yewon
      */
     @Transactional(readOnly = true)
-    public int checkNickname(String nickname) throws BaseException {
+    public int checkNickname(String user_nickname) throws BaseException {
         try {
-            return userDao.checkNickname(nickname);
+            return userDao.checkNickname(user_nickname);
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }
@@ -172,12 +171,29 @@ public class UserProvider {
 
             // 프로젝트 리스트
             List<String> project = userDao.getUserProject(userId);
-            getProfileRes.setPj_name(project);
+            getProfileRes.setPj_header(project);
 
 
             return getProfileRes;
         } catch (IncorrectResultSizeDataAccessException error) {
             throw new BaseException(NOT_EXISTS_USER_ID);
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    /**
+     * 내 정보 조회(PR) API
+     * @param user_id
+     * @return
+     * @throws BaseException
+     * @author yewon
+     */
+    @Transactional(readOnly = true)
+    public GetInfoRes getInfo(String user_id) throws BaseException {
+        try {
+            GetInfoRes getInfoRes = userDao.getInfo(user_id);
+            return getInfoRes;
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }
@@ -195,4 +211,51 @@ public class UserProvider {
         if(user_prPhoto == null) user_prPhoto = "https://infra-infra-bucket.s3.ap-northeast-2.amazonaws.com/prphoto/infra_profile.png";
         return user_prPhoto;
     }
+
+    /**
+     * 전체 유저 프로필 조회 API - 전체
+     * @return 닉네임, 평점
+     * @throws BaseException
+     * @author yewon
+     */
+    @Transactional
+    public List<GetAllUserProfilesRes> getAllProfile() throws BaseException {
+        try {
+            List<GetAllUserProfilesRes> getAllUserProfilesRes = userDao.getAllProfile();
+            return getAllUserProfilesRes;
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    /**
+     * 전체 유저 프로필 조회 API - 능력(user_ability) 가져오기
+     * @param user_id
+     * @return 능력(abilty)
+     * @throws BaseException
+     * @author yewon
+     */
+    public String [] getAbility(String user_id) throws BaseException {
+        try {
+            return userDao.getAbility(user_id);
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    /**
+     * 전체 유저 프로필 조회 API - 키워드(user_keyword) 가져오기
+     * @param user_id
+     * @return 키워드(keyword)
+     * @throws BaseException
+     * @author yewon
+     */
+    public String [] getKeyword(String user_id) throws BaseException {
+        try {
+            return userDao.getKeyword(user_id);
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
 }

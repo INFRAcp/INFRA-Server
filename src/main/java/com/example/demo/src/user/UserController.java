@@ -2,20 +2,24 @@ package com.example.demo.src.user;
 
 import com.example.demo.config.BaseException;
 import com.example.demo.config.BaseResponse;
+import com.example.demo.src.s3.S3Service;
 import com.example.demo.src.user.model.*;
 import com.example.demo.utils.jwt.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 import static com.example.demo.config.BaseResponseStatus.*;
 import static com.example.demo.utils.ValidationRegex.isRegexId;
 
+
 @RestController
-@RequestMapping("/user")
+@RequestMapping(value = "/user")
 public class UserController {
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -25,12 +29,15 @@ public class UserController {
     private final UserService userService;
     @Autowired
     private final JwtService jwtService;
+    @Autowired
+    private final S3Service s3Service;
 
 
-    public UserController(UserProvider userProvider, UserService userService, JwtService jwtService) {
+    public UserController(UserProvider userProvider, UserService userService, JwtService jwtService, S3Service s3Service) {
         this.userProvider = userProvider;
         this.userService = userService;
         this.jwtService = jwtService;
+        this.s3Service = s3Service;
     }
 
 
@@ -94,12 +101,32 @@ public class UserController {
         if (!isRegexId(user_id)) {   // id 형식 체크
             return new BaseResponse<>(POST_USERS_INVALID_ID);
         }
-
         try {
             if (userProvider.checkId(user_id) == 1) {
                 throw new BaseException(POST_USERS_EXISTS_ID);
             }
-            return new BaseResponse<>("사용가능한 아이디입니다.");
+            return new BaseResponse<>("사용 가능한 아이디입니다.");
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
+    /**
+     * 닉네임 중복 체크 API (회원가입시 체크하지만 소셜 로그인으로 들어온 사용자를 위한 단독 체크 API)
+     * [GET] /user/valid-nickname/:user_nickname
+     *
+     * @param getNicknameReq - nickname
+     * @return
+     * @author yewon
+     */
+    @ResponseBody
+    @PostMapping("/valid-nickname")
+    public BaseResponse<String> validNickname(@RequestBody GetNicknameReq getNicknameReq) {
+        try {
+            if (userProvider.checkNickname(getNicknameReq.getUser_nickname()) == 1) {
+                throw new BaseException(POST_USERS_EXISTS_NICKNAME);
+            }
+            return new BaseResponse<>("사용 가능한 닉네임입니다.");
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
         }
@@ -113,10 +140,8 @@ public class UserController {
     @PatchMapping("/update-pw/{userId}")
     public BaseResponse<String> modifyUserName(@PathVariable("userId") String userId, @RequestBody User user) {
         try {
-            String userIdByJwt = jwtService.getUserId();    //jwt에서 id 추출
-            if (!userId.equals(userIdByJwt)) {
-                return new BaseResponse<>(INVALID_USER_JWT);
-            }
+            jwtService.JwtEffectiveness(userId, jwtService.getUserId());
+
             if (user.getUser_pw() == null) {
                 return new BaseResponse<>(POST_USERS_EMPTY_INFO);
             }
@@ -159,7 +184,7 @@ public class UserController {
 
     /**
      * 회원정보조회 API
-     * [POST] /user/{user_id}
+     * [POST] /user/:userId
      *
      * @param user_id
      * @return
@@ -169,10 +194,8 @@ public class UserController {
     @GetMapping("/{user_id}")
     public BaseResponse<List<GetUserRes>> getUser(@PathVariable("user_id") String user_id) {
         try {
-            String userIdByJwt = jwtService.getUserId();
-            if (!user_id.equals(userIdByJwt)) {
-                return new BaseResponse<>(INVALID_USER_JWT);
-            }
+            jwtService.JwtEffectiveness(user_id, jwtService.getUserId());
+
             List<GetUserRes> getUserRes = userProvider.getUser(user_id);
             return new BaseResponse<>(getUserRes);
         } catch (BaseException exception) {
@@ -182,7 +205,7 @@ public class UserController {
 
     /**
      * 회원탈퇴  API
-     * [PATCH] /user/{user_id}
+     * [PATCH] /user/:userId
      *
      * @param user_id
      * @return
@@ -192,10 +215,8 @@ public class UserController {
     @PatchMapping("/{user_id}")
     public BaseResponse<String> delUser(@PathVariable("user_id") String user_id) {
         try {
-            String userIdByJwt = jwtService.getUserId();
-            if (!user_id.equals(userIdByJwt)) {
-                return new BaseResponse<>(INVALID_USER_JWT);
-            }
+            jwtService.JwtEffectiveness(user_id, jwtService.getUserId());
+
             userService.delUser(user_id);
             String result = "탈퇴가 정상적으로 처리되었습니다.";
             return new BaseResponse<>(result);
@@ -206,7 +227,7 @@ public class UserController {
 
     /**
      * 소개 페이지 작성 API
-     * [POST] /user/profile
+     * [POST] /user/profilez
      *
      * @param postProfileReq
      * @return profile, photo, ability, link, keyword, request(project)
@@ -216,17 +237,14 @@ public class UserController {
     @PostMapping("/profile/{user_id}")
     public BaseResponse<PostProfileRes> createProfile(@PathVariable("user_id") String user_id, @RequestBody PostProfileReq postProfileReq) {
         try {
-            String userIdByJwt = jwtService.getUserId();
-            if (!user_id.equals(userIdByJwt)) {
-                return new BaseResponse<>(INVALID_USER_JWT);
-            }
+            jwtService.JwtEffectiveness(user_id, jwtService.getUserId());
+
             PostProfileRes postProfileRes = userService.createProfile(user_id, postProfileReq);
             return new BaseResponse<>(postProfileRes);
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
         }
     }
-
 
     /**
      * 소개 페이지 내용 조회 API
@@ -250,7 +268,112 @@ public class UserController {
         }
     }
 
+    /**
+     * 소개 페이지 수정 API
+     * [PATCH] /user/profile/:userId
+     *
+     * @param user_id
+     * @param patchProfileReq
+     * @return
+     * @author yewon
+     */
+    @ResponseBody
+    @PatchMapping("/profile/{user_id}")
+    public BaseResponse<PatchProfileRes> modifyProfile(@PathVariable("user_id") String user_id, @RequestBody PatchProfileReq patchProfileReq) {
+        try {
+            jwtService.JwtEffectiveness(user_id, jwtService.getUserId());
+            PatchProfileRes patchProfileRes = userService.modifyProfile(user_id, patchProfileReq);
+            return new BaseResponse<>(patchProfileRes);
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
 
+
+    /**
+     * 내 정보 조회(PR) API
+     * [GET] /user/profile/info/userId
+     *
+     * @param user_id
+     * @return
+     * @author yewon
+     */
+    @ResponseBody
+    @GetMapping("/profile/info/{user_id}")
+    public BaseResponse<GetInfoRes> getInfo (@PathVariable("user_id") String user_id) {
+        try {
+            jwtService.JwtEffectiveness(user_id, jwtService.getUserId());   // jwt token 검증
+            GetInfoRes getInfoRes = userProvider.getInfo(user_id);  // user_id로 정보 조회
+            // 프로필 사진 가져오기
+            String user_prPhoto = userProvider.getPrPhoto(getInfoRes.getUser_nickname());
+            getInfoRes.setUser_prPhoto(user_prPhoto);
+            return new BaseResponse<>(getInfoRes);
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
+    /**
+     * 내 정보 수정(PR) API
+     * [PATCH] /user/profile/info/userId
+     *
+     * @param user_id
+     * @return
+     * @author yewon, shinhyeon(s3)
+     */
+    @ResponseBody
+    @PatchMapping("/profile/info/{user_id}")
+    public BaseResponse<String> modifyInfo(@PathVariable("user_id") String user_id, @RequestParam("user_nickname") String user_nickname, @RequestParam("user_prPhoto") String user_prPhoto, @RequestParam("images") MultipartFile multipartFile) throws IOException {
+        try {
+            jwtService.JwtEffectiveness(user_id, jwtService.getUserId());   // jwt token 검증
+
+            if(user_prPhoto.equals("등록")){ // 프로필 사진 등록
+                // s3에 업로드
+                String imgPath = s3Service.uploadPrphoto(multipartFile, "prphoto");
+                // db에 반영 (user_prPhoto)
+                s3Service.uploadPrphoto(imgPath, user_id);
+            }
+            else if(user_prPhoto.equals("삭제")){ // 프로필 사진 삭제
+                s3Service.delPrphoto(user_id);
+            }
+            else {
+                return new BaseResponse<>(INVALID_ODER_PRPHOTO);
+            }
+
+            // 닉네임 변경
+            userService.modifyInfo(user_id, user_nickname);
+
+            String result = "정상으로 수정되었습니다.";
+            return new BaseResponse<>(result);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    /**
+     * 전체 유저 프로필 조회 API
+     * @return  사진, 닉네임, 능력, 평점, 키워드
+     * @throws BaseException
+     * @author yewon
+     */
+    @GetMapping("/profile/all")
+    public BaseResponse<List<GetAllUserProfilesRes>> getAllProfile() throws BaseException {
+        List<GetAllUserProfilesRes> getAllUserProfilesRes = userProvider.getAllProfile();    // 닉네임, 평점 가져오기
+        // 프로필 사진 가져오기
+        for (int i = 0; i < getAllUserProfilesRes.size(); i++) {
+            // 모든 유저의 사진 가져와서 저장(가져올 때는 null값) -> 위에서 가져온 닉네임을 통해 getPrPhoto 메소드를 호출하여 각 유저의 사진을 가져와서 저장!
+            getAllUserProfilesRes.get(i).setUser_prPhoto(userProvider.getPrPhoto(getAllUserProfilesRes.get(i).getUser_nickname()));
+        }
+        // 능력(user_ability) 가져오기
+        for (int i = 0; i < getAllUserProfilesRes.size(); i++) {
+            getAllUserProfilesRes.get(i).setUser_prAbility(userProvider.getAbility(getAllUserProfilesRes.get(i).getUser_id()));
+        }
+        // 키워드(user_keyword) 가져오기
+        for (int i = 0; i < getAllUserProfilesRes.size(); i++) {
+            getAllUserProfilesRes.get(i).setUser_prKeyword(userProvider.getKeyword(getAllUserProfilesRes.get(i).getUser_id()));
+        }
+        return new BaseResponse<>(getAllUserProfilesRes);
+    }
 }
 
 

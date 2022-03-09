@@ -17,5 +17,5 @@ public class GetProfileRes {
     private List<String> user_prAbility;
     private List<String> user_prLink;
     private List<String> user_prKeyword;
-    private List<String> pj_name;
+    private List<String> pj_header;
 }

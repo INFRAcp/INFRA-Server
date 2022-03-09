@@ -5,7 +5,6 @@ import com.example.demo.src.user.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
 import java.util.List;
@@ -143,7 +142,6 @@ public class UserDao {
         return this.jdbcTemplate.query(getUserQuery,
                 (rs, rowNum) -> new GetUserRes(
                         rs.getString("user_id"),
-                        //rs.getString("user_pw"),
                         rs.getString("user_phone"),
                         rs.getString("user_email")),
 
@@ -160,6 +158,20 @@ public class UserDao {
         String delUserQuery = "update User set user_status = 'DEL', user_leaveTime = now() where user_id = ?";
         String delUserParams = user_id;
         this.jdbcTemplate.update(delUserQuery, delUserParams);
+    }
+
+    /**
+     * phone에 해당하는 email 정보 가져오기
+     *
+     * @param phone
+     * @return String - email
+     * @author yunhee
+     */
+    public User getEmailFromPhone(String phone) {
+        String getEmailQuery = "select user_id, user_email from User where user_phone = ? and user_status REGEXP 'ACTIVE|STOP'";
+        return this.jdbcTemplate.queryForObject(getEmailQuery,
+                (rs, rowNum) -> User.builder().user_id(rs.getString("user_id")).
+                        user_email(rs.getString("user_email")).build(), phone);
     }
 
     /**
@@ -196,20 +208,6 @@ public class UserDao {
         }
 
         return "소개 페이지가 완성되었습니다~!";
-    }
-
-    /**
-     * phone에 해당하는 email 정보 가져오기
-     *
-     * @param phone
-     * @return String - email
-     * @author yunhee
-     */
-    public User getEmailFromPhone(String phone) {
-        String getEmailQuery = "select user_id, user_email from User where user_phone=? and user_status REGEXP 'ACTIVE|STOP'";
-        return this.jdbcTemplate.queryForObject(getEmailQuery,
-                (rs, rowNum) -> User.builder().user_id(rs.getString("user_id")).
-                        user_email(rs.getString("user_email")).build(), phone);
     }
 
     /**
@@ -272,10 +270,56 @@ public class UserDao {
      * @author yewon
      */
     public List<String> getUserProject(String userId) {
-        String getUserProjectQuery = "select Project.pj_name from Project " +
+        String getUserProjectQuery = "select Project.pj_header from Project " +
                     "inner join Pj_request on Project.pj_num = Pj_request.pj_num " +
                     "where Pj_request.user_id = ? and Pj_request.pj_inviteStatus = '승인완료'";
         return this.jdbcTemplate.queryForList(getUserProjectQuery, String.class, userId);
+    }
+
+    /**
+     * 소개페이지 수정 API
+     * @param user_id
+     * @param patchProfileReq
+     * @return
+     * @author yewon
+     */
+    public String modifyProfile(String user_id, PatchProfileReq patchProfileReq) {
+        String userId = user_id;
+
+        // photo와 profile을 user 테이블에 추가하기 (이미 존재하는 아이디에 넣는 것이기 때문에 update)
+        String userProfileQuery = "UPDATE User SET user_prProfile = ? WHERE user_id = ? ";
+        Object[] createProfileParams = new Object[]{patchProfileReq.getUser_prProfile(), userId};
+        this.jdbcTemplate.update(userProfileQuery, createProfileParams);
+
+        // user_prAbility
+        String abilityQuery1 = "DELETE from User_ability where user_id = ?"; // 배열에 있는 값들을 먼저 삭제해준 후 업뎃
+        this.jdbcTemplate.update(abilityQuery1, userId);
+        for (int i = 0; i < patchProfileReq.getUser_prAbility().length; i++) {  // 다시 입력받은 값(사용자가 수정한 값) 넣어주기
+            String abilityQuery2 = "INSERT INTO User_ability (user_id, user_prAbility) VALUES (?, ?)";
+            this.jdbcTemplate.update(abilityQuery2, userId, patchProfileReq.getUser_prAbility()[i]);
+        }
+
+        // TODO : 프로젝트 제목 수정 부분 회의 이후에 추가 예정
+//        // pj_header
+//        String projectQuery1 = "DELETE from Project where "
+
+        // user_prLink
+        String linkQuery1 = "DELETE from User_link where user_id = ?";
+        this.jdbcTemplate.update(linkQuery1, userId);
+        for (int i = 0; i < patchProfileReq.getUser_prLink().length; i++) {
+            String linkQuery2 = "INSERT INTO User_link (user_id, user_prLink) VALUES (?, ?)";
+            this.jdbcTemplate.update(linkQuery2, userId, patchProfileReq.getUser_prLink()[i]);
+        }
+
+        // user_prKeyword
+        String keywordQuery1 = "DELETE from User_keyword where user_id = ?";
+        this.jdbcTemplate.update(keywordQuery1,userId);
+        for (int i = 0; i < patchProfileReq.getUser_prKeyword().length; i++) {
+            String keywordQuery = "INSERT INTO User_keyword (user_id, user_prKeyword) VALUES (?, ?)";
+            this.jdbcTemplate.update(keywordQuery, userId, patchProfileReq.getUser_prKeyword()[i]);
+        }
+
+        return "소개페이지가 수정되었습니다~!";
     }
 
     /**
@@ -313,12 +357,95 @@ public class UserDao {
         }
     }
 
-
-
-
+    /**
+     * 프로필 사진 가져오기
+     * @param user_nickname
+     * @return
+     * @author shinhyeon
+     */
     public String getPrphoto(String user_nickname) {
         String getPrphotoQuery = "SELECT user_prPhoto from User Where user_nickname = ?";
 
         return this.jdbcTemplate.queryForObject(getPrphotoQuery, new String[]{user_nickname}, String.class);
+    }
+
+    /**
+     * 내 정보 조회(PR) API
+     * @param user_id
+     * @return
+     * @author yewon
+     */
+    public GetInfoRes getInfo(String user_id) {
+        String getInfoQuery = "select user_nickname, user_prPhoto" +
+                "    from User where user_id = ?";
+        return this.jdbcTemplate.queryForObject(getInfoQuery,
+                (rs, rowNum) -> GetInfoRes.builder().user_nickname(rs.getString("user_nickname")).
+                        user_prPhoto(rs.getString("user_prPhoto")).build(), user_id);
+    }
+
+    /**
+     * 내 정보 수정(PR) API
+     * @param user_id
+     * @author yewon
+     */
+    public void modifyInfo(String user_id, String user_nickname) {
+        String modifyInfoQuery = "update User set user_nickname = ? where user_id = ?";
+        this.jdbcTemplate.update(modifyInfoQuery, user_nickname, user_id);
+    }
+
+    /**
+     * 전체 유저 프로필 조회 API - 전체 중 값이 하나인 것들만
+     * @return 닉네임, 평점
+     * @author yewon
+     */
+    public List<GetAllUserProfilesRes> getAllProfile() {
+        String getAllProfileQuery = "SELECT user_id, user_nickname, user_grade from User"; // 값이 하나인 것들만 먼저 조회
+        return this.jdbcTemplate.query(getAllProfileQuery,
+                (rs, rowNum) -> new GetAllUserProfilesRes(
+                        rs.getString("user_id"),
+                        null,   // 사진
+                        rs.getString("user_nickname"),
+                        null,   // 능력
+                        rs.getFloat("user_grade"),
+                        null   // 키워드
+                ));
+    }
+
+    /**
+     * 전체 유저 프로필 조회 API - 능력(ability)
+     * @param user_id
+     * @return 능력
+     * @author yewon
+     */
+    public String [] getAbility(String user_id) {
+        // 능력(ability)이 하나도 없을 경우에는 null 반환
+        String nullCheckAbility = "SELECT count(*) FROM User_ability WHERE user_id = ?";
+        int cnt = this.jdbcTemplate.queryForObject(nullCheckAbility, int.class, user_id);
+        if(cnt > 0) {
+            String getAbilityQuery = "SELECT user_prAbility from User_ability where user_id = ?";
+            List<String> abilityList = this.jdbcTemplate.queryForList(getAbilityQuery, String.class, user_id);
+            String abilityArr[] = abilityList.toArray(new String[abilityList.size()]);  // 리스트 -> 배열로 형변환
+            return abilityArr;
+        }
+        return null;
+    }
+
+    /**
+     * 전체 유저 프로필 조회 API - 키워드(keyword)
+     * @param user_id
+     * @return 키워드
+     * @author yewon
+     */
+    public String [] getKeyword(String user_id) {
+        // 키워드(keyword)가 하나도 없을 경우에는 null 반환
+        String nullCheckKeyword = "SELECT count(*) FROM User_keyword WHERE user_id = ?";
+        int cnt = this.jdbcTemplate.queryForObject(nullCheckKeyword, int.class, user_id);
+        if(cnt > 0) {
+            String getKeywordQuery = "SELECT user_prKeyword from User_keyword where user_id = ?";
+            List<String> keywordList = this.jdbcTemplate.queryForList(getKeywordQuery, String.class, user_id);
+            String keywordArr[] = keywordList.toArray(new String[keywordList.size()]);
+            return keywordArr;
+        }
+        return null;
     }
 }
