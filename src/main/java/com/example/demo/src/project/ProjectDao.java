@@ -822,4 +822,15 @@ public class ProjectDao {
                         null
                 ), user_interestCategory);
     }
+
+    /**
+     * 관심분야 설정 여부 확인
+     * @param user_id
+     * @return int
+     * @author shinhyeon
+     */
+    public int checkInterestCategory(String user_id) {
+        String checkInterestCategoryQuery = "select count(*) from User_interest where user_id = ? ";
+        return this.jdbcTemplate.queryForObject(checkInterestCategoryQuery, int.class, user_id);
+    }
 }
