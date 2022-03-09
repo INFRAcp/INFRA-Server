@@ -318,7 +318,6 @@ public class UserController {
      * [PATCH] /user/profile/info/userId
      *
      * @param user_id
-     * @param patchInfoReq
      * @return
      * @author yewon, shinhyeon(s3)
      */
@@ -351,10 +350,28 @@ public class UserController {
         }
     }
 
+    /**
+     * 전체 유저 프로필 조회 API
+     * @return  사진, 닉네임, 능력, 평점, 키워드
+     * @throws BaseException
+     * @author yewon
+     */
     @GetMapping("/profile/all")
-    public BaseResponse<List<GetAllUserProfilesRes>> getAllProfile() throws BaseException { // user_id는 넣을지 말지 회의에 따라 결정
-        List<GetAllUserProfilesRes> getAllUserProfilesRes = userProvider.getAllProfile();
+    public BaseResponse<List<GetAllUserProfilesRes>> getAllProfile() throws BaseException {
+        List<GetAllUserProfilesRes> getAllUserProfilesRes = userProvider.getAllProfile();    // 닉네임, 평점 가져오기
         // 프로필 사진 가져오기
+        for (int i = 0; i < getAllUserProfilesRes.size(); i++) {
+            // 모든 유저의 사진 가져와서 저장(가져올 때는 null값) -> 위에서 가져온 닉네임을 통해 getPrPhoto 메소드를 호출하여 각 유저의 사진을 가져와서 저장!
+            getAllUserProfilesRes.get(i).setUser_prPhoto(userProvider.getPrPhoto(getAllUserProfilesRes.get(i).getUser_nickname()));
+        }
+        // 능력(user_ability) 가져오기
+        for (int i = 0; i < getAllUserProfilesRes.size(); i++) {
+            getAllUserProfilesRes.get(i).setUser_prAbility(userProvider.getAbility(getAllUserProfilesRes.get(i).getUser_id()));
+        }
+        // 키워드(user_keyword) 가져오기
+        for (int i = 0; i < getAllUserProfilesRes.size(); i++) {
+            getAllUserProfilesRes.get(i).setUser_prKeyword(userProvider.getKeyword(getAllUserProfilesRes.get(i).getUser_id()));
+        }
         return new BaseResponse<>(getAllUserProfilesRes);
     }
 }

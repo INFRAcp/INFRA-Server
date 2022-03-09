@@ -212,6 +212,12 @@ public class UserProvider {
         return user_prPhoto;
     }
 
+    /**
+     * 전체 유저 프로필 조회 API - 전체
+     * @return 닉네임, 평점
+     * @throws BaseException
+     * @author yewon
+     */
     @Transactional
     public List<GetAllUserProfilesRes> getAllProfile() throws BaseException {
         try {
@@ -221,4 +227,35 @@ public class UserProvider {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
+    /**
+     * 전체 유저 프로필 조회 API - 능력(user_ability) 가져오기
+     * @param user_id
+     * @return 능력(abilty)
+     * @throws BaseException
+     * @author yewon
+     */
+    public String [] getAbility(String user_id) throws BaseException {
+        try {
+            return userDao.getAbility(user_id);
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    /**
+     * 전체 유저 프로필 조회 API - 키워드(user_keyword) 가져오기
+     * @param user_id
+     * @return 키워드(keyword)
+     * @throws BaseException
+     * @author yewon
+     */
+    public String [] getKeyword(String user_id) throws BaseException {
+        try {
+            return userDao.getKeyword(user_id);
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
 }

@@ -142,7 +142,6 @@ public class UserDao {
         return this.jdbcTemplate.query(getUserQuery,
                 (rs, rowNum) -> new GetUserRes(
                         rs.getString("user_id"),
-                        //rs.getString("user_pw"),
                         rs.getString("user_phone"),
                         rs.getString("user_email")),
 
@@ -169,7 +168,7 @@ public class UserDao {
      * @author yunhee
      */
     public User getEmailFromPhone(String phone) {
-        String getEmailQuery = "select user_id, user_email from User where user_phone=? and user_status REGEXP 'ACTIVE|STOP'";
+        String getEmailQuery = "select user_id, user_email from User where user_phone = ? and user_status REGEXP 'ACTIVE|STOP'";
         return this.jdbcTemplate.queryForObject(getEmailQuery,
                 (rs, rowNum) -> User.builder().user_id(rs.getString("user_id")).
                         user_email(rs.getString("user_email")).build(), phone);
@@ -387,11 +386,66 @@ public class UserDao {
     /**
      * 내 정보 수정(PR) API
      * @param user_id
-     * @param patchInfoReq
      * @author yewon
      */
     public void modifyInfo(String user_id, String user_nickname) {
         String modifyInfoQuery = "update User set user_nickname = ? where user_id = ?";
         this.jdbcTemplate.update(modifyInfoQuery, user_nickname, user_id);
+    }
+
+    /**
+     * 전체 유저 프로필 조회 API - 전체 중 값이 하나인 것들만
+     * @return 닉네임, 평점
+     * @author yewon
+     */
+    public List<GetAllUserProfilesRes> getAllProfile() {
+        String getAllProfileQuery = "SELECT user_id, user_nickname, user_grade from User"; // 값이 하나인 것들만 먼저 조회
+        return this.jdbcTemplate.query(getAllProfileQuery,
+                (rs, rowNum) -> new GetAllUserProfilesRes(
+                        rs.getString("user_id"),
+                        null,   // 사진
+                        rs.getString("user_nickname"),
+                        null,   // 능력
+                        rs.getFloat("user_grade"),
+                        null   // 키워드
+                ));
+    }
+
+    /**
+     * 전체 유저 프로필 조회 API - 능력(ability)
+     * @param user_id
+     * @return 능력
+     * @author yewon
+     */
+    public String [] getAbility(String user_id) {
+        // 능력(ability)이 하나도 없을 경우에는 null 반환
+        String nullCheckAbility = "SELECT count(*) FROM User_ability WHERE user_id = ?";
+        int cnt = this.jdbcTemplate.queryForObject(nullCheckAbility, int.class, user_id);
+        if(cnt > 0) {
+            String getAbilityQuery = "SELECT user_prAbility from User_ability where user_id = ?";
+            List<String> abilityList = this.jdbcTemplate.queryForList(getAbilityQuery, String.class, user_id);
+            String abilityArr[] = abilityList.toArray(new String[abilityList.size()]);  // 리스트 -> 배열로 형변환
+            return abilityArr;
+        }
+        return null;
+    }
+
+    /**
+     * 전체 유저 프로필 조회 API - 키워드(keyword)
+     * @param user_id
+     * @return 키워드
+     * @author yewon
+     */
+    public String [] getKeyword(String user_id) {
+        // 키워드(keyword)가 하나도 없을 경우에는 null 반환
+        String nullCheckKeyword = "SELECT count(*) FROM User_keyword WHERE user_id = ?";
+        int cnt = this.jdbcTemplate.queryForObject(nullCheckKeyword, int.class, user_id);
+        if(cnt > 0) {
+            String getKeywordQuery = "SELECT user_prKeyword from User_keyword where user_id = ?";
+            List<String> keywordList = this.jdbcTemplate.queryForList(getKeywordQuery, String.class, user_id);
+            String keywordArr[] = keywordList.toArray(new String[keywordList.size()]);
+            return keywordArr;
+        }
+        return null;
     }
 }
