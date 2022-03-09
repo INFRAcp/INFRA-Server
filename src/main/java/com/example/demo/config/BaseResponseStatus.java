@@ -129,6 +129,9 @@ public enum BaseResponseStatus {
     POST_USER_PROFILE_SAME_LINK(false, 3122, "중복된 링크(link)는 입력할 수 없습니다."),
     POST_USER_PROFILE_SAME_KEYWORD(false, 3123, "중복된 키워드(keyword)는 입력할 수 없습니다."),
 
+    // 관심분야
+    EMPTY_INTEREST_CATEGORY(false, 3150, "설정한 관심분야가 없습니다."),
+
     // 프로젝트 (3300~)
     // 팀원 평가
     PROJECT_EVALUATE_AUTHORITY(false, 3351, "평가 권한이 없습니다. (프로젝트에 참여해야 평가 권한이 주어집니다.)"),
