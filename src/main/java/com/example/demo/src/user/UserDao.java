@@ -206,7 +206,7 @@ public class UserDao {
      * @author yunhee
      */
     public User getEmailFromPhone(String phone) {
-        String getEmailQuery = "select user_id, user_email from User where user_phone=? and user_status REGEXP 'ACTIVE|STOP'";
+        String getEmailQuery = "select user_id, user_email from User where user_phone=? and user_type='infra' and REGEXP 'ACTIVE|STOP'";
         return this.jdbcTemplate.queryForObject(getEmailQuery,
                 (rs, rowNum) -> User.builder().user_id(rs.getString("user_id")).
                         user_email(rs.getString("user_email")).build(), phone);
@@ -273,35 +273,36 @@ public class UserDao {
      */
     public List<String> getUserProject(String userId) {
         String getUserProjectQuery = "select Project.pj_name from Project " +
-                    "inner join Pj_request on Project.pj_num = Pj_request.pj_num " +
-                    "where Pj_request.user_id = ? and Pj_request.pj_inviteStatus = '승인완료'";
+                "inner join Pj_request on Project.pj_num = Pj_request.pj_num " +
+                "where Pj_request.user_id = ? and Pj_request.pj_inviteStatus = '승인완료'";
         return this.jdbcTemplate.queryForList(getUserProjectQuery, String.class, userId);
     }
 
     /**
      * 로그인 리프레시 토큰 저장
+     *
      * @param userId
      * @param refreshToken
      * @author kyubeom
      */
     public int pushRefreshToken(String userId, String refreshToken) {
         String userTokenNullCheckQuery = "SELECT refresh_idx FROM User WHERE user_id = ?";
-        String userToken = this.jdbcTemplate.queryForObject(userTokenNullCheckQuery,String.class, userId);
+        String userToken = this.jdbcTemplate.queryForObject(userTokenNullCheckQuery, String.class, userId);
 
         int TokenIdx;
         //첫 로그인을 할 경우
-        if (userToken==null){
+        if (userToken == null) {
             String refreshTokenInsertQuery = "INSERT INTO User_refreshToken (idx, refreshToken) VALUES (default, ?)";
             this.jdbcTemplate.update(refreshTokenInsertQuery, refreshToken);
 
             String refreshTokenSelectQuery = "SELECT idx FROM User_refreshToken WHERE refreshToken = ?";
-            TokenIdx =  this.jdbcTemplate.queryForObject(refreshTokenSelectQuery, int.class, refreshToken);
+            TokenIdx = this.jdbcTemplate.queryForObject(refreshTokenSelectQuery, int.class, refreshToken);
 
             String refreshTokenUserInsertQuery = "UPDATE User SET refresh_idx = ? WHERE user_id = ?";
             this.jdbcTemplate.update(refreshTokenUserInsertQuery, TokenIdx, userId);
 
             return TokenIdx;
-        }else //두번 이상 로그인을 할 경우
+        } else //두번 이상 로그인을 할 경우
         {
             String refreshTokenSelctQuery = "SELECT refresh_idx FROM User WHERE user_id = ?";
             TokenIdx = this.jdbcTemplate.queryForObject(refreshTokenSelctQuery, int.class, userId);
@@ -312,8 +313,6 @@ public class UserDao {
             return TokenIdx;
         }
     }
-
-
 
 
     public String getPrphoto(String user_nickname) {
