@@ -187,6 +187,8 @@ public class UserService {
         try {
             modifyUserPw(patchUserReq); // 비밀번호 변경
             mailService.sendResetPwMail(email, pw);
+        } catch (BaseException exception) {
+            throw new BaseException(exception.getStatus());
         } catch (Exception exception) { // DB에 이상이 있는 경우
             throw new BaseException(DATABASE_ERROR);
         }
