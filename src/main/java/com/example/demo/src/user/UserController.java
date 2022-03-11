@@ -19,14 +19,11 @@ import static com.example.demo.utils.ValidationRegex.isRegexId;
 public class UserController {
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    @Autowired
     private final UserProvider userProvider;
-    @Autowired
     private final UserService userService;
-    @Autowired
     private final JwtService jwtService;
 
-
+    @Autowired
     public UserController(UserProvider userProvider, UserService userService, JwtService jwtService) {
         this.userProvider = userProvider;
         this.userService = userService;
@@ -42,20 +39,15 @@ public class UserController {
      * @return BaseResponse
      * @author yunhee, yewon
      */
-    @ResponseBody
     @PostMapping("/sign-up")
-    public BaseResponse<PostUserRes> createUser(@RequestBody PostUserReq postUserReq) {
+    public BaseResponse<PostUserRes> createUser(@RequestBody PostUserReq postUserReq) throws BaseException {
         if (postUserReq.getUser_id() == null || postUserReq.getUser_pw() == null || postUserReq.getUser_nickname() == null
                 || postUserReq.getUser_email() == null || postUserReq.getUser_phone() == null) {
             return new BaseResponse<>(POST_USERS_EMPTY_INFO);
         }
 
-        try {
-            PostUserRes postUserRes = userService.createUser(postUserReq);
-            return new BaseResponse<>(postUserRes);
-        } catch (BaseException exception) {
-            return new BaseResponse<>((exception.getStatus()));
-        }
+        PostUserRes postUserRes = userService.createUser(postUserReq);
+        return new BaseResponse<>(postUserRes);
     }
 
     /**
@@ -66,18 +58,13 @@ public class UserController {
      * @return BaseResponse
      * @author yunhee
      */
-    @ResponseBody
     @PostMapping("/log-in")
-    public BaseResponse<PostLoginRes> logIn(@RequestBody PostLoginReq postLoginReq) {
+    public BaseResponse<PostLoginRes> logIn(@RequestBody PostLoginReq postLoginReq) throws BaseException {
         if (postLoginReq.getUser_id() == null || postLoginReq.getUser_pw() == null) {
             return new BaseResponse<>(POST_USERS_EMPTY_INFO);
         }
-        try {
-            PostLoginRes postLoginRes = userService.logIn(postLoginReq);
-            return new BaseResponse<>(postLoginRes);
-        } catch (BaseException exception) {
-            return new BaseResponse<>(exception.getStatus());
-        }
+        PostLoginRes postLoginRes = userService.logIn(postLoginReq);
+        return new BaseResponse<>(postLoginRes);
     }
 
     /**
@@ -88,46 +75,36 @@ public class UserController {
      * @return BaseResponse
      * @author yunhee
      */
-    @ResponseBody
     @GetMapping("/valid-id/{user_id}")
-    public BaseResponse<String> validId(@PathVariable("user_id") String user_id) {
+    public BaseResponse<String> validId(@PathVariable("user_id") String user_id) throws BaseException {
         if (!isRegexId(user_id)) {   // id 형식 체크
             return new BaseResponse<>(POST_USERS_INVALID_ID);
         }
 
-        try {
-            if (userProvider.checkId(user_id) == 1) {
-                throw new BaseException(POST_USERS_EXISTS_ID);
-            }
-            return new BaseResponse<>("사용가능한 아이디입니다.");
-        } catch (BaseException exception) {
-            return new BaseResponse<>(exception.getStatus());
+        if (userProvider.checkId(user_id) == 1) {
+            throw new BaseException(POST_USERS_EXISTS_ID);
         }
+        return new BaseResponse<>("사용가능한 아이디입니다.");
     }
 
     /**
      * 비밀번호 변경 API
      * [PATCH] /user/update-pw/:userId
      */
-    @ResponseBody
     @PatchMapping("/update-pw/{userId}")
-    public BaseResponse<String> modifyUserName(@PathVariable("userId") String userId, @RequestBody User user) {
-        try {
-            String userIdByJwt = jwtService.getUserId();    //jwt에서 id 추출
-            if (!userId.equals(userIdByJwt)) {
-                return new BaseResponse<>(INVALID_USER_JWT);
-            }
-            if (user.getUser_pw() == null) {
-                return new BaseResponse<>(POST_USERS_EMPTY_INFO);
-            }
-
-            userService.modifyUserPw(PatchUserReq.builder().user_id(userId).user_pw(user.getUser_pw()).build());
-
-            String result = "비밀번호가 성공적으로 변경되었습니다.";
-            return new BaseResponse<>(result);
-        } catch (BaseException exception) {
-            return new BaseResponse<>((exception.getStatus()));
+    public BaseResponse<String> modifyUserName(@PathVariable("userId") String userId, @RequestBody User user) throws BaseException {
+        String userIdByJwt = jwtService.getUserId();    //jwt에서 id 추출
+        if (!userId.equals(userIdByJwt)) {
+            return new BaseResponse<>(INVALID_USER_JWT);
         }
+        if (user.getUser_pw() == null) {
+            return new BaseResponse<>(POST_USERS_EMPTY_INFO);
+        }
+
+        userService.modifyUserPw(PatchUserReq.builder().user_id(userId).user_pw(user.getUser_pw()).build());
+
+        String result = "비밀번호가 성공적으로 변경되었습니다.";
+        return new BaseResponse<>(result);
     }
 
     /**
@@ -138,22 +115,17 @@ public class UserController {
      * @return BaseResponse
      * @author yunhee
      */
-    @ResponseBody
     @PatchMapping("/reset-pw")
-    public BaseResponse<String> resetPw(@RequestBody User user) {
+    public BaseResponse<String> resetPw(@RequestBody User user) throws BaseException {
         if (user.getUser_phone() == null) {
             return new BaseResponse<>(POST_USERS_EMPTY_INFO);
         }
-        try {
-            User userInfo = userProvider.getEmailFromPhone(user.getUser_phone());
-            if (userInfo == null)
-                return new BaseResponse<>(NOT_EXISTS_EMAIL);
+        User userInfo = userProvider.getEmailFromPhone(user.getUser_phone());
+        if (userInfo == null)
+            return new BaseResponse<>(NOT_EXISTS_EMAIL);
 
-            userService.resetPwMail(userInfo.getUser_id(), userInfo.getUser_email()); // 비밀번호 변경후 메일 전송
-            return new BaseResponse<>("임시 비밀번호가 성공적으로 발송되었습니다.");
-        } catch (BaseException exception) {
-            return new BaseResponse<>(exception.getStatus());
-        }
+        userService.resetPwMail(userInfo.getUser_id(), userInfo.getUser_email()); // 비밀번호 변경후 메일 전송
+        return new BaseResponse<>("임시 비밀번호가 성공적으로 발송되었습니다.");
     }
 
 
@@ -165,19 +137,14 @@ public class UserController {
      * @return
      * @author yewon
      */
-    @ResponseBody
     @GetMapping("/{user_id}")
-    public BaseResponse<List<GetUserRes>> getUser(@PathVariable("user_id") String user_id) {
-        try {
-            String userIdByJwt = jwtService.getUserId();
-            if (!user_id.equals(userIdByJwt)) {
-                return new BaseResponse<>(INVALID_USER_JWT);
-            }
-            List<GetUserRes> getUserRes = userProvider.getUser(user_id);
-            return new BaseResponse<>(getUserRes);
-        } catch (BaseException exception) {
-            return new BaseResponse<>((exception.getStatus()));
+    public BaseResponse<List<GetUserRes>> getUser(@PathVariable("user_id") String user_id) throws BaseException {
+        String userIdByJwt = jwtService.getUserId();
+        if (!user_id.equals(userIdByJwt)) {
+            return new BaseResponse<>(INVALID_USER_JWT);
         }
+        List<GetUserRes> getUserRes = userProvider.getUser(user_id);
+        return new BaseResponse<>(getUserRes);
     }
 
     /**
@@ -188,20 +155,15 @@ public class UserController {
      * @return
      * @author yewon
      */
-    @ResponseBody
     @PatchMapping("/{user_id}")
-    public BaseResponse<String> delUser(@PathVariable("user_id") String user_id) {
-        try {
-            String userIdByJwt = jwtService.getUserId();
-            if (!user_id.equals(userIdByJwt)) {
-                return new BaseResponse<>(INVALID_USER_JWT);
-            }
-            userService.delUser(user_id);
-            String result = "탈퇴가 정상적으로 처리되었습니다.";
-            return new BaseResponse<>(result);
-        } catch (BaseException exception) {
-            return new BaseResponse<>((exception.getStatus()));
+    public BaseResponse<String> delUser(@PathVariable("user_id") String user_id) throws BaseException {
+        String userIdByJwt = jwtService.getUserId();
+        if (!user_id.equals(userIdByJwt)) {
+            return new BaseResponse<>(INVALID_USER_JWT);
         }
+        userService.delUser(user_id);
+        String result = "탈퇴가 정상적으로 처리되었습니다.";
+        return new BaseResponse<>(result);
     }
 
     /**
@@ -212,19 +174,14 @@ public class UserController {
      * @return profile, photo, ability, link, keyword, request(project)
      * @author yewon
      */
-    @ResponseBody
     @PostMapping("/profile/{user_id}")
-    public BaseResponse<PostProfileRes> createProfile(@PathVariable("user_id") String user_id, @RequestBody PostProfileReq postProfileReq) {
-        try {
-            String userIdByJwt = jwtService.getUserId();
-            if (!user_id.equals(userIdByJwt)) {
-                return new BaseResponse<>(INVALID_USER_JWT);
-            }
-            PostProfileRes postProfileRes = userService.createProfile(user_id, postProfileReq);
-            return new BaseResponse<>(postProfileRes);
-        } catch (BaseException exception) {
-            return new BaseResponse<>(exception.getStatus());
+    public BaseResponse<PostProfileRes> createProfile(@PathVariable("user_id") String user_id, @RequestBody PostProfileReq postProfileReq) throws BaseException {
+        String userIdByJwt = jwtService.getUserId();
+        if (!user_id.equals(userIdByJwt)) {
+            return new BaseResponse<>(INVALID_USER_JWT);
         }
+        PostProfileRes postProfileRes = userService.createProfile(user_id, postProfileReq);
+        return new BaseResponse<>(postProfileRes);
     }
 
 
@@ -236,18 +193,13 @@ public class UserController {
      * @return BaseResponse
      * @author yunhee, yewon, shinhyeon(s3)
      */
-    @ResponseBody
     @GetMapping("/profile/{userId}")
-    public BaseResponse<GetProfileRes> getProfile(@PathVariable("userId") String userId) {
-        try {
-            GetProfileRes getProfileRes = userProvider.getProfile(userId);
-            // 프로필 사진 가져오기
-            String user_prPhoto = userProvider.getPrPhoto(getProfileRes.getUser_nickname());
-            getProfileRes.setUser_prPhoto(user_prPhoto);
-            return new BaseResponse<>(getProfileRes);
-        } catch (BaseException exception) {
-            return new BaseResponse<>(exception.getStatus());
-        }
+    public BaseResponse<GetProfileRes> getProfile(@PathVariable("userId") String userId) throws BaseException {
+        GetProfileRes getProfileRes = userProvider.getProfile(userId);
+        // 프로필 사진 가져오기
+        String user_prPhoto = userProvider.getPrPhoto(getProfileRes.getUser_nickname());
+        getProfileRes.setUser_prPhoto(user_prPhoto);
+        return new BaseResponse<>(getProfileRes);
     }
 
 
