@@ -142,6 +142,7 @@ public class UserDao {
         return this.jdbcTemplate.query(getUserQuery,
                 (rs, rowNum) -> new GetUserRes(
                         rs.getString("user_id"),
+                        //rs.getString("user_pw"),
                         rs.getString("user_phone"),
                         rs.getString("user_email")),
 
@@ -158,20 +159,6 @@ public class UserDao {
         String delUserQuery = "update User set user_status = 'DEL', user_leaveTime = now() where user_id = ?";
         String delUserParams = user_id;
         this.jdbcTemplate.update(delUserQuery, delUserParams);
-    }
-
-    /**
-     * phone에 해당하는 email 정보 가져오기
-     *
-     * @param phone
-     * @return String - email
-     * @author yunhee
-     */
-    public User getEmailFromPhone(String phone) {
-        String getEmailQuery = "select user_id, user_email from User where user_phone = ? and user_status REGEXP 'ACTIVE|STOP'";
-        return this.jdbcTemplate.queryForObject(getEmailQuery,
-                (rs, rowNum) -> User.builder().user_id(rs.getString("user_id")).
-                        user_email(rs.getString("user_email")).build(), phone);
     }
 
     /**
@@ -208,6 +195,20 @@ public class UserDao {
         }
 
         return "소개 페이지가 완성되었습니다~!";
+    }
+
+    /**
+     * phone에 해당하는 email 정보 가져오기
+     *
+     * @param phone
+     * @return String - email
+     * @author yunhee
+     */
+    public User getEmailFromPhone(String phone) {
+        String getEmailQuery = "select user_id, user_email from User where user_phone=? and user_type='infra' and REGEXP 'ACTIVE|STOP'";
+        return this.jdbcTemplate.queryForObject(getEmailQuery,
+                (rs, rowNum) -> User.builder().user_id(rs.getString("user_id")).
+                        user_email(rs.getString("user_email")).build(), phone);
     }
 
     /**
@@ -266,7 +267,7 @@ public class UserDao {
      * 소개페이지 조회 - 프로젝트 가져오기
      *
      * @param userId
-     * @return pj_name
+     * @return pj_header
      * @author yewon
      */
     public List<String> getUserProject(String userId) {
@@ -299,9 +300,6 @@ public class UserDao {
             this.jdbcTemplate.update(abilityQuery2, userId, patchProfileReq.getUser_prAbility()[i]);
         }
 
-        // TODO : 프로젝트 제목 수정 부분 회의 이후에 추가 예정
-//        // pj_header
-//        String projectQuery1 = "DELETE from Project where "
 
         // user_prLink
         String linkQuery1 = "DELETE from User_link where user_id = ?";
@@ -324,28 +322,29 @@ public class UserDao {
 
     /**
      * 로그인 리프레시 토큰 저장
+     *
      * @param userId
      * @param refreshToken
      * @author kyubeom
      */
     public int pushRefreshToken(String userId, String refreshToken) {
         String userTokenNullCheckQuery = "SELECT refresh_idx FROM User WHERE user_id = ?";
-        String userToken = this.jdbcTemplate.queryForObject(userTokenNullCheckQuery,String.class, userId);
+        String userToken = this.jdbcTemplate.queryForObject(userTokenNullCheckQuery, String.class, userId);
 
         int TokenIdx;
         //첫 로그인을 할 경우
-        if (userToken==null){
+        if (userToken == null) {
             String refreshTokenInsertQuery = "INSERT INTO User_refreshToken (idx, refreshToken) VALUES (default, ?)";
             this.jdbcTemplate.update(refreshTokenInsertQuery, refreshToken);
 
             String refreshTokenSelectQuery = "SELECT idx FROM User_refreshToken WHERE refreshToken = ?";
-            TokenIdx =  this.jdbcTemplate.queryForObject(refreshTokenSelectQuery, int.class, refreshToken);
+            TokenIdx = this.jdbcTemplate.queryForObject(refreshTokenSelectQuery, int.class, refreshToken);
 
             String refreshTokenUserInsertQuery = "UPDATE User SET refresh_idx = ? WHERE user_id = ?";
             this.jdbcTemplate.update(refreshTokenUserInsertQuery, TokenIdx, userId);
 
             return TokenIdx;
-        }else //두번 이상 로그인을 할 경우
+        } else //두번 이상 로그인을 할 경우
         {
             String refreshTokenSelctQuery = "SELECT refresh_idx FROM User WHERE user_id = ?";
             TokenIdx = this.jdbcTemplate.queryForObject(refreshTokenSelctQuery, int.class, userId);

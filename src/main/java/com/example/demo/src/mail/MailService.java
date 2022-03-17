@@ -37,6 +37,8 @@ public class MailService {
         mail.setMessage("비밀번호 : " + userPw);
         try {
             sendMail(mail);
+        } catch (BaseException exception){
+            throw new BaseException(exception.getStatus());
         } catch (Exception exception) {
             throw new BaseException(EMAIL_ERROR);
         }
