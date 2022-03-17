@@ -235,16 +235,11 @@ public class UserController {
      * @return
      * @author yewon
      */
-    @ResponseBody
     @PatchMapping("/profile/{user_id}")
-    public BaseResponse<PatchProfileRes> modifyProfile(@PathVariable("user_id") String user_id, @RequestBody PatchProfileReq patchProfileReq) {
-        try {
+    public BaseResponse<PatchProfileRes> modifyProfile(@PathVariable("user_id") String user_id, @RequestBody PatchProfileReq patchProfileReq) throws BaseException{
             jwtService.JwtEffectiveness(user_id, jwtService.getUserId());
             PatchProfileRes patchProfileRes = userService.modifyProfile(user_id, patchProfileReq);
             return new BaseResponse<>(patchProfileRes);
-        } catch (BaseException exception) {
-            return new BaseResponse<>(exception.getStatus());
-        }
     }
 
 
@@ -256,19 +251,14 @@ public class UserController {
      * @return
      * @author yewon
      */
-    @ResponseBody
     @GetMapping("/profile/info/{user_id}")
-    public BaseResponse<GetInfoRes> getInfo (@PathVariable("user_id") String user_id) {
-        try {
+    public BaseResponse<GetInfoRes> getInfo (@PathVariable("user_id") String user_id) throws BaseException{
             jwtService.JwtEffectiveness(user_id, jwtService.getUserId());   // jwt token 검증
             GetInfoRes getInfoRes = userProvider.getInfo(user_id);  // user_id로 정보 조회
             // 프로필 사진 가져오기
             String user_prPhoto = userProvider.getPrPhoto(getInfoRes.getUser_nickname());
             getInfoRes.setUser_prPhoto(user_prPhoto);
             return new BaseResponse<>(getInfoRes);
-        } catch (BaseException exception) {
-            return new BaseResponse<>(exception.getStatus());
-        }
     }
 
     /**
@@ -281,8 +271,7 @@ public class UserController {
      */
     @ResponseBody
     @PatchMapping("/profile/info/{user_id}")
-    public BaseResponse<String> modifyInfo(@PathVariable("user_id") String user_id, @RequestParam("user_nickname") String user_nickname, @RequestParam("user_prPhoto") String user_prPhoto, @RequestParam("images") MultipartFile multipartFile) throws IOException {
-        try {
+    public BaseResponse<String> modifyInfo(@PathVariable("user_id") String user_id, @RequestParam("user_nickname") String user_nickname, @RequestParam("user_prPhoto") String user_prPhoto, @RequestParam("images") MultipartFile multipartFile) throws IOException, BaseException {
             jwtService.JwtEffectiveness(user_id, jwtService.getUserId());   // jwt token 검증
 
             if(user_prPhoto.equals("등록")){ // 프로필 사진 등록
@@ -303,9 +292,6 @@ public class UserController {
 
             String result = "정상으로 수정되었습니다.";
             return new BaseResponse<>(result);
-        } catch (BaseException exception) {
-            return new BaseResponse<>((exception.getStatus()));
-        }
     }
 
     /**

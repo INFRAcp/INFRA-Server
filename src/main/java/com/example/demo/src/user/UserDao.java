@@ -267,7 +267,7 @@ public class UserDao {
      * 소개페이지 조회 - 프로젝트 가져오기
      *
      * @param userId
-     * @return pj_name
+     * @return pj_header
      * @author yewon
      */
     public List<String> getUserProject(String userId) {
@@ -300,9 +300,6 @@ public class UserDao {
             this.jdbcTemplate.update(abilityQuery2, userId, patchProfileReq.getUser_prAbility()[i]);
         }
 
-        // TODO : 프로젝트 제목 수정 부분 회의 이후에 추가 예정
-//        // pj_header
-//        String projectQuery1 = "DELETE from Project where "
 
         // user_prLink
         String linkQuery1 = "DELETE from User_link where user_id = ?";
