@@ -309,4 +309,24 @@ public class ProjectProvider {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
+    /**
+     * 프로젝트 추천 조회 (이런 프로젝트는 어떠세요?)
+     * @param user_id
+     * @return List<GetHotProjectRes>
+     * @throws BaseException
+     * @author shinhyeon
+     */
+    public List<GetHotProjectRes> getRecommendProjects(String user_id) throws BaseException {
+        // 관심분야 설정 여부 확인
+        int user_interestCategory = projectDao.checkInterestCategory(user_id);
+        if(user_interestCategory == 0) throw new BaseException(EMPTY_INTEREST_CATEGORY);
+
+        try {
+            List<GetHotProjectRes> getHotProjectRes = projectDao.getRecommendProjects(user_id);
+            return getHotProjectRes;
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 }
