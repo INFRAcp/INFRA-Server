@@ -20,7 +20,7 @@ public class KakaoDao {
     /**
      * 카카오 로그인 - 사용자 정보 DB 저장
      * @param email
-     * @author 데뷔초 태연(yewon), 최우식(seongsik)
+     * @author yewon
      */
     public void insertInfo(String email) {
         /* 이미 회원가입 된 사용자일 경우 함수를 실행하지 않고 나가기(로그인 시) - ACTIVE인 회원들 중 조회 가능 */
