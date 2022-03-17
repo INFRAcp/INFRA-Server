@@ -136,12 +136,13 @@ public class ProjectDao {
             return null;
         }
         else {
-            String getTeam_Query = "select user_nickname, user_prPhoto " +
+            String getTeam_Query = "select user_id, user_nickname, user_prPhoto " +
                     "from User " +
                     "where user_id in (select user_id from Pj_request where pj_inviteStatus = '승인완료' and pj_num = ?)";
             Integer getParams = pj_num;
             return this.jdbcTemplate.query(getTeam_Query,
                     (rs, rowNum) -> new GetPjParticipateRes(
+                            rs.getString("user_id"),
                             rs.getString("user_nickname"),
                             rs.getString("user_prPhoto")),
                     getParams
