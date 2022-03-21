@@ -276,7 +276,7 @@ public class UserController {
 
             if(user_prPhoto.equals("등록")){ // 프로필 사진 등록
                 // s3에 업로드
-                String imgPath = s3Service.uploadPrphoto(multipartFile, "prphoto");
+                String imgPath = s3Service.uploadPrphoto(multipartFile, "test/prphoto");
                 // db에 반영 (user_prPhoto)
                 s3Service.uploadPrphoto(imgPath, user_id);
             }
