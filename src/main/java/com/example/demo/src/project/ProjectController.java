@@ -442,6 +442,10 @@ public class ProjectController {
             //조회수 증가
             projectService.plusViews(pj_num, user_id);
 
+            // 프로젝트 사진 조회
+            List<String> photos = projectProvider.getPjPhoto(pj_num);
+            getContactRes.setPj_photo(photos);
+
             return new BaseResponse<>(getContactRes);
     }
 
