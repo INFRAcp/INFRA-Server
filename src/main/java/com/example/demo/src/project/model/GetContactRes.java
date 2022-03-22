@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Builder
 @Getter
 @Setter
@@ -30,4 +32,5 @@ public class GetContactRes {
     private String pj_recruit;
     private int pj_daysub;
     private int pj_like;
+    List<String> pj_photo;
 }
