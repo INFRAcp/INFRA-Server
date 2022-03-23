@@ -27,7 +27,7 @@ public class ProjectProvider {
     }
 
     /**
-     * 프로젝트 전체, 검색 조회
+     * 프로젝트 목록 조회, 검색조회
      * @return List 제목, 분야, 이름, 진행, 모집마감일, 전체인원, 모집인원, (모집, 마감임박), 마감 남은 일수
      * @author 한규범, 윤성식
      */
@@ -61,7 +61,7 @@ public class ProjectProvider {
 
 
     /**
-     * 유저가 찜한 프로젝트 조회
+     * 유저가 스크랩한 프로젝트 목록 조회
      * @param postPj_likeReq
      * @return List 프로젝트 번호, 제목, 조회수, 분야, 이름, 세부분야, 진행상황, 모집마감일, 총 모집인원, 현재 모집인원, 게시일
      * @author 한규범
@@ -91,7 +91,7 @@ public class ProjectProvider {
     }
 
     /**
-     * 유저가 조회했던 프로젝트 조회
+     * 유저가 열람한 프로젝트 목록 조회
      * @param user_id
      * @return List 프로젝트 번호, 프로젝트 제목, 조회수, 프로젝트 분야, 이름, 세부분야, 진행, 마감일, 전체인원, 모집 중인 인원, 프로젝트 등록 시간
      * @author 한규범
@@ -325,6 +325,15 @@ public class ProjectProvider {
         try {
             List<GetHotProjectRes> getHotProjectRes = projectDao.getRecommendProjects(user_id);
             return getHotProjectRes;
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    public List<GetMyPjInquiryRes> getMyPjInquiry(String user_id) throws BaseException{
+        try {
+            List<GetMyPjInquiryRes> getMyPjInquiryRes = projectDao.getMyPjInquiry(user_id);
+            return getMyPjInquiryRes;
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }

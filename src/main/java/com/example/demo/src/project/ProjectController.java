@@ -41,7 +41,7 @@ public class ProjectController {
     }
 
     /**
-     * 프로젝트 전체, 검색 조회
+     * 프로젝트 목록 조회, 검색조회
      *
      * @param search
      * @return List 제목, 분야, 이름, 진행, 모집마감일, 전체인원, 모집인원, (모집, 마감임박), 마감 남은 일수, 사진
@@ -93,7 +93,7 @@ public class ProjectController {
 
 
     /**
-     * 유저가 찜한 프로젝트 조회
+     * 유저가 스크랩한 프로젝트 목록 조회
      *
      * @param user_id
      * @return List 프로젝트 번호, 제목, 조회수, 분야, 이름, 세부분야, 진행상황, 모집마감일, 총 모집인원, 현재 모집인원, 게시일
@@ -120,7 +120,7 @@ public class ProjectController {
     }
 
     /**
-     * 유저가 조회했던 프로젝트 조회
+     * 유저가 열람한 프로젝트 목록 조회
      *
      * @param user_id
      * @return List 프로젝트 번호, 프로젝트 제목, 조회수, 프로젝트 분야, 이름, 세부분야, 진행, 마감일, 전체인원, 모집 중인 인원, 프로젝트 등록 시간
@@ -302,7 +302,7 @@ public class ProjectController {
     }
 
     /**
-     * 프로젝트 찜 등록
+     * 프로젝트 스크랩 등록
      *
      * @param postLikeRegisterReq
      * @return 등록 완료된 메세지
@@ -316,7 +316,7 @@ public class ProjectController {
     }
 
     /**
-     * 프로젝트 찜 삭제
+     * 프로젝트 스크랩 삭제
      *
      * @param postLikeRegisterReq
      * @return 찜 삭제된 메세지
@@ -516,4 +516,35 @@ public class ProjectController {
         }
         return new BaseResponse<>(getHotProjectRes);
     }
+
+    /**
+     *
+     * @param user_id
+     * @return List<GetMyPjInquiryRes> 프로젝트 번호, 프로젝트 제목, 카테고리이름, 서브카테고리번호, 프로젝트진행상황, 마감일, 현재인원, 모집인원, 프로젝트 사진, 현재모집상태, 해시태그</GetMyPjInquiryRes>
+     * @throws BaseException
+     * @author 윤성식
+     */
+    @GetMapping("/myProject")
+    public BaseResponse<List<GetMyPjInquiryRes>> getMyPjInquiry(@RequestParam String user_id) throws BaseException{
+        jwtService.JwtEffectiveness(user_id, jwtService.getUserId());
+
+        List<GetMyPjInquiryRes> getMyPjInquiryRes = projectProvider.getMyPjInquiry(user_id);
+
+        for (int i = 0; i < getMyPjInquiryRes.size(); i++) {
+            //프로젝트 해시태그 불러오기
+            getMyPjInquiryRes.get(i).setHashtag(projectProvider.getHashtag(getMyPjInquiryRes.get(i).getPj_num()));
+            //프로젝트 모집중, 마감임박, 마감 표시
+            getMyPjInquiryRes.get(i).setPj_recruit(projectService.recruit(getMyPjInquiryRes.get(i).getPj_daysub()));
+        }
+
+        for (int i = 0; i < getMyPjInquiryRes.size(); i++) {
+            List<String> photos = projectProvider.getPjPhoto(getMyPjInquiryRes.get(i).getPj_num());
+            getMyPjInquiryRes.get(i).setPj_photo(photos);
+        }
+
+        return new BaseResponse<>(getMyPjInquiryRes);
+
+    }
+
+
 }

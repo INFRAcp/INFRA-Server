@@ -23,7 +23,7 @@ public class ProjectDao {
     }
 
     /**
-     * 프로젝트 전체, 검색 조회
+     * 프로젝트 목록 조회, 검색조회
      * @return List 제목, 분야, 진행, 모집마감일, 전체인원, 모집인원, (모집, 마감임박), 마감 남은 일수
      * @author 한규범, 윤성식
      */
@@ -91,7 +91,7 @@ public class ProjectDao {
 
 
     /**
-     * 유저가 찜한 프로젝트 조회
+     * 유저가 스크랩한 프로젝트 목록 조회
      * @param user_id
      * @return List 프로젝트 번호, 제목, 조회수, 분야, 세부분야, 진행상황, 모집마감일, 총 모집인원, 현재 모집인원, 게시일
      * @author 한규범
@@ -151,7 +151,7 @@ public class ProjectDao {
     }
 
     /**
-     * 유저가 조회했던 프로젝트 조회
+     * 유저가 열람한 프로젝트 목록 조회
      * @param user_id
      * @return List 프로젝트 번호, 프로젝트 제목, 조회수, 프로젝트 분야, 세부분야, 진행, 마감일, 전체인원, 모집 중인 인원, 프로젝트 등록 시간
      * @author 한규범
@@ -395,7 +395,7 @@ public class ProjectDao {
     }
 
     /**
-     * 프로젝트 찜 등록
+     * 프로젝트 스크랩 등록
      * @param postLikeRegisterReq
      * @return 등록 완료된 메세지
      * @author 윤성식
@@ -408,7 +408,7 @@ public class ProjectDao {
     }
 
     /**
-     * 프로젝트 찜 삭제
+     * 프로젝트 스크랩 삭제
      * @param postLikeRegisterReq
      * @return 찜 삭제된 메세지
      * @author 윤성식
@@ -843,5 +843,26 @@ public class ProjectDao {
     public int checkInterestCategory(String user_id) {
         String checkInterestCategoryQuery = "select count(*) from User_interest where user_id = ? ";
         return this.jdbcTemplate.queryForObject(checkInterestCategoryQuery, int.class, user_id);
+    }
+
+    public List<GetMyPjInquiryRes> getMyPjInquiry(String user_id) {
+        String getProjectQuery = "select Project.pj_num, pj_header, pj_categoryName, pj_subCategoryNum, pj_progress, pj_deadline, pj_totalPerson, pj_recruitPerson, DATEDIFF(pj_deadline,now()) " +
+                "from Project, Pj_category " +
+                "where pj_status = '등록' and Project.pj_categoryNum = Pj_category.pj_categoryNum and user_id = ? ";
+        return this.jdbcTemplate.query(getProjectQuery,
+                (rs, rowNum) -> new GetMyPjInquiryRes(
+                        rs.getInt("pj_num"),
+                        rs.getString("pj_header"),
+                        rs.getString("pj_categoryName"),
+                        rs.getInt("pj_subCategoryNum"),
+                        rs.getString("pj_progress"),
+                        rs.getString("pj_deadline"),
+                        rs.getInt("pj_totalPerson"),
+                        rs.getInt("pj_recruitPerson"),
+                        null,
+                        "모집중",
+                        rs.getInt("DATEDIFF(pj_deadline,now())"),
+                        null
+                ), user_id);
     }
 }
