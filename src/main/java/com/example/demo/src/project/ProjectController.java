@@ -188,7 +188,7 @@ public class ProjectController {
                 for(int i = 0; i < MultipartFiles.length; i++) { // 다중 이미지 파일
                     // s3에 업로드
                     int pj_num = postPjRegisterReq.getPj_num();
-                    String s3path = "pjphoto/pj_num : " + Integer.toString(pj_num);
+                    String s3path = "test/pjphoto/pj_num : " + Integer.toString(pj_num);
                     String imgPath = s3Service.uploadPrphoto(MultipartFiles[i], s3path);
                     // db에 반영 (Pj_photo)
                     s3Service.uploadPjPhoto(imgPath, pj_num);
@@ -441,6 +441,10 @@ public class ProjectController {
             GetContactRes getContactRes = projectService.pjContact(pj_num, user_id);
             //조회수 증가
             projectService.plusViews(pj_num, user_id);
+
+            // 프로젝트 사진 조회
+            List<String> photos = projectProvider.getPjPhoto(pj_num);
+            getContactRes.setPj_photo(photos);
 
             return new BaseResponse<>(getContactRes);
     }
