@@ -205,7 +205,7 @@ public class UserDao {
      * @author yunhee
      */
     public User getEmailFromPhone(String phone) {
-        String getEmailQuery = "select user_id, user_email from User where user_phone=? and user_type='infra' and REGEXP 'ACTIVE|STOP'";
+        String getEmailQuery = "select user_id, user_email from User where user_phone=? and user_type='infra' REGEXP 'ACTIVE|STOP'";
         return this.jdbcTemplate.queryForObject(getEmailQuery,
                 (rs, rowNum) -> User.builder().user_id(rs.getString("user_id")).
                         user_email(rs.getString("user_email")).build(), phone);

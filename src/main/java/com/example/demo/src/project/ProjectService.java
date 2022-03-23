@@ -184,7 +184,7 @@ public class ProjectService {
     }
 
     /**
-     * 프로젝트 찜 등록
+     * 프로젝트 스크랩 등록
      * @param postLikeRegisterReq
      * @return 등록 완료된 메세지
      * @author 윤성식
@@ -199,7 +199,7 @@ public class ProjectService {
     }
 
     /**
-     * 프로젝트 찜 삭제
+     * 프로젝트 스크랩 삭제
      * @param postLikeRegisterReq
      * @return 찜 삭제된 메세지
      * @author 윤성식
