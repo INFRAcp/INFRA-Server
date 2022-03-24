@@ -538,6 +538,7 @@ public class ProjectController {
             //프로젝트 해시태그 불러오기
             getMyPjInquiryRes.get(i).setHashtag(projectProvider.getHashtag(getMyPjInquiryRes.get(i).getPj_num()));
             //프로젝트 모집중, 마감임박, 마감 표시
+            //project
             getMyPjInquiryRes.get(i).setPj_recruit(projectService.recruit(getMyPjInquiryRes.get(i).getPj_daysub()));
         }
 
