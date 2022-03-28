@@ -167,6 +167,7 @@ public class ProjectController {
     }
 
     /**
+     *
      * 프로젝트 등록
      * 다중 파일 업르드 (form-data<image, json>)
      *
@@ -280,6 +281,12 @@ public class ProjectController {
     public BaseResponse<List<GetApplyListRes>> pjApplyList(@RequestParam(required = false) String pj_num, String user_id) throws BaseException{
             jwtService.JwtEffectiveness(user_id, jwtService.getUserId());
             List<GetApplyListRes> getApplyListRes = projectProvider.pjApplyList(pj_num);
+
+            // 프로필 사진이 등록되어 있지 않은 경우 기본 이미지 반환
+            for (int i = 0; i < getApplyListRes.size(); i++) {
+                if(getApplyListRes.get(i).getUser_prphoto() == null) getApplyListRes.get(i).setUser_prphoto("https://infra-infra-bucket.s3.ap-northeast-2.amazonaws.com/prphoto/infra_profile.png");
+            }
+
             if (getApplyListRes == null) {
                 throw new BaseException(GET_PROJECT_APPLY_LIST_NULL);
             }
