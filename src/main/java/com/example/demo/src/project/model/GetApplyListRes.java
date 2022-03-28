@@ -9,7 +9,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class GetApplyListRes {
     private String user_id;
-    private String pj_num;
+    private String user_nickname;
     private String user_grade;
     private String user_prphoto;
 
