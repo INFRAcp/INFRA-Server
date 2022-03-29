@@ -14,9 +14,11 @@ public class PatchPjModifyReq {
     private String user_id = null;
     private String pj_header=null;
     private String pj_categoryNum =null;
+    private String pj_categoryName = null;
 
     private String pj_content=null;
     private String pj_subCategoryNum =null;
+    private String pj_subCategoryName = null;
     private String pj_progress=null;
     private String pj_endTerm =null;
 

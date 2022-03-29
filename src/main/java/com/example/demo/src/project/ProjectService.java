@@ -64,12 +64,17 @@ public class ProjectService {
      * @author 한규범
      */
     public PatchPjModifyRes pjModify(PatchPjModifyReq patchPjModifyReq) throws BaseException {
+        //카테고리 번호, 이름
+        patchPjModifyReq.setPj_categoryNum(projectProvider.getPjCategoryNum(patchPjModifyReq.getPj_categoryName()));
+        //세부 카테고리 번호, 이름
+        patchPjModifyReq.setPj_subCategoryNum(projectProvider.getPjSubCategoryNum(patchPjModifyReq.getPj_subCategoryNum()));
         //날짜 관련 검사
         PjDateCheck(patchPjModifyReq.getPj_deadline(), patchPjModifyReq.getPj_startTerm(), patchPjModifyReq.getPj_endTerm());
         // NULL 값 검사
         PjNullCheck(patchPjModifyReq.getPj_header(), patchPjModifyReq.getPj_categoryNum(), patchPjModifyReq.getPj_content(), patchPjModifyReq.getPj_subCategoryNum(), patchPjModifyReq.getPj_progress(), patchPjModifyReq.getPj_endTerm(), patchPjModifyReq.getPj_startTerm(), patchPjModifyReq.getPj_deadline(), patchPjModifyReq.getPj_totalPerson());
         //해시태그 관련 검사
         PjHashTagCheck(patchPjModifyReq.getHashtag());
+
 
         try {
             String PjModify = projectDao.pjModify(patchPjModifyReq);
