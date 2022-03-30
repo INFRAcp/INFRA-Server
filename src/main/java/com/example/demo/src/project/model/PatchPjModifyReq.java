@@ -1,14 +1,14 @@
 package com.example.demo.src.project.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 
 @Getter
 @Setter
 @AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@ToString
 public class PatchPjModifyReq {
     private int pj_num=0;
     private String user_id = null;
