@@ -152,6 +152,23 @@ public class ProjectProvider {
     }
 
     /**
+     * 인원의 승인 상태 조회
+     * @param user_id
+     * @param pj_num
+     * @return String
+     * @throws BaseException
+     * @author shinhyeon
+     */
+    public String getPjInviteStatus(String user_id, Integer pj_num) throws BaseException {
+        try {
+            String pj_inviteStatus = projectDao.getPjInviteStatus1(user_id, pj_num);
+            return pj_inviteStatus;
+        } catch (Exception exception) {
+            throw new BaseException(PROJECT_MEMBER);
+        }
+    }
+
+    /**
      * 평가하는 인원의 승인 상태 조회
      * @param user_id
      * @param pj_num
