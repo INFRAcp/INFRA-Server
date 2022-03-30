@@ -203,7 +203,7 @@ public class ProjectController {
      *
      * @param patchPjModifyReq
      * @return PatchPjModifyRes 프로젝트 이름
-     * @author 한규범
+     * @author 한규범 강신현(s3)
      */
     @PatchMapping("/modify")
     public BaseResponse<PatchPjModifyRes> pjModify(@RequestParam("jsonList") String jsonList, @RequestPart(value = "images", required = false) MultipartFile[] MultipartFiles) throws IOException, BaseException{
@@ -221,7 +221,11 @@ public class ProjectController {
                 int pj_num = patchPjModifyReq.getPj_num();
                 String s3path = "test/pjphoto/pj_num : " + Integer.toString(pj_num);
                 String imgPath = s3Service.uploadPrphoto(MultipartFiles[i], s3path);
+
                 // db에 반영 (Pj_photo)
+                // 1. 기존 사진 삭제
+                s3Service.delPjphoto(pj_num);
+                // 2. 새로운 사진 추가
                 s3Service.uploadPjPhoto(imgPath, pj_num);
             }
         }
