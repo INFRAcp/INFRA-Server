@@ -203,7 +203,7 @@ public class ProjectController {
      *
      * @param patchPjModifyReq
      * @return PatchPjModifyRes 프로젝트 이름
-     * @author 한규범 강신현(s3)
+     * @author 한규범 강신현
      */
     @PatchMapping("/modify")
     public BaseResponse<PatchPjModifyRes> pjModify(@RequestParam("jsonList") String jsonList, @RequestPart(value = "images", required = false) MultipartFile[] MultipartFiles) throws IOException, BaseException{
