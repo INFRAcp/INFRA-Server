@@ -205,6 +205,35 @@ public class ProjectController {
      * @return PatchPjModifyRes 프로젝트 이름
      * @author 한규범 강신현
      */
+    // 선택한 사진 삭제 (version2 적용 예정)
+//    @PatchMapping("/modify")
+//    public BaseResponse<PatchPjModifyRes> pjModify(@RequestParam("jsonList") String jsonList, @RequestPart(value = "images", required = false) MultipartFile[] MultipartFiles) throws IOException, BaseException{
+//        ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+//        PatchPjModifyReq patchPjModifyReq = objectMapper.readValue(jsonList, new TypeReference<PatchPjModifyReq>() {
+//        });
+//
+//        jwtService.JwtEffectiveness(patchPjModifyReq.getUser_id(), jwtService.getUserId());
+//        PatchPjModifyRes patchPjModifyRes = projectService.pjModify(patchPjModifyReq);
+//
+//        int pj_num = patchPjModifyReq.getPj_num();
+//
+//        // db(Pj_photo) 사진 삭제 (선택한 사진 삭제)
+//        // if(patchPjModifyReq.getDel_photo() != null) s3Service.delPjphoto(pj_num, patchPjModifyReq.getDel_photo());
+//
+//        if(MultipartFiles != null)
+//        {
+//            for(int i = 0; i < MultipartFiles.length; i++) { // 다중 이미지 파일
+//                // s3에 업로드
+//                String s3path = "test/pjphoto/pj_num : " + Integer.toString(pj_num);
+//                String imgPath = s3Service.uploadPrphoto(MultipartFiles[i], s3path);
+//
+//                s3Service.uploadPjPhoto(imgPath, pj_num); // db(Pj_photo)에 새로운 사진 추가
+//            }
+//        }
+//        return new BaseResponse<>(patchPjModifyRes);
+//    }
+
+    // 사진 일괄 삭제 (version1)
     @PatchMapping("/modify")
     public BaseResponse<PatchPjModifyRes> pjModify(@RequestParam("jsonList") String jsonList, @RequestPart(value = "images", required = false) MultipartFile[] MultipartFiles) throws IOException, BaseException{
         ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
@@ -216,23 +245,19 @@ public class ProjectController {
 
         int pj_num = patchPjModifyReq.getPj_num();
 
-        // db(Pj_photo) 사진 삭제
-        if(patchPjModifyReq.getDel_photo() != null) s3Service.delPjphoto(pj_num, patchPjModifyReq.getDel_photo());
+        if(patchPjModifyReq.getPjPhoto().equals("삭제")) s3Service.delPjphoto2(pj_num);
+        if(patchPjModifyReq.getPjPhoto().equals("등록")){
+            if(MultipartFiles != null)
+            {
+                for(int i = 0; i < MultipartFiles.length; i++) { // 다중 이미지 파일
+                    // s3에 업로드
+                    String s3path = "test/pjphoto/pj_num : " + Integer.toString(pj_num);
+                    String imgPath = s3Service.uploadPrphoto(MultipartFiles[i], s3path);
 
-        if(MultipartFiles != null)
-        {
-            for(int i = 0; i < MultipartFiles.length; i++) { // 다중 이미지 파일
-                // s3에 업로드
-                String s3path = "test/pjphoto/pj_num : " + Integer.toString(pj_num);
-                String imgPath = s3Service.uploadPrphoto(MultipartFiles[i], s3path);
-
-                s3Service.uploadPjPhoto(imgPath, pj_num); // db(Pj_photo)에 새로운 사진 추가
+                    s3Service.uploadPjPhoto(imgPath, pj_num); // db(Pj_photo)에 새로운 사진 추가
+                }
             }
         }
-
-
-
-
         return new BaseResponse<>(patchPjModifyRes);
     }
 

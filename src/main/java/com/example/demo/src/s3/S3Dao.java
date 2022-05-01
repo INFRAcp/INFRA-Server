@@ -66,7 +66,7 @@ public class S3Dao {
     }
 
     /**
-     * 프로젝트 사진 삭제
+     * 프로젝트 사진 삭제 (선택한 사진 삭제)
      * @param pj_num
      * @author shinhyeon
      */
@@ -75,5 +75,16 @@ public class S3Dao {
         Object[] delPjphotoParam = new Object[]{pj_num, del_photo};
 
         this.jdbcTemplate.update(delPjphotoQuery, delPjphotoParam);
+    }
+
+    /**
+     * 프로젝트 사진 삭제 (사진 일괄 삭제)
+     * @param pj_num
+     * @author shinhyeon
+     */
+    public void delPjphoto2(int pj_num) {
+        String delPjphotoQuery = "DELETE FROM Pj_photo WHERE pj_num=?";
+
+        this.jdbcTemplate.update(delPjphotoQuery, pj_num);
     }
 }
