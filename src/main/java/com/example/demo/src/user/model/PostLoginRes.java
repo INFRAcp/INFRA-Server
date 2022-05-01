@@ -17,4 +17,5 @@ public class PostLoginRes {
 //    private String jwtRefresh;
     private String user_nickname;
     private int jwtRefreshIdx;
+    private String user_prPhoto;
 }

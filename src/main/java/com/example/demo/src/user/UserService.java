@@ -119,10 +119,12 @@ public class UserService {
             String jwtAccess = jwtService.createAccessJwt(userId);
             String jwtRefresh = jwtService.createRefreshJwt(userId);
             String user_nickname = userDao.getPwd(postLoginReq).getUser_nickname();
+            String user_prPhoto = userDao.getPwd(postLoginReq).getUser_prPhoto();
+
 
             int jwtRefreshIdx = userDao.pushRefreshToken(userId, jwtRefresh);
 
-            return new PostLoginRes(userId, jwtAccess, user_nickname, jwtRefreshIdx);
+            return new PostLoginRes(userId, jwtAccess, user_nickname, jwtRefreshIdx, user_prPhoto);
         } else { // 비밀번호 불일치
             throw new BaseException(FAILED_TO_LOGIN);
         }
