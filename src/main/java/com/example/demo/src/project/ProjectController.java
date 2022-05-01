@@ -167,6 +167,7 @@ public class ProjectController {
     }
 
     /**
+     *
      * 프로젝트 등록
      * 다중 파일 업르드 (form-data<image, json>)
      *
@@ -202,13 +203,34 @@ public class ProjectController {
      *
      * @param patchPjModifyReq
      * @return PatchPjModifyRes 프로젝트 이름
-     * @author 한규범
+     * @author 한규범 강신현(s3)
      */
     @PatchMapping("/modify")
-    public BaseResponse<PatchPjModifyRes> pjModify(@RequestBody PatchPjModifyReq patchPjModifyReq) throws BaseException{
-            jwtService.JwtEffectiveness(patchPjModifyReq.getUser_id(), jwtService.getUserId());
-            PatchPjModifyRes patchPjModifyRes = projectService.pjModify(patchPjModifyReq);
-            return new BaseResponse<>(patchPjModifyRes);
+    public BaseResponse<PatchPjModifyRes> pjModify(@RequestParam("jsonList") String jsonList, @RequestPart(value = "images", required = false) MultipartFile[] MultipartFiles) throws IOException, BaseException{
+        ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+        PatchPjModifyReq patchPjModifyReq = objectMapper.readValue(jsonList, new TypeReference<PatchPjModifyReq>() {
+        });
+
+        jwtService.JwtEffectiveness(patchPjModifyReq.getUser_id(), jwtService.getUserId());
+        PatchPjModifyRes patchPjModifyRes = projectService.pjModify(patchPjModifyReq);
+
+        if(MultipartFiles != null)
+        {
+            for(int i = 0; i < MultipartFiles.length; i++) { // 다중 이미지 파일
+                // s3에 업로드
+                int pj_num = patchPjModifyReq.getPj_num();
+                String s3path = "test/pjphoto/pj_num : " + Integer.toString(pj_num);
+                String imgPath = s3Service.uploadPrphoto(MultipartFiles[i], s3path);
+
+                // db에 반영 (Pj_photo)
+                // 1. 기존 사진 삭제
+                s3Service.delPjphoto(pj_num);
+                // 2. 새로운 사진 추가
+                s3Service.uploadPjPhoto(imgPath, pj_num);
+            }
+        }
+
+        return new BaseResponse<>(patchPjModifyRes);
     }
 
     /**
@@ -280,6 +302,12 @@ public class ProjectController {
     public BaseResponse<List<GetApplyListRes>> pjApplyList(@RequestParam(required = false) String pj_num, String user_id) throws BaseException{
             jwtService.JwtEffectiveness(user_id, jwtService.getUserId());
             List<GetApplyListRes> getApplyListRes = projectProvider.pjApplyList(pj_num);
+
+            // 프로필 사진이 등록되어 있지 않은 경우 기본 이미지 반환
+            for (int i = 0; i < getApplyListRes.size(); i++) {
+                if(getApplyListRes.get(i).getUser_prphoto() == null) getApplyListRes.get(i).setUser_prphoto("https://infra-infra-bucket.s3.ap-northeast-2.amazonaws.com/prphoto/infra_profile.png");
+            }
+
             if (getApplyListRes == null) {
                 throw new BaseException(GET_PROJECT_APPLY_LIST_NULL);
             }

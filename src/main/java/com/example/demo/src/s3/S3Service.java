@@ -17,8 +17,7 @@ import java.io.IOException;
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.example.demo.config.BaseResponseStatus.DATABASE_ERROR;
-import static com.example.demo.config.BaseResponseStatus.MODIFY_FAIL_QA;
+import static com.example.demo.config.BaseResponseStatus.*;
 
 @Slf4j
 @Component
@@ -98,11 +97,28 @@ public class S3Service {
     }
 
     /**
-     * 프로젝트 사진 삭제
+     * 프로필 사진 삭제
      * @param user_id
      * @author shinhyeon
      */
-    public void delPrphoto(String user_id) {
-        s3Dao.delProphoto(user_id);
+    public void delPrphoto(String user_id) throws BaseException {
+        try {
+            s3Dao.delProphoto(user_id);
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    /*
+     * 프로젝트 사진 삭제
+     * @param pj_num
+     * @author shinhyeon
+     */
+    public void delPjphoto(int pj_num) throws BaseException {
+        try {
+            s3Dao.delPjphoto(pj_num);
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
     }
 }
