@@ -114,9 +114,11 @@ public class S3Service {
      * @param pj_num
      * @author shinhyeon
      */
-    public void delPjphoto(int pj_num) throws BaseException {
+    public void delPjphoto(int pj_num, String[] del_photo) throws BaseException {
         try {
-            s3Dao.delPjphoto(pj_num);
+            for(int i=0;i<del_photo.length;i++) {
+                s3Dao.delPjphoto(pj_num, del_photo[i]);
+            }
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }

@@ -70,9 +70,10 @@ public class S3Dao {
      * @param pj_num
      * @author shinhyeon
      */
-    public void delPjphoto(int pj_num) {
-        String delProphotoQuery = "DELETE FROM Pj_photo WHERE pj_num=?";
+    public void delPjphoto(int pj_num, String del_photo) {
+        String delPjphotoQuery = "DELETE FROM Pj_photo WHERE pj_num=? and pjPhoto=?";
+        Object[] delPjphotoParam = new Object[]{pj_num, del_photo};
 
-        this.jdbcTemplate.update(delProphotoQuery, pj_num);
+        this.jdbcTemplate.update(delPjphotoQuery, delPjphotoParam);
     }
 }
