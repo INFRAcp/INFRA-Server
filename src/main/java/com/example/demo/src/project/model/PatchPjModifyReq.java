@@ -27,5 +27,6 @@ public class PatchPjModifyReq {
     private int pj_totalPerson =0;
 
     private String [] hashtag;
-    private String [] del_photo=null;
+    // private String [] del_photo=null;
+    private String pjPhoto;
 }

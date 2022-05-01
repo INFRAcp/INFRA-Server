@@ -110,7 +110,7 @@ public class S3Service {
     }
 
     /*
-     * 프로젝트 사진 삭제
+     * 프로젝트 사진 삭제 (선택한 사진 삭제)
      * @param pj_num
      * @author shinhyeon
      */
@@ -119,6 +119,19 @@ public class S3Service {
             for(int i=0;i<del_photo.length;i++) {
                 s3Dao.delPjphoto(pj_num, del_photo[i]);
             }
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    /*
+     * 프로젝트 사진 삭제 (사진 일괄 삭제)
+     * @param pj_num
+     * @author shinhyeon
+     */
+    public void delPjphoto2(int pj_num) throws BaseException {
+        try {
+                s3Dao.delPjphoto2(pj_num);
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }

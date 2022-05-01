@@ -271,7 +271,7 @@ public class UserController {
      */
     @ResponseBody
     @PatchMapping("/profile/info/{user_id}")
-    public BaseResponse<String> modifyInfo(@PathVariable("user_id") String user_id, @RequestParam("user_nickname") String user_nickname, @RequestParam("user_prPhoto") String user_prPhoto, @RequestParam("images") MultipartFile multipartFile) throws IOException, BaseException {
+    public BaseResponse<String> modifyInfo(@PathVariable("user_id") String user_id, @RequestParam("user_nickname") String user_nickname, @RequestParam("user_prPhoto") String user_prPhoto, @RequestParam(value = "images", required = false) MultipartFile multipartFile) throws IOException, BaseException {
             jwtService.JwtEffectiveness(user_id, jwtService.getUserId());   // jwt token 검증
 
             if(user_prPhoto.equals("등록")){ // 프로필 사진 등록
