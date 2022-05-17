@@ -27,6 +27,8 @@ repositories {
 
 //스프링 부트 디펜던시 추가 하는곳
 dependencies {
+    implementation 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.4'
+
 
     // 네이버 로그인 API에 대한 의존성 추가
     compile 'org.springframework.boot:spring-boot-starter-webflux'
