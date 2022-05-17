@@ -52,8 +52,8 @@ public class ProjectController {
             jwtService.JwtEffectiveness(user_id, jwtService.getUserId());
             if (search == null) {
                 List<GetProjectRes> getProjectRes = projectProvider.getProjects(user_id);
-                //프로젝트 모집중, 마감, 마감임박 구분
 
+                //프로젝트 모집중, 마감, 마감임박 구분
                 for (int i = 0; i < getProjectRes.size(); i++) {
                     //프로젝트 좋아요 유무
                     getProjectRes.get(i).setPj_like(projectProvider.checkPjLike(getProjectRes.get(i).getPj_num(), user_id));

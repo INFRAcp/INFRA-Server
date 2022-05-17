@@ -78,9 +78,8 @@ public class JwtService {
         return request.getHeader("X-REFRESH-TOKEN");
     }
 
-    /*
+    /**
     JWT에서 userId 추출
-    @return int
     @throws BaseException
      */
     public String getUserId() throws BaseException {

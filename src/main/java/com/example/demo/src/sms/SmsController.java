@@ -46,8 +46,7 @@ public class SmsController {
      */
     @ResponseBody
     @PostMapping("/send")
-    public BaseResponse<PostSmsRes> smsSend(
-            @RequestBody PostSmsReq postSmsReq)
+    public BaseResponse<PostSmsRes> smsSend(@RequestBody PostSmsReq postSmsReq)
             throws NoSuchAlgorithmException, URISyntaxException, UnsupportedEncodingException, InvalidKeyException, JsonProcessingException, BaseException {
         try {
 

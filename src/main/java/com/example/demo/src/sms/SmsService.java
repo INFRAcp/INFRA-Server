@@ -7,6 +7,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -27,9 +28,14 @@ import java.util.List;
 @Service
 public class SmsService {
 
-    private final String serviceId = "ncp:sms:kr:280044915694:infra-sms";
-    private final String accessKey = "JUARhMRAzpFrstZqd775";
-    private final String secretKey = "lgiOpHwGvTW5HjcIaCKkhATBHFB3qeRuWzaBOrZZ";
+    @Value("${spring.sms.service_id}")
+    private String serviceId;
+
+    @Value("${spring.sms.access_key}")
+    private String accessKey;
+
+    @Value("${spring.sms.secret_key}")
+    private String secretKey;
 
     private SmsDao smsDao;
 
@@ -47,7 +53,7 @@ public class SmsService {
 
         PostSmsRequest smsRequest = new PostSmsRequest("SMS", "COMM", "82", "0318488224", "인증", messages);
 
-        smsRequest.setContent(Integer.toString((int)(Math.random() * (99999 - 10000 + 1)) + 10000));
+//        smsRequest.setContent(Integer.toString((int)(Math.random() * (99999 - 10000 + 1)) + 10000));
 
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonBody = objectMapper.writeValueAsString(smsRequest);
